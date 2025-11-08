@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="text-align:center;">
+    <h2 class="metallic-text">Register as Customer</h2>
+
+    <form method="post"
+          style="max-width:450px; margin:30px auto; background:white;
+                 padding:30px; border-radius:10px;
+                 box-shadow:0 3px 12px rgba(0,0,0,0.1);">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit" class="btn">Create Account</button>
+    </form>
+
+    <p style="margin-top:20px; font-size:0.95em;">
+        Already have an account? <a href="/login/">Login here</a>
+    </p>
+</div>
+{% endblock %}
