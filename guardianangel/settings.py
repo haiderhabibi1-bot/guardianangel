@@ -50,7 +50,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # Custom security + rate limit
     "core.middleware.security.SecurityHeadersMiddleware",
     "core.middleware.ratelimit.SimpleRateLimitMiddleware",
 ]
@@ -72,7 +71,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "core.context_processors.user_roles",  # <- matches the file we created
+                "core.context_processors.user_roles",
             ],
         },
     },
@@ -83,8 +82,6 @@ WSGI_APPLICATION = "guardianangel.wsgi.application"
 # ========================
 # DATABASE
 # ========================
-# Simple default: SQLite (fine for now; no extra packages needed)
-# If you later add Postgres on Render, we can switch this.
 
 DATABASES = {
     "default": {
@@ -119,9 +116,7 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_DIRS = [
-    BASE_DIR / "core" / "static",
-]
+STATICFILES_DIRS = [BASE_DIR / "core" / "static"]
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -134,23 +129,28 @@ EMAIL_BACKEND = os.getenv(
     "DJANGO_EMAIL_BACKEND",
     "django.core.mail.backends.console.EmailBackend"
 )
-
 EMAIL_HOST = os.getenv("EMAIL_HOST", "")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").lower() in ("true", "1")
-
 DEFAULT_FROM_EMAIL = os.getenv(
     "DJANGO_DEFAULT_FROM_EMAIL",
     "no-reply@guardianangelconsulting.ca"
 )
 
-# Where lawyer registration notifications go
+# Lawyer registration notifications
 LAWYER_REGISTRATION_NOTIFY_EMAIL = os.getenv(
     "LAWYER_REGISTRATION_NOTIFY_EMAIL",
     DEFAULT_FROM_EMAIL,
 )
+
+# ========================
+# STRIPE (OPTIONAL)
+# ========================
+
+STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY", "")
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
 
 # ========================
 # AUTH / LOGIN
@@ -163,7 +163,7 @@ LOGOUT_REDIRECT_URL = "/"
 # ========================
 # RATE LIMIT
 # ========================
-# Format: "seconds:requests"
+
 RATELIMIT_DEFAULT = os.getenv("RATELIMIT_DEFAULT", "60:1000")
 
 # ========================
@@ -172,11 +172,7 @@ RATELIMIT_DEFAULT = os.getenv("RATELIMIT_DEFAULT", "60:1000")
 
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
-
-# Force HTTPS in production
 SECURE_SSL_REDIRECT = not DEBUG
-
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
-
 X_FRAME_OPTIONS = "DENY"
