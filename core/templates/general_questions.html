@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="text-align:center;">
+    <h2 class="metallic-text">General Questions</h2>
+
+    <!-- CUSTOMER SECTION: Ask up to 2 free anonymous questions -->
+    {% if is_customer %}
+        <div style="max-width:600px; margin:30px auto; background:white; padding:25px;
+                    border-radius:10px; box-shadow:0 3px 12px rgba(0,0,0,0.1); text-align:left;">
+            <h3>Ask a Free Question</h3>
+
+            {% if can_ask %}
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="ask">
+                    {{ form.as_p }}
+                    <button type="submit" class="btn">Submit Question</button>
+                </form>
+                <p style="margin-top:10px; font-size:0.9em; color:#666;">
+                    You’ve used {{ user_free_count }} of your 2 free questions.
+                </p>
+            {% else %}
+                <p>You’ve reached your limit of 2 free questions.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <!-- LAWYER SECTION: View unanswered questions and respond -->
+    {% if is_lawyer_flag %}
+        <div style="max-width:700px; margin:40px auto; background:white; padding:25px;
+                    border-radius:10px; box-shadow:0 3px 12px rgba(0,0,0,0.1); text-align:left;">
+            <h3>Unanswered Questions</h3>
+            {% if pending_questions %}
+                {% for q in pending_questions %}
+                    <div style="margin-bottom:25px; border-bottom:1px solid #ddd; padding-bottom:15px;">
+                        <p><strong>Question #{{ q.id }}</strong></p>
+                        <p>{{ q.text|linebreaks }}</p>
+
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="answer">
+                            <input type="hidden" name="question_id" value="{{ q.id }}">
+                            {{ pending_forms[q.id].as_p }}
+                            <button type="submit" class="btn">Submit Answer</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No unanswered questions right now.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <!-- PUBLIC SECTION: All answered questions -->
+    <div style="max-width:800px; margin:50px auto; background:white; padding:25px;
+                border-radius:10px; box-shadow:0 3px 12px rgba(0,0,0,0.1); text-align:left;">
+        <h3>Answered Questions (Public)</h3>
+        {% if questions %}
+            {% for q in questions %}
+                <div style="margin-bottom:25px; border-bottom:1px solid #ddd; padding-bottom:15px;">
+                    <p><strong>Asked by:</strong> {{ q.display_name }}</p>
+                    <p><strong>Question:</strong><br>{{ q.text|linebreaks }}</p>
+                    <p><strong>Answer:</strong><br>{{ q.answer_text|linebreaks }}</p>
+                    <p style="font-size:0.9em; color:#666;">Answered by: {{ q.answered_by.user.username }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No answered questions yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
