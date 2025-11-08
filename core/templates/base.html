@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guardian Angel</title>
+    <style>
+        body {
+            background: linear-gradient(180deg, #cce6ff 0%, #e6f0ff 100%);
+            color: #3d3d3d;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: rgba(173, 216, 230, 0.8);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        header h1 {
+            font-size: 1.6em;
+            font-weight: 700;
+            color: #4a4a4a;
+            letter-spacing: 1px;
+        }
+        nav a {
+            color: #4a4a4a;
+            margin-left: 18px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 30px 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 40px;
+        }
+        .btn {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background-color: #357ab7;
+        }
+        .lang-section {
+            margin-top: 40px;
+            border-top: 1px solid #bbb;
+            padding-top: 25px;
+        }
+        .metallic-text {
+            color: #555;
+            text-shadow: 0 1px 1px #fff, 0 -1px 1px #999;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Guardian Angel</h1>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/general-questions/">General Questions</a>
+
+        {% if user.is_authenticated %}
+            {% if is_customer %}
+                <a href="/lawyers/">Lawyers</a>
+            {% endif %}
+            {% if is_lawyer %}
+                <a href="/questions/">Client Questions</a>
+            {% endif %}
+            <a href="/profile/">Profile</a>
+            <a href="/logout/">Logout</a>
+        {% else %}
+            <a href="/login/">Login</a>
+            <a href="/register/customer/">Sign up (Customer)</a>
+            <a href="/register/lawyer/">Sign up (Lawyer)</a>
+        {% endif %}
+    </nav>
+</header>
+
+<div class="container">
+    {% block content %}
+    {% endblock %}
+</div>
+
+<footer>
+    &copy; {{ now|date:"Y" }} Guardian Angel — All rights reserved.
+</footer>
+</body>
+</html>
