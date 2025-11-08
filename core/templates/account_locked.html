@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="text-align:center; max-width:600px; margin:60px auto;">
+    <h2 class="metallic-text">Account Locked</h2>
+
+    <div style="background:white; padding:30px; border-radius:12px;
+                box-shadow:0 3px 12px rgba(0,0,0,0.1); text-align:left;">
+        <p style="font-size:1.05em; line-height:1.6em;">
+            For your protection, your account has been temporarily locked due to
+            multiple failed login attempts or unusual activity detected by our system.
+        </p>
+
+        <p style="margin-top:20px;">
+            Please wait a few minutes before trying again. If you believe this is an error,
+            you can <a href="/contact-support/" style="color:#4a90e2;">contact support</a>
+            for assistance in verifying your identity and unlocking your account.
+        </p>
+
+        <hr style="margin:25px 0;">
+
+        <p style="font-size:0.9em; color:#666;">
+            Guardian Angel takes your privacy and security seriously.
+            We use multiple layers of protection to keep your information safe.
+        </p>
+
+        <div style="text-align:center; margin-top:25px;">
+            <a href="/login/" class="btn">Back to Login</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
