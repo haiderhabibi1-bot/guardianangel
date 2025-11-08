@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="text-align:center;">
+    <h2 class="metallic-text">Paid Questions</h2>
+
+    <!-- CUSTOMER SECTION: Post a paid question -->
+    {% if is_customer %}
+        <div style="max-width:600px; margin:30px auto; background:white; padding:25px;
+                    border-radius:10px; box-shadow:0 3px 12px rgba(0,0,0,0.1); text-align:left;">
+            <h3>Post a Question</h3>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn">Submit Question</button>
+            </form>
+            <p style="margin-top:10px; font-size:0.9em; color:#666;">
+                You can set a price between $10 – $30 CAD for your question.
+                Lawyers will decide whether to answer at your chosen price.
+            </p>
+        </div>
+    {% endif %}
+
+    <!-- LAWYER SECTION: Browse open questions -->
+    {% if is_lawyer_flag %}
+        <div style="max-width:850px; margin:40px auto; background:white; padding:25px;
+                    border-radius:10px; box-shadow:0 3px 12px rgba(0,0,0,0.1); text-align:left;">
+            <h3>Open Client Questions</h3>
+            {% if questions %}
+                {% for q in questions %}
+                    <div style="margin-bottom:25px; border-bottom:1px solid #ddd; padding-bottom:15px;">
+                        <p><strong>Question #{{ q.id }}</strong></p>
+                        <p><strong>Title:</strong> {{ q.title }}</p>
+                        <p><strong>Description:</strong><br>{{ q.text|linebreaks }}</p>
+                        <p><strong>Offered Price:</strong> ${{ q.offered_price }} CAD</p>
+
+                        {% if q.is_open %}
+                            <form method="post" action="/questions/{{ q.id }}/answer/" style="text-align:center;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn">Answer for ${{ q.offered_price }} CAD</button>
+                            </form>
+                        {% else %}
+                            <p style="color:#777;">Already taken by another lawyer.</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No paid questions available yet.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <!-- GENERIC: Show own posted questions -->
+    {% if is_customer %}
+        <div style="max-width:700px; margin:40px auto; background:white; padding:25px;
+                    border-radius:10px; box-shadow:0 3px 12px rgba(0,0,0,0.1); text-align:left;">
+            <h3>My Posted Questions</h3>
+            {% if my_questions %}
+                {% for q in my_questions %}
+                    <div style="margin-bottom:20px; border-bottom:1px solid #ddd; padding-bottom:10px;">
+                        <p><strong>Title:</strong> {{ q.title }}</p>
+                        <p><strong>Offered Price:</strong> ${{ q.offered_price }} CAD</p>
+                        <p><strong>Status:</strong> 
+                            {% if q.is_open %}Open{% else %}Taken{% endif %}
+                        </p>
+                        {% if q.chosen_lawyer %}
+                            <p><strong>Answered By:</strong> {{ q.chosen_lawyer.user.username }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>You haven’t posted any paid questions yet.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
