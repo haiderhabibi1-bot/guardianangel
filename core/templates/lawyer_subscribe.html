@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="text-align:center;">
+    <h2 class="metallic-text">Lawyer Subscription</h2>
+
+    <div style="max-width:500px; margin:30px auto; background:white;
+                padding:25px; border-radius:10px;
+                box-shadow:0 3px 12px rgba(0,0,0,0.1); text-align:left;">
+        
+        <p>As a lawyer, you need an active subscription to:</p>
+        <ul style="text-align:left; margin:15px 40px;">
+            <li>Answer client questions (paid and free)</li>
+            <li>Be listed publicly in the “Our Lawyers” directory</li>
+            <li>Receive chat requests from customers</li>
+        </ul>
+
+        <hr>
+
+        <p style="font-size:1.1em; font-weight:bold;">Subscription: $15.00 CAD / month</p>
+        <p style="color:#666;">Includes platform access and secure messaging system.</p>
+
+        <form method="post" style="text-align:center; margin-top:25px;">
+            {% csrf_token %}
+            <button type="submit" class="btn">
+                {% if stripe_public_key %}
+                    Subscribe Securely
+                {% else %}
+                    Activate Subscription (Demo Mode)
+                {% endif %}
+            </button>
+        </form>
+
+        {% if not stripe_public_key %}
+            <p style="margin-top:10px; font-size:0.85em; color:#999;">
+                Payments currently run in demo mode — no real charges will be made.
+            </p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
