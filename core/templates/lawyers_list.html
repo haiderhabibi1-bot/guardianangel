@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="text-align:center;">
+    <h2 class="metallic-text">Our Lawyers</h2>
+
+    {% if lawyers %}
+        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:25px; margin-top:30px;">
+            {% for lawyer in lawyers %}
+            <div style="background:white; width:280px; border-radius:12px; padding:20px;
+                        box-shadow:0 3px 10px rgba(0,0,0,0.1); text-align:left;">
+                <h3 style="margin-top:0;">{{ lawyer.user.username }}</h3>
+                <p><strong>Specialty:</strong> {{ lawyer.specialty }}</p>
+                <p><strong>Years Practicing:</strong> {{ lawyer.years_practicing }}</p>
+                <p><strong>Graduated From:</strong> {{ lawyer.graduation_institution }}</p>
+                <p><strong>Price per Question:</strong> ${{ lawyer.question_price }} CAD</p>
+
+                <div style="text-align:center; margin-top:15px;">
+                    <a href="/lawyers/{{ lawyer.id }}/" class="btn">View Profile</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="margin-top:25px;">No lawyers available at the moment.</p>
+    {% endif %}
+</div>
+{% endblock %}
