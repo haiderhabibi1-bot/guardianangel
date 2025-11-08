@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="text-align:center;">
+    <h2 class="metallic-text">Chat with {{ chat.lawyer.user.username }}</h2>
+
+    {% if not chat.is_paid %}
+        <div style="max-width:600px; margin:30px auto; background:white; padding:25px;
+                    border-radius:10px; box-shadow:0 3px 12px rgba(0,0,0,0.1); text-align:left;">
+            <p>This chat is pending payment.</p>
+            <p><a href="/payment/{{ chat.id }}/" class="btn">Complete Payment to Continue</a></p>
+        </div>
+    {% else %}
+        <div id="chat-box" style="max-width:700px; margin:30px auto; background:white;
+                                  padding:25px; border-radius:10px;
+                                  box-shadow:0 3px 12px rgba(0,0,0,0.1);
+                                  text-align:left; max-height:400px; overflow-y:auto;">
+            {% if messages %}
+                {% for m in messages %}
+                    <div style="margin-bottom:15px;
+                                background:{% if m.sender == user %}#d9eaff{% else %}#f4f4f4{% endif %};
+                                padding:10px 15px;
+                                border-radius:8px;
+                                max-width:80%;
+                                {% if m.sender == user %}margin-left:auto;{% endif %}">
+                        <p style="margin:0; font-weight:600;">{{ m.sender.username }}</p>
+                        <p style="margin:5px 0;">{{ m.text|linebreaks }}</p>
+                        <p style="font-size:0.8em; color:#777;">{{ m.timestamp|date:"Y-m-d H:i" }}</p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p style="color:#777;">No messages yet.</p>
+            {% endif %}
+        </div>
+
+        <form method="post" style="max-width:700px; margin:20px auto; text-align:center;">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn">Send Message</button>
+        </form>
+    {% endif %}
+</div>
+{% endblock %}
