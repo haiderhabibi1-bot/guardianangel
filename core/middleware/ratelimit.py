@@ -1,44 +1,55 @@
 import time
-from django.http import HttpResponseTooManyRequests
+from django.http import HttpResponse
 from django.conf import settings
 from django.utils.deprecation import MiddlewareMixin
 
 class SimpleRateLimitMiddleware(MiddlewareMixin):
     """
     A simple in-memory rate limiter.
-    Example default: "60:8" -> 8 requests per 60 seconds per IP.
-    Not bulletproof (memory resets when app restarts), but good for basic spam protection.
+
+    Default format (from settings.RATELIMIT_DEFAULT):
+        "60:8" -> 8 requests per 60 seconds per IP.
+
+    Not persistent across restarts, but good enough
+    for basic abuse protection on a small deployment.
     """
 
     cache = {}
 
     def process_request(self, request):
-        # Skip admin and static
         path = request.path
+
+        # Skip static files and admin (optional)
         if path.startswith('/static') or path.startswith('/admin'):
             return None
 
+        # Read limit from settings, fallback to 8 req / 60s
         limit_str = getattr(settings, "RATELIMIT_DEFAULT", "60:8")
-        seconds, max_requests = map(int, limit_str.split(":"))
+        try:
+            seconds, max_requests = map(int, limit_str.split(":"))
+        except ValueError:
+            seconds, max_requests = 60, 8
 
         ip = self.get_client_ip(request)
         now = time.time()
 
-        # Initialize record
-        rec = self.cache.get(ip, [])
-        rec = [t for t in rec if now - t < seconds]  # keep only recent timestamps
-        rec.append(now)
-        self.cache[ip] = rec
+        # Get existing timestamps for this IP and drop old ones
+        timestamps = self.cache.get(ip, [])
+        timestamps = [t for t in timestamps if now - t < seconds]
+        timestamps.append(now)
+        self.cache[ip] = timestamps
 
-        if len(rec) > max_requests:
-            return HttpResponseTooManyRequests("Too many requests. Please slow down.")
+        if len(timestamps) > max_requests:
+            # 429 Too Many Requests (compatible with all Django versions)
+            return HttpResponse(
+                "Too many requests. Please slow down.",
+                status=429
+            )
 
         return None
 
     def get_client_ip(self, request):
         xff = request.META.get("HTTP_X_FORWARDED_FOR")
         if xff:
-            ip = xff.split(",")[0].strip()
-        else:
-            ip = request.META.get("REMOTE_ADDR", "")
-        return ip
+            return xff.split(",")[0].strip()
+        return request.META.get("REMOTE_ADDR", "") or "unknown"
