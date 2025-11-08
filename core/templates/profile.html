@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="text-align:center;">
+    <h2 class="metallic-text">My Profile</h2>
+
+    {% if is_customer %}
+        <div style="max-width:500px; margin:25px auto; background:white;
+                    padding:25px; border-radius:10px; box-shadow:0 3px 10px rgba(0,0,0,0.1); text-align:left;">
+            <h3 style="margin-top:0;">Customer Account</h3>
+            <p><strong>Username:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <hr>
+            <p>You can:</p>
+            <ul>
+                <li><a href="/lawyers/">Browse Lawyers</a></li>
+                <li><a href="/general-questions/">Ask a Free General Question</a></li>
+                <li><a href="/questions/">Post a Paid Question</a></li>
+            </ul>
+        </div>
+    {% endif %}
+
+    {% if is_lawyer %}
+        <div style="max-width:600px; margin:25px auto; background:white;
+                    padding:25px; border-radius:10px; box-shadow:0 3px 10px rgba(0,0,0,0.1); text-align:left;">
+            <h3 style="margin-top:0;">Lawyer Account</h3>
+            <p><strong>Username:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Specialty:</strong> {{ lawyer.specialty }}</p>
+            <p><strong>Years Practicing:</strong> {{ lawyer.years_practicing }}</p>
+            <p><strong>Graduation Institution:</strong> {{ lawyer.graduation_institution }}</p>
+            <p><strong>Question Price:</strong> ${{ lawyer.question_price }} CAD</p>
+            <p><strong>Approved:</strong> {{ lawyer.is_approved|yesno:"Yes,No" }}</p>
+            <p><strong>Subscription Active:</strong> {{ lawyer.subscription_active|yesno:"Yes,No" }}</p>
+
+            {% if not lawyer.subscription_active %}
+                <hr>
+                <form method="post" action="/lawyer/subscribe/" style="text-align:center;">
+                    {% csrf_token %}
+                    <p style="margin-bottom:10px;">Activate your monthly subscription ($15 CAD/month) to answer client questions.</p>
+                    <button type="submit" class="btn">Subscribe Now</button>
+                </form>
+            {% endif %}
+
+            <hr>
+            <p>You can:</p>
+            <ul>
+                <li><a href="/questions/">View Client Questions</a></li>
+                <li><a href="/general-questions/">Answer General Questions</a></li>
+            </ul>
+        </div>
+    {% endif %}
+
+    {% if not is_customer and not is_lawyer %}
+        <div style="max-width:500px; margin:25px auto; background:white;
+                    padding:25px; border-radius:10px; box-shadow:0 3px 10px rgba(0,0,0,0.1); text-align:left;">
+            <p>Welcome, {{ user.username }}.</p>
+            <p>Your account type has not been identified yet. Please register again as a
+               <a href="/register/customer/">Customer</a> or a
+               <a href="/register/lawyer/">Lawyer</a>.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
