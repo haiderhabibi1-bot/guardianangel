@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="text-align:center;">
+    <h2 class="metallic-text">Lawyer Profile</h2>
+
+    <div style="max-width:600px; margin:30px auto; background:white;
+                padding:30px; border-radius:12px; box-shadow:0 3px 12px rgba(0,0,0,0.1); text-align:left;">
+
+        <h3 style="margin-top:0;">{{ lawyer.user.username }}</h3>
+        <p><strong>Specialty:</strong> {{ lawyer.specialty }}</p>
+        <p><strong>Years Practicing:</strong> {{ lawyer.years_practicing }}</p>
+        <p><strong>Graduated From:</strong> {{ lawyer.graduation_institution }}</p>
+        <p><strong>Price per Question:</strong> ${{ lawyer.question_price }} CAD</p>
+
+        <hr style="margin:20px 0;">
+
+        {% if can_message %}
+            <form method="post" action="/lawyers/{{ lawyer.id }}/start-chat/" style="text-align:center;">
+                {% csrf_token %}
+                <p style="margin-bottom:10px;">Start a new paid chat with this lawyer for ${{ lawyer.question_price }} + tax.</p>
+                <button type="submit" class="btn">Message this Lawyer</button>
+            </form>
+        {% else %}
+            <p style="text-align:center; color:#666;">
+                You must be logged in as a customer to contact this lawyer.<br>
+                <a href="/login/">Login</a> or <a href="/register/customer/">register</a> to continue.
+            </p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
