@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="text-align:center;">
+    <h2 class="metallic-text">Register as Lawyer</h2>
+
+    <form method="post" enctype="multipart/form-data"
+          style="max-width:550px; margin:30px auto; background:white;
+                 padding:30px; border-radius:10px;
+                 box-shadow:0 3px 12px rgba(0,0,0,0.1); text-align:left;">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit" class="btn">Submit Application</button>
+    </form>
+
+    <p style="margin-top:25px; font-size:0.95em;">
+        Once you register, our team will verify your bar membership certificate
+        before approving your account. You’ll be notified when your profile is active.
+    </p>
+
+    <p style="margin-top:20px; font-size:0.95em;">
+        Already registered? <a href="/login/">Login here</a>
+    </p>
+</div>
+{% endblock %}
