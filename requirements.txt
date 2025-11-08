@@ -1,0 +1,7 @@
+django>=5.0,<6.0
+stripe>=10.0.0
+django-axes>=6.0
+django-redis>=6.0
+python-magic>=0.4.27
+bleach>=6.0.0
+gunicorn>=21.0.0
