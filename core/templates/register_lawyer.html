@@ -1,25 +1,169 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sign up as Lawyer | Guardian Angel{% endblock %}
+
 {% block content %}
-<div style="text-align:center;">
-    <h2 class="metallic-text">Register as Lawyer</h2>
+<div class="form-container">
+<h2 class="form-title">Lawyer Registration</h2>
+<p class="form-subtitle">
+Provide your information and bar certificate. Your profile will be reviewed and activated manually.
+</p>
 
-    <form method="post" enctype="multipart/form-data"
-          style="max-width:550px; margin:30px auto; background:white;
-                 padding:30px; border-radius:10px;
-                 box-shadow:0 3px 12px rgba(0,0,0,0.1); text-align:left;">
-        {% csrf_token %}
-        {{ form.as_p }}
+{% if messages %}
+<ul class="messages">
+{% for message in messages %}
+<li class="alert {{ message.tags }}">{{ message }}</li>
+{% endfor %}
+</ul>
+{% endif %}
 
-        <button type="submit" class="btn">Submit Application</button>
-    </form>
+<form method="post" enctype="multipart/form-data" class="form-box">
+{% csrf_token %}
+{{ form.non_field_errors }}
 
-    <p style="margin-top:25px; font-size:0.95em;">
-        Once you register, our team will verify your bar membership certificate
-        before approving your account. You’ll be notified when your profile is active.
-    </p>
-
-    <p style="margin-top:20px; font-size:0.95em;">
-        Already registered? <a href="/login/">Login here</a>
-    </p>
+<div class="form-group">
+<label for="{{ form.username.id_for_label }}">Username</label>
+{{ form.username }}
 </div>
+
+<div class="form-group">
+<label for="{{ form.email.id_for_label }}">Email</label>
+{{ form.email }}
+</div>
+
+<div class="form-group">
+<label for="{{ form.password1.id_for_label }}">Password</label>
+{{ form.password1 }}
+</div>
+
+<div class="form-group">
+<label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+{{ form.password2 }}
+</div>
+
+<div class="form-group">
+<label for="{{ form.speciality.id_for_label }}">Speciality</label>
+{{ form.speciality }}
+</div>
+
+<div class="form-group">
+<label for="{{ form.years_experience.id_for_label }}">Years of practice</label>
+{{ form.years_experience }}
+</div>
+
+<div class="form-group">
+<label for="{{ form.law_school.id_for_label }}">Law school</label>
+{{ form.law_school }}
+</div>
+
+<div class="form-group">
+<label for="{{ form.bar_number.id_for_label }}">Bar number</label>
+{{ form.bar_number }}
+</div>
+
+<div class="form-group">
+<label for="{{ form.bar_certificate.id_for_label }}">Bar membership certificate (PDF/JPG/PNG)</label>
+{{ form.bar_certificate }}
+</div>
+
+<button type="submit" class="btn-primary">Submit for Approval</button>
+</form>
+
+<div class="extra-links">
+<p>Already registered? <a href="{% url 'login' %}" class="link">Log in</a></p>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.form-container {
+max-width: 640px;
+margin: 40px auto;
+padding: 28px;
+background: #fff;
+border-radius: 14px;
+box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+.form-title {
+margin: 0 0 8px;
+font-size: 1.7rem;
+color: #0b3c5d;
+font-weight: 700;
+text-align: center;
+}
+.form-subtitle {
+font-size: 0.9rem;
+color: #666;
+margin-bottom: 18px;
+text-align: center;
+}
+.form-group {
+margin-bottom: 12px;
+}
+.form-group label {
+display: block;
+font-weight: 600;
+margin-bottom: 4px;
+color: #333;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+width: 100%;
+padding: 9px 10px;
+border-radius: 7px;
+border: 1px solid #ccd6e0;
+font-size: 0.95rem;
+outline: none;
+transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+border-color: #0b3c5d;
+box-shadow: 0 0 0 2px rgba(11,60,93,0.12);
+}
+.btn-primary {
+width: 100%;
+margin-top: 8px;
+padding: 10px;
+border: none;
+border-radius: 7px;
+background: linear-gradient(90deg, #0b3c5d, #00aaff);
+color: #fff;
+font-weight: 600;
+cursor: pointer;
+font-size: 1rem;
+}
+.btn-primary:hover {
+background: linear-gradient(90deg, #09324c, #008ecc);
+}
+.messages {
+list-style: none;
+padding: 0;
+margin: 0 0 10px;
+font-size: 0.85rem;
+}
+.messages li {
+background: #e6f7ff;
+color: #044a63;
+padding: 7px 9px;
+border-radius: 6px;
+margin-bottom: 4px;
+}
+.extra-links {
+text-align: center;
+margin-top: 14px;
+font-size: 0.9rem;
+}
+.link {
+color: #0077cc;
+text-decoration: none;
+}
+.link:hover {
+text-decoration: underline;
+}
+</style>
 {% endblock %}
