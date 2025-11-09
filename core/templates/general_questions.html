@@ -1,72 +1,121 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block title %}General Questions | Guardian Angel{% endblock %}
+
 {% block content %}
-<div style="text-align:center;">
-    <h2 class="metallic-text">General Questions</h2>
+<div class="page-wrap">
+<h2>General Questions</h2>
+<p class="intro">
+You can ask up to <strong>2 free general questions</strong>. Questions may be answered
+by lawyers and displayed publicly, while your identity remains anonymous.
+</p>
 
-    <!-- CUSTOMER SECTION: Ask up to 2 free anonymous questions -->
-    {% if is_customer %}
-        <div style="max-width:600px; margin:30px auto; background:white; padding:25px;
-                    border-radius:10px; box-shadow:0 3px 12px rgba(0,0,0,0.1); text-align:left;">
-            <h3>Ask a Free Question</h3>
+{% if messages %}
+<ul class="messages">
+{% for message in messages %}
+<li class="alert {{ message.tags }}">{{ message }}</li>
+{% endfor %}
+</ul>
+{% endif %}
 
-            {% if can_ask %}
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="ask">
-                    {{ form.as_p }}
-                    <button type="submit" class="btn">Submit Question</button>
-                </form>
-                <p style="margin-top:10px; font-size:0.9em; color:#666;">
-                    You’ve used {{ user_free_count }} of your 2 free questions.
-                </p>
-            {% else %}
-                <p>You’ve reached your limit of 2 free questions.</p>
-            {% endif %}
-        </div>
-    {% endif %}
-
-    <!-- LAWYER SECTION: View unanswered questions and respond -->
-    {% if is_lawyer_flag %}
-        <div style="max-width:700px; margin:40px auto; background:white; padding:25px;
-                    border-radius:10px; box-shadow:0 3px 12px rgba(0,0,0,0.1); text-align:left;">
-            <h3>Unanswered Questions</h3>
-            {% if pending_questions %}
-                {% for q in pending_questions %}
-                    <div style="margin-bottom:25px; border-bottom:1px solid #ddd; padding-bottom:15px;">
-                        <p><strong>Question #{{ q.id }}</strong></p>
-                        <p>{{ q.text|linebreaks }}</p>
-
-                        <form method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="answer">
-                            <input type="hidden" name="question_id" value="{{ q.id }}">
-                            {{ pending_forms[q.id].as_p }}
-                            <button type="submit" class="btn">Submit Answer</button>
-                        </form>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <p>No unanswered questions right now.</p>
-            {% endif %}
-        </div>
-    {% endif %}
-
-    <!-- PUBLIC SECTION: All answered questions -->
-    <div style="max-width:800px; margin:50px auto; background:white; padding:25px;
-                border-radius:10px; box-shadow:0 3px 12px rgba(0,0,0,0.1); text-align:left;">
-        <h3>Answered Questions (Public)</h3>
-        {% if questions %}
-            {% for q in questions %}
-                <div style="margin-bottom:25px; border-bottom:1px solid #ddd; padding-bottom:15px;">
-                    <p><strong>Asked by:</strong> {{ q.display_name }}</p>
-                    <p><strong>Question:</strong><br>{{ q.text|linebreaks }}</p>
-                    <p><strong>Answer:</strong><br>{{ q.answer_text|linebreaks }}</p>
-                    <p style="font-size:0.9em; color:#666;">Answered by: {{ q.answered_by.user.username }}</p>
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>No answered questions yet.</p>
-        {% endif %}
-    </div>
+<form method="post" class="form-box">
+{% csrf_token %}
+{{ form.non_field_errors }}
+<div class="form-group">
+{{ form.text }}
 </div>
+<button type="submit" class="btn-primary">Submit Question</button>
+</form>
+
+<h3>Public Questions</h3>
+<ul class="questions-list">
+{% for q in questions %}
+<li>
+{{ q.text|linebreaksbr }}
+<div class="meta">
+Asked on {{ q.created_at|date:"Y-m-d H:i" }}
+</div>
+</li>
+{% empty %}
+<li>No questions yet. Be the first to ask.</li>
+{% endfor %}
+</ul>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-wrap {
+max-width: 720px;
+margin: 30px auto;
+padding: 24px;
+background: #fff;
+border-radius: 14px;
+box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+.intro {
+font-size: 0.95rem;
+color: #555;
+margin-bottom: 18px;
+}
+.form-box {
+margin-bottom: 24px;
+}
+.form-group textarea,
+.form-group .form-input {
+width: 100%;
+padding: 10px;
+border-radius: 7px;
+border: 1px solid #ccd6e0;
+font-size: 0.95rem;
+resize: vertical;
+min-height: 90px;
+outline: none;
+}
+.form-group textarea:focus {
+border-color: #0b3c5d;
+box-shadow: 0 0 0 2px rgba(11,60,93,0.12);
+}
+.btn-primary {
+padding: 9px 18px;
+border: none;
+border-radius: 7px;
+background: linear-gradient(90deg, #0b3c5d, #00aaff);
+color: #fff;
+font-weight: 600;
+cursor: pointer;
+font-size: 0.95rem;
+}
+.btn-primary:hover {
+background: linear-gradient(90deg, #09324c, #008ecc);
+}
+.questions-list {
+list-style: none;
+padding: 0;
+margin: 0;
+}
+.questions-list li {
+padding: 10px 0;
+border-bottom: 1px solid #eef1f5;
+font-size: 0.95rem;
+}
+.questions-list .meta {
+font-size: 0.75rem;
+color: #888;
+margin-top: 2px;
+}
+.messages {
+list-style: none;
+padding: 0;
+margin: 0 0 10px;
+font-size: 0.85rem;
+}
+.messages li {
+background: #e6f7ff;
+color: #044a63;
+padding: 7px 9px;
+border-radius: 6px;
+margin-bottom: 4px;
+}
+</style>
 {% endblock %}
