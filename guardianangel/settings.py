@@ -7,13 +7,9 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # -------------------------------------------------------
-# SECURITY
+# SECURITY SETTINGS
 # -------------------------------------------------------
-SECRET_KEY = os.environ.get(
-    "SECRET_KEY",
-    "change-me-in-production"  # override on Render with env var
-)
-
+SECRET_KEY = os.environ.get("SECRET_KEY", "change-me-please")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
@@ -30,21 +26,25 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # -------------------------------------------------------
-# APPLICATION DEFINITION
+# APPLICATIONS
 # -------------------------------------------------------
 INSTALLED_APPS = [
+    "whitenoise.runserver_nostatic",  # enables whitenoise in dev
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
-    "core",
+    "core",  # your main app
 ]
 
+# -------------------------------------------------------
+# MIDDLEWARE
+# -------------------------------------------------------
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # serves static files in production
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -53,7 +53,11 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+# -------------------------------------------------------
+# URLS & WSGI
+# -------------------------------------------------------
 ROOT_URLCONF = "guardianangel.urls"
+WSGI_APPLICATION = "guardianangel.wsgi.application"
 
 # -------------------------------------------------------
 # TEMPLATES
@@ -61,7 +65,6 @@ ROOT_URLCONF = "guardianangel.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        # Your main templates folder
         "DIRS": [BASE_DIR / "core" / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -70,17 +73,13 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                # ❌ removed non-existent core.context_processors.global_settings
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = "guardianangel.wsgi.application"
-
 # -------------------------------------------------------
 # DATABASE
-# (keep SQLite for now; you can switch to Postgres on Render later)
 # -------------------------------------------------------
 DATABASES = {
     "default": {
@@ -108,28 +107,27 @@ USE_I18N = True
 USE_TZ = True
 
 # -------------------------------------------------------
-# STATIC & MEDIA FILES
+# STATIC FILES
 # -------------------------------------------------------
 STATIC_URL = "/static/"
-
-# Where collectstatic will put files (Render serves from here)
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# Do NOT point to BASE_DIR / "static" since you’re using app-level static folders
-# STATICFILES_DIRS = [BASE_DIR / "static"]
-
+# -------------------------------------------------------
+# MEDIA FILES
+# -------------------------------------------------------
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 # -------------------------------------------------------
-# AUTH / LOGIN
+# AUTH REDIRECTS
 # -------------------------------------------------------
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
 # -------------------------------------------------------
-# EMAIL (configure with env vars when ready)
+# EMAIL SETTINGS
 # -------------------------------------------------------
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
@@ -150,21 +148,6 @@ if not DEBUG:
     SECURE_HSTS_PRELOAD = True
 
 # -------------------------------------------------------
-# DEFAULT AUTO FIELD
+# DEFAULT PRIMARY KEY FIELD TYPE
 # -------------------------------------------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# -------------------------------------------------------
-# LOGGING (simple console logging)
-# -------------------------------------------------------
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "console": {"class": "logging.StreamHandler"},
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": "INFO",
-    },
-}
