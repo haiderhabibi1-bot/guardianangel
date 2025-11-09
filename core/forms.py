@@ -1,74 +1,121 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import GeneralQuestion, CustomerQuestion, Message
-import bleach
-
-# Sanitization rules to protect against XSS in questions or messages
-ALLOWED_TAGS = ['b', 'i', 'strong', 'a', 'p', 'ul', 'li', 'br']
-ALLOWED_ATTRS = {'a': ['href', 'rel', 'target']}
+from django.contrib.auth.forms import AuthenticationForm
+from .models import LawyerProfile, GeneralQuestion
 
 
-def sanitize(text):
-    return bleach.clean(text, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRS)
+class LoginForm(AuthenticationForm):
+username = forms.CharField(
+max_length=150,
+widget=forms.TextInput(attrs={"class": "form-input", "placeholder": "Username"}),
+)
+password = forms.CharField(
+widget=forms.PasswordInput(attrs={"class": "form-input", "placeholder": "Password"}),
+)
 
 
-class CustomerRegisterForm(UserCreationForm):
-    email = forms.EmailField(required=True)
+class CustomerRegistrationForm(forms.ModelForm):
+password1 = forms.CharField(
+label="Password",
+widget=forms.PasswordInput(attrs={"class": "form-input"}),
+)
+password2 = forms.CharField(
+label="Confirm Password",
+widget=forms.PasswordInput(attrs={"class": "form-input"}),
+)
 
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'password1', 'password2']
+class Meta:
+model = User
+fields = ["username", "email"]
+widgets = {
+"username": forms.TextInput(attrs={"class": "form-input"}),
+"email": forms.EmailInput(attrs={"class": "form-input"}),
+}
+
+def clean(self):
+cleaned = super().clean()
+p1 = cleaned.get("password1")
+p2 = cleaned.get("password2")
+if p1 and p2 and p1 != p2:
+self.add_error("password2", "Passwords do not match.")
+return cleaned
+
+def save(self, commit=True):
+user = super().save(commit=False)
+user.set_password(self.cleaned_data["password1"])
+if commit:
+user.save()
+return user
 
 
-class LawyerRegisterForm(UserCreationForm):
-    email = forms.EmailField(required=True)
-    specialty = forms.CharField(max_length=255)
-    years_practicing = forms.IntegerField(min_value=0)
-    graduation_institution = forms.CharField(max_length=255)
-    question_price = forms.DecimalField(min_value=10, max_value=30, decimal_places=2)
-    bar_certificate = forms.FileField()
+class LawyerRegistrationForm(forms.ModelForm):
+username = forms.CharField(
+max_length=150,
+widget=forms.TextInput(attrs={"class": "form-input"}),
+)
+email = forms.EmailField(
+widget=forms.EmailInput(attrs={"class": "form-input"}),
+)
+password1 = forms.CharField(
+label="Password",
+widget=forms.PasswordInput(attrs={"class": "form-input"}),
+)
+password2 = forms.CharField(
+label="Confirm Password",
+widget=forms.PasswordInput(attrs={"class": "form-input"}),
+)
 
-    class Meta:
-        model = User
-        fields = [
-            'username', 'email', 'password1', 'password2',
-            'specialty', 'years_practicing', 'graduation_institution',
-            'question_price', 'bar_certificate'
-        ]
+class Meta:
+model = LawyerProfile
+fields = ["speciality", "years_experience", "law_school", "bar_number", "bar_certificate"]
+widgets = {
+"speciality": forms.TextInput(attrs={"class": "form-input"}),
+"years_experience": forms.NumberInput(attrs={"class": "form-input"}),
+"law_school": forms.TextInput(attrs={"class": "form-input"}),
+"bar_number": forms.TextInput(attrs={"class": "form-input"}),
+}
+
+def clean(self):
+cleaned = super().clean()
+p1 = cleaned.get("password1")
+p2 = cleaned.get("password2")
+if p1 and p2 and p1 != p2:
+self.add_error("password2", "Passwords do not match.")
+return cleaned
+
+def save(self, commit=True):
+from .models import LawyerProfile
+
+username = self.cleaned_data["username"]
+email = self.cleaned_data["email"]
+password = self.cleaned_data["password1"]
+
+user = User(username=username, email=email)
+user.set_password(password)
+if commit:
+user.save()
+
+lawyer = LawyerProfile(
+user=user,
+speciality=self.cleaned_data.get("speciality", ""),
+years_experience=self.cleaned_data.get("years_experience") or 0,
+law_school=self.cleaned_data.get("law_school", ""),
+bar_number=self.cleaned_data.get("bar_number", ""),
+bar_certificate=self.cleaned_data.get("bar_certificate"),
+approved=False,
+)
+if commit:
+lawyer.save()
+
+return lawyer
 
 
 class GeneralQuestionForm(forms.ModelForm):
-    class Meta:
-        model = GeneralQuestion
-        fields = ['text']
-
-    def clean_text(self):
-        return sanitize(self.cleaned_data['text'])
-
-
-class GeneralQuestionAnswerForm(forms.ModelForm):
-    class Meta:
-        model = GeneralQuestion
-        fields = ['answer_text']
-
-    def clean_answer_text(self):
-        return sanitize(self.cleaned_data['answer_text'])
-
-
-class CustomerQuestionForm(forms.ModelForm):
-    class Meta:
-        model = CustomerQuestion
-        fields = ['title', 'text', 'offered_price']
-
-    def clean_text(self):
-        return sanitize(self.cleaned_data['text'])
-
-
-class MessageForm(forms.ModelForm):
-    class Meta:
-        model = Message
-        fields = ['text']
-
-    def clean_text(self):
-        return sanitize(self.cleaned_data['text'])
+class Meta:
+model = GeneralQuestion
+fields = ["text"]
+widgets = {
+"text": forms.Textarea(
+attrs={"class": "form-input", "rows": 4, "placeholder": "Ask your question here..."}
+)
+}
