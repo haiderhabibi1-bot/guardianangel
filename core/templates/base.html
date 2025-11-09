@@ -27,8 +27,6 @@
                 <!-- Desktop Links -->
                 <nav class="ga-nav-links">
                     <a href="{% url 'home' %}">Home</a>
-
-                    <!-- Use placeholder links until URL names exist -->
                     <a href="/public-questions/">Public Questions</a>
                     <a href="/lawyers/">Find a Lawyer</a>
                     <a href="/pricing/">Pricing</a>
@@ -41,7 +39,8 @@
                         <a href="{% url 'logout' %}" class="ga-btn ga-btn-outline">Logout</a>
                     {% else %}
                         <a href="{% url 'login' %}" class="ga-btn ga-btn-ghost">Login</a>
-                        <a href="{% url 'register' %}" class="ga-btn ga-btn-primary">Get Started</a>
+                        <!-- 🔹 changed: plain URL instead of {% url 'register' %} -->
+                        <a href="/register/" class="ga-btn ga-btn-primary">Get Started</a>
                     {% endif %}
                 </div>
 
@@ -64,7 +63,8 @@
                 <a href="{% url 'logout' %}">Logout</a>
             {% else %}
                 <a href="{% url 'login' %}">Login</a>
-                <a href="{% url 'register' %}" class="ga-mobile-cta">Get Started</a>
+                <!-- 🔹 changed here too -->
+                <a href="/register/" class="ga-mobile-cta">Get Started</a>
             {% endif %}
         </div>
 
