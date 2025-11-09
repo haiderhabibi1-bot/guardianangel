@@ -3,119 +3,65 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Guardian Angel — Legal Answers, On Demand{% endblock %}</title>
+    <title>{% block title %}Guardian Angel{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Font and CSS -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
-
     {% block extra_head %}{% endblock %}
 </head>
 <body>
-    <div class="ga-page-wrapper">
-
-        <!-- Navbar -->
-        <header class="ga-navbar">
-            <div class="ga-nav-inner">
-                <!-- Logo -->
-                <a href="/" class="ga-logo">
-                    <div class="ga-logo-icon">GA</div>
-                    <div class="ga-logo-text">
-                        <span class="ga-logo-title">Guardian Angel</span>
-                        <span class="ga-logo-subtitle">Ask a lawyer with confidence</span>
-                    </div>
-                </a>
-
-                <!-- Desktop Nav -->
-                <nav class="ga-nav-links">
-                    <a href="/">Home</a>
-                    <a href="/public-questions/">Public Questions</a>
-                    <a href="/lawyers/">Find a Lawyer</a>
-                    <a href="/pricing/">Pricing</a>
-                </nav>
-
-                <!-- Auth Buttons -->
-                <div class="ga-nav-actions">
-                    {% if user.is_authenticated %}
-                        <a href="/dashboard/" class="ga-btn ga-btn-ghost">Dashboard</a>
-                        <a href="/logout/" class="ga-btn ga-btn-outline">Logout</a>
-                    {% else %}
-                        <a href="/login/" class="ga-btn ga-btn-ghost">Login</a>
-                        <a href="/register/" class="ga-btn ga-btn-primary">Get Started</a>
-                    {% endif %}
-                </div>
-
-                <!-- Mobile burger -->
-                <button class="ga-burger" id="ga-burger" aria-label="Toggle navigation">
-                    <span></span><span></span><span></span>
-                </button>
-            </div>
-        </header>
-
-        <!-- Mobile Menu -->
-        <div class="ga-mobile-menu" id="ga-mobile-menu">
-            <a href="/">Home</a>
-            <a href="/public-questions/">Public Questions</a>
-            <a href="/lawyers/">Find a Lawyer</a>
-            <a href="/pricing/">Pricing</a>
-
+<header class="ga-header">
+    <div class="ga-header-inner">
+        <a href="{% url 'home' %}" class="ga-logo">
+            <span class="ga-logo-icon">GA</span>
+            <span class="ga-logo-text">Guardian Angel</span>
+        </a>
+        <nav class="ga-nav">
+            <a href="{% url 'home' %}">Ask a Lawyer</a>
+            <a href="{% url 'public_questions' %}">Public Questions</a>
+            <a href="{% url 'lawyers_list' %}">Find a Lawyer</a>
+            <a href="{% url 'pricing' %}">Pricing</a>
+        </nav>
+        <div class="ga-nav-actions">
             {% if user.is_authenticated %}
-                <a href="/dashboard/">Dashboard</a>
-                <a href="/logout/">Logout</a>
+                <a href="/profile/" class="ga-link">Dashboard</a>
+                <a href="/logout/" class="ga-link">Logout</a>
             {% else %}
-                <a href="/login/">Login</a>
-                <a href="/register/" class="ga-mobile-cta">Get Started</a>
+                <a href="/login/" class="ga-link">Login</a>
+                <a href="{% url 'register' %}" class="ga-btn-primary">Get Started</a>
             {% endif %}
         </div>
-
-        <!-- Hero or page header -->
-        {% block hero %}{% endblock %}
-
-        <!-- Page Content -->
-        <main class="ga-main">
-            {% if messages %}
-                <div class="ga-messages">
-                    {% for message in messages %}
-                        <div class="ga-alert ga-alert-{{ message.tags }}">{{ message }}</div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-            {% block content %}{% endblock %}
-        </main>
-
-        <!-- Footer -->
-        <footer class="ga-footer">
-            <div class="ga-footer-inner">
-                <div>
-                    <div class="ga-logo-mini">GA</div>
-                    <p>Guardian Angel connects you with licensed lawyers for quick, reliable answers. Not a law firm — no legal relationship is formed until you hire a lawyer directly.</p>
-                </div>
-                <div class="ga-footer-links">
-                    <a href="/terms/">Terms</a>
-                    <a href="/privacy/">Privacy</a>
-                    <a href="/contact/">Contact</a>
-                </div>
-            </div>
-            <div class="ga-footer-bottom">
-                © {{ now|date:"Y" }} Guardian Angel. All rights reserved.
-            </div>
-        </footer>
     </div>
+</header>
 
-    <!-- Mobile menu toggle -->
-    <script>
-        const burger = document.getElementById('ga-burger');
-        const mobileMenu = document.getElementById('ga-mobile-menu');
+<main class="ga-main">
+    {% if messages %}
+        <div class="ga-messages">
+            {% for message in messages %}
+                <div class="ga-message ga-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+</main>
 
-        if (burger && mobileMenu) {
-            burger.addEventListener('click', () => {
-                burger.classList.toggle('open');
-                mobileMenu.classList.toggle('open');
-            });
-        }
-    </script>
+<footer class="ga-footer">
+    <div class="ga-footer-inner">
+        <div class="ga-footer-brand">GA</div>
+        <div class="ga-footer-text">
+            Guardian Angel connects you with licensed lawyers for quick, reliable answers.
+            Not a law firm — no legal relationship is formed until you hire a lawyer directly.
+        </div>
+        <div class="ga-footer-links">
+            <a href="/terms/">Terms</a>
+            <a href="/privacy/">Privacy</a>
+            <a href="/contact/">Contact</a>
+        </div>
+    </div>
+    <div class="ga-footer-copy">
+        © Guardian Angel. All rights reserved.
+    </div>
+</footer>
 
-    {% block extra_js %}{% endblock %}
+{% block extra_js %}{% endblock %}
 </body>
 </html>
