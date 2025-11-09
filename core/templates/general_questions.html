@@ -1,121 +1,38 @@
 {% extends "base.html" %}
 
-{% block title %}General Questions | Guardian Angel{% endblock %}
-
 {% block content %}
-<div class="page-wrap">
 <h2>General Questions</h2>
-<p class="intro">
-You can ask up to <strong>2 free general questions</strong>. Questions may be answered
-by lawyers and displayed publicly, while your identity remains anonymous.
+
+<p>
+    Ask a general legal question. It may be answered and displayed publicly (anonymously).
 </p>
 
-{% if messages %}
-<ul class="messages">
-{% for message in messages %}
-<li class="alert {{ message.tags }}">{{ message }}</li>
-{% endfor %}
-</ul>
-{% endif %}
-
-<form method="post" class="form-box">
-{% csrf_token %}
-{{ form.non_field_errors }}
-<div class="form-group">
-{{ form.text }}
-</div>
-<button type="submit" class="btn-primary">Submit Question</button>
+<form method="post" style="margin-bottom: 20px;">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div>
+        {{ form.text }}
+        {% for error in form.text.errors %}
+            <div style="color: red; font-size: 0.9rem;">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <button type="submit" class="btn">Submit Question</button>
 </form>
 
-<h3>Public Questions</h3>
-<ul class="questions-list">
-{% for q in questions %}
-<li>
-{{ q.text|linebreaksbr }}
-<div class="meta">
-Asked on {{ q.created_at|date:"Y-m-d H:i" }}
-</div>
-</li>
-{% empty %}
-<li>No questions yet. Be the first to ask.</li>
-{% endfor %}
-</ul>
-</div>
-{% endblock %}
+<hr>
 
-{% block extra_css %}
-<style>
-.page-wrap {
-max-width: 720px;
-margin: 30px auto;
-padding: 24px;
-background: #fff;
-border-radius: 14px;
-box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-}
-.intro {
-font-size: 0.95rem;
-color: #555;
-margin-bottom: 18px;
-}
-.form-box {
-margin-bottom: 24px;
-}
-.form-group textarea,
-.form-group .form-input {
-width: 100%;
-padding: 10px;
-border-radius: 7px;
-border: 1px solid #ccd6e0;
-font-size: 0.95rem;
-resize: vertical;
-min-height: 90px;
-outline: none;
-}
-.form-group textarea:focus {
-border-color: #0b3c5d;
-box-shadow: 0 0 0 2px rgba(11,60,93,0.12);
-}
-.btn-primary {
-padding: 9px 18px;
-border: none;
-border-radius: 7px;
-background: linear-gradient(90deg, #0b3c5d, #00aaff);
-color: #fff;
-font-weight: 600;
-cursor: pointer;
-font-size: 0.95rem;
-}
-.btn-primary:hover {
-background: linear-gradient(90deg, #09324c, #008ecc);
-}
-.questions-list {
-list-style: none;
-padding: 0;
-margin: 0;
-}
-.questions-list li {
-padding: 10px 0;
-border-bottom: 1px solid #eef1f5;
-font-size: 0.95rem;
-}
-.questions-list .meta {
-font-size: 0.75rem;
-color: #888;
-margin-top: 2px;
-}
-.messages {
-list-style: none;
-padding: 0;
-margin: 0 0 10px;
-font-size: 0.85rem;
-}
-.messages li {
-background: #e6f7ff;
-color: #044a63;
-padding: 7px 9px;
-border-radius: 6px;
-margin-bottom: 4px;
-}
-</style>
+<h3>Public Questions</h3>
+
+<ul style="list-style: none; padding-left: 0;">
+    {% for q in questions %}
+        <li class="card">
+            <div>{{ q.text }}</div>
+            <small style="color: #888;">
+                Posted on {{ q.created_at|date:"Y-m-d H:i" }}
+            </small>
+        </li>
+    {% empty %}
+        <li>No public questions have been posted yet.</li>
+    {% endfor %}
+</ul>
 {% endblock %}
