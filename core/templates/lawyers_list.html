@@ -1,27 +1,69 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block title %}Lawyers | Guardian Angel{% endblock %}
+
 {% block content %}
-<div style="text-align:center;">
-    <h2 class="metallic-text">Our Lawyers</h2>
+<div class="page-wrap">
+<h2>Approved Lawyers</h2>
+<p class="intro">
+These lawyers have registered with Guardian Angel and are pending or approved for direct consultations.
+Only approved profiles are shown here.
+</p>
 
-    {% if lawyers %}
-        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:25px; margin-top:30px;">
-            {% for lawyer in lawyers %}
-            <div style="background:white; width:280px; border-radius:12px; padding:20px;
-                        box-shadow:0 3px 10px rgba(0,0,0,0.1); text-align:left;">
-                <h3 style="margin-top:0;">{{ lawyer.user.username }}</h3>
-                <p><strong>Specialty:</strong> {{ lawyer.specialty }}</p>
-                <p><strong>Years Practicing:</strong> {{ lawyer.years_practicing }}</p>
-                <p><strong>Graduated From:</strong> {{ lawyer.graduation_institution }}</p>
-                <p><strong>Price per Question:</strong> ${{ lawyer.question_price }} CAD</p>
-
-                <div style="text-align:center; margin-top:15px;">
-                    <a href="/lawyers/{{ lawyer.id }}/" class="btn">View Profile</a>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <p style="margin-top:25px;">No lawyers available at the moment.</p>
-    {% endif %}
+<ul class="lawyer-list">
+{% for l in lawyers %}
+<li class="lawyer-card">
+<div class="lawyer-name">{{ l.user.username }}</div>
+{% if l.speciality %}
+<div class="lawyer-field">{{ l.speciality }}</div>
+{% endif %}
+<div class="lawyer-meta">
+{% if l.years_experience %}{{ l.years_experience }} years experience{% endif %}
+{% if l.law_school %} • {{ l.law_school }}{% endif %}
 </div>
+</li>
+{% empty %}
+<li>No approved lawyers yet. Check back soon.</li>
+{% endfor %}
+</ul>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-wrap {
+max-width: 720px;
+margin: 30px auto;
+padding: 24px;
+background: #fff;
+border-radius: 14px;
+box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+.intro {
+font-size: 0.95rem;
+color: #555;
+margin-bottom: 18px;
+}
+.lawyer-list {
+list-style: none;
+padding: 0;
+margin: 0;
+}
+.lawyer-card {
+padding: 12px 10px;
+border-bottom: 1px solid #eef1f5;
+}
+.lawyer-name {
+font-weight: 600;
+color: #0b3c5d;
+}
+.lawyer-field {
+font-size: 0.9rem;
+color: #0077cc;
+}
+.lawyer-meta {
+font-size: 0.8rem;
+color: #777;
+}
+</style>
 {% endblock %}
