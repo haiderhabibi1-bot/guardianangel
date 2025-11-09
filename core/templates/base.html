@@ -16,7 +16,7 @@
         <header class="ga-navbar">
             <div class="ga-nav-inner">
                 <!-- Logo -->
-                <a href="{% url 'home' %}" class="ga-logo">
+                <a href="/" class="ga-logo">
                     <div class="ga-logo-icon">GA</div>
                     <div class="ga-logo-text">
                         <span class="ga-logo-title">Guardian Angel</span>
@@ -26,7 +26,7 @@
 
                 <!-- Desktop Links -->
                 <nav class="ga-nav-links">
-                    <a href="{% url 'home' %}">Home</a>
+                    <a href="/">Home</a>
                     <a href="/public-questions/">Public Questions</a>
                     <a href="/lawyers/">Find a Lawyer</a>
                     <a href="/pricing/">Pricing</a>
@@ -35,11 +35,10 @@
                 <!-- Auth / Dashboard Buttons -->
                 <div class="ga-nav-actions">
                     {% if user.is_authenticated %}
-                        <a href="{% url 'dashboard' %}" class="ga-btn ga-btn-ghost">Dashboard</a>
-                        <a href="{% url 'logout' %}" class="ga-btn ga-btn-outline">Logout</a>
+                        <a href="/dashboard/" class="ga-btn ga-btn-ghost">Dashboard</a>
+                        <a href="/logout/" class="ga-btn ga-btn-outline">Logout</a>
                     {% else %}
-                        <a href="{% url 'login' %}" class="ga-btn ga-btn-ghost">Login</a>
-                        <!-- 🔹 changed: plain URL instead of {% url 'register' %} -->
+                        <a href="/login/" class="ga-btn ga-btn-ghost">Login</a>
                         <a href="/register/" class="ga-btn ga-btn-primary">Get Started</a>
                     {% endif %}
                 </div>
@@ -53,17 +52,16 @@
 
         <!-- Mobile Menu -->
         <div class="ga-mobile-menu" id="ga-mobile-menu">
-            <a href="{% url 'home' %}">Home</a>
+            <a href="/">Home</a>
             <a href="/public-questions/">Public Questions</a>
             <a href="/lawyers/">Find a Lawyer</a>
             <a href="/pricing/">Pricing</a>
 
             {% if user.is_authenticated %}
-                <a href="{% url 'dashboard' %}">Dashboard</a>
-                <a href="{% url 'logout' %}">Logout</a>
+                <a href="/dashboard/">Dashboard</a>
+                <a href="/logout/">Logout</a>
             {% else %}
-                <a href="{% url 'login' %}">Login</a>
-                <!-- 🔹 changed here too -->
+                <a href="/login/">Login</a>
                 <a href="/register/" class="ga-mobile-cta">Get Started</a>
             {% endif %}
         </div>
