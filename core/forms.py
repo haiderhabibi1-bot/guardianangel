@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
+
 from .models import LawyerProfile, GeneralQuestion
 
 
@@ -10,10 +11,14 @@ from .models import LawyerProfile, GeneralQuestion
 class LoginForm(AuthenticationForm):
     username = forms.CharField(
         max_length=150,
-        widget=forms.TextInput(attrs={"class": "form-input", "placeholder": "Username"}),
+        widget=forms.TextInput(
+            attrs={"class": "form-input", "placeholder": "Username"}
+        ),
     )
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={"class": "form-input", "placeholder": "Password"}),
+        widget=forms.PasswordInput(
+            attrs={"class": "form-input", "placeholder": "Password"}
+        ),
     )
 
 
@@ -76,7 +81,13 @@ class LawyerRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = LawyerProfile
-        fields = ["speciality", "years_experience", "law_school", "bar_number", "bar_certificate"]
+        fields = [
+            "speciality",
+            "years_experience",
+            "law_school",
+            "bar_number",
+            "bar_certificate",
+        ]
         widgets = {
             "speciality": forms.TextInput(attrs={"class": "form-input"}),
             "years_experience": forms.NumberInput(attrs={"class": "form-input"}),
@@ -93,17 +104,17 @@ class LawyerRegistrationForm(forms.ModelForm):
         return cleaned
 
     def save(self, commit=True):
+        # Create related User
         username = self.cleaned_data["username"]
         email = self.cleaned_data["email"]
         password = self.cleaned_data["password1"]
 
-        # Create Django user
         user = User(username=username, email=email)
         user.set_password(password)
         if commit:
             user.save()
 
-        # Create lawyer profile
+        # Create LawyerProfile
         lawyer = LawyerProfile(
             user=user,
             speciality=self.cleaned_data.get("speciality", ""),
@@ -111,7 +122,7 @@ class LawyerRegistrationForm(forms.ModelForm):
             law_school=self.cleaned_data.get("law_school", ""),
             bar_number=self.cleaned_data.get("bar_number", ""),
             bar_certificate=self.cleaned_data.get("bar_certificate"),
-            approved=False,
+            approved=False,  # will be approved via admin
         )
         if commit:
             lawyer.save()
