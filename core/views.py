@@ -1,575 +1,230 @@
-from decimal import Decimal
-from datetime import timedelta
-
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.contrib import messages
+from django.http import HttpResponse
 from django.conf import settings
-from django.core.mail import send_mail
-from django.http import HttpResponse, HttpResponseForbidden
-from django.views.decorators.csrf import csrf_exempt
-from django.utils import timezone
-
+from .models import Lawyer, Question, Chat, Message
+from .forms import CustomerRegistrationForm, LawyerRegistrationForm, QuestionForm
 import stripe
 
-from .models import (
-    CustomerProfile,
-    LawyerProfile,
-    GeneralQuestion,
-    CustomerQuestion,
-    ChatSession,
-    Message,
-    Payment
-)
-from .forms import (
-    CustomerRegisterForm,
-    LawyerRegisterForm,
-    GeneralQuestionForm,
-    CustomerQuestionForm,
-    MessageForm,
-    GeneralQuestionAnswerForm
-)
-
-stripe.api_key = settings.STRIPE_SECRET_KEY
-
-
-def is_lawyer(user):
-    return hasattr(user, 'lawyer_profile') and user.lawyer_profile.is_approved
-
-
-def is_customer(user):
-    return hasattr(user, 'customer_profile')
-
-
-def can_start_new_chat(customer, lawyer=None, minutes=3):
-    """
-    Simple anti-spam guard:
-    Prevents opening many new chats with the same lawyer in a short period.
-    """
-    since = timezone.now() - timedelta(minutes=minutes)
-    qs = ChatSession.objects.filter(customer=customer, created_at__gte=since)
-    if lawyer:
-        qs = qs.filter(lawyer=lawyer)
-    return not qs.exists()
-
+# ===============================
+# HOME PAGE (inline HTML + style)
+# ===============================
 
 def home(request):
-    return render(request, 'home.html')
+    html = """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Guardian Angel</title>
+        <style>
+            body {
+                margin: 0;
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                background: radial-gradient(circle at top, #e6f3ff 0%, #c7ddff 40%, #eef4ff 100%);
+                color: #404040;
+            }
+            header {
+                background: #dfeeff;
+                padding: 14px 32px;
+                border-bottom: 2px solid #4a90e2;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+                text-align: center;
+            }
+            h1 {
+                color: #333;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+            .container {
+                max-width: 1080px;
+                margin: 40px auto 32px;
+                padding: 24px 26px 32px;
+                background: rgba(255,255,255,0.98);
+                border-radius: 18px;
+                box-shadow: 0 14px 40px rgba(0,0,0,0.06);
+            }
+            h2 {
+                color: #555;
+                text-shadow: 0 1px 1px #fff, 0 -1px 1px #999;
+                margin-top: 0;
+            }
+            p {
+                line-height: 1.6;
+                font-size: 1rem;
+            }
+            footer {
+                text-align: center;
+                padding: 14px;
+                font-size: 0.8rem;
+                color: #7a7a7a;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>Guardian Angel</h1>
+        </header>
+        <div class="container">
+            <h2>About Us</h2>
+            <p>
+                At Guardian Angel, we know that sometimes it feels like you have to sign with the devil
+                just to make it through. We understand that mental illness can cloud your clarity of mind,
+                and that it can feel like you're walking through a storm in a world where phones throw off
+                your natural compass. We've been through all the trials, we've seen all the possibilities,
+                and we're here so you don't have to go through it all—without risking a human’s mental health
+                to do it. We have AI to take care of that. At Guardian Angel, we never lose control, and we
+                keep things steady at home. Help us help you. Accept this helping hand—though it may be artificial,
+                its impact will be real.
+            </p>
+            <br><br>
+            <h2>À propos de nous</h2>
+            <p>
+                On le sait chez Guardian Angel que parfois vous sentez qu’il faut signer chez le diable pour
+                s’en sortir, on le sait que la maladie mentale vous enlève votre clarté d’esprit et que vous avez
+                l’impression de marcher et vous diriger dans une tempête dans un monde où les téléphones
+                dérèglent votre boussole naturelle. On est passé par toutes les épreuves, on a vu toutes les
+                possibilités et on est là pour que vous n’ayez pas à le faire, sans risquer la santé mentale d’un
+                humain pour le faire. On a des AI pour le faire. Chez Guardian Angel, on ne perd jamais les pédales
+                et on garde le contrôle à la maison. Aidez-nous à vous aider, acceptez ce coup de main, bien qu’il
+                soit artificiel, il sera d’un impact réel.
+            </p>
+        </div>
+        <footer>
+            &copy; Guardian Angel. All rights reserved.
+        </footer>
+    </body>
+    </html>
+    """
+    return HttpResponse(html)
 
+# ===============================
+# USER REGISTRATION & LOGIN
+# ===============================
 
 def register_customer(request):
-    if request.method == 'POST':
-        form = CustomerRegisterForm(request.POST)
+    if request.method == "POST":
+        form = CustomerRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            CustomerProfile.objects.create(user=user)
-            login(request, user)
-            messages.success(request, "Customer account created.")
-            return redirect('home')
+            form.save()
+            messages.success(request, "Account created successfully!")
+            return redirect("login")
     else:
-        form = CustomerRegisterForm()
-    return render(request, 'register_customer.html', {'form': form})
-
+        form = CustomerRegistrationForm()
+    return render(request, "register_customer.html", {"form": form})
 
 def register_lawyer(request):
-    if request.method == 'POST':
-        form = LawyerRegisterForm(request.POST, request.FILES)
+    if request.method == "POST":
+        form = LawyerRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
-            user = form.save()
-            LawyerProfile.objects.create(
-                user=user,
-                specialty=form.cleaned_data['specialty'],
-                years_practicing=form.cleaned_data['years_practicing'],
-                graduation_institution=form.cleaned_data['graduation_institution'],
-                question_price=form.cleaned_data['question_price'],
-                bar_certificate=form.cleaned_data['bar_certificate'],
-                is_approved=False,
-                subscription_active=False
-            )
-            # Notify admin (for now goes to console or DEFAULT_FROM_EMAIL)
-            send_mail(
-                "New lawyer registration",
-                f"Lawyer {user.username} has registered and awaits approval.",
-                settings.DEFAULT_FROM_EMAIL,
-                [settings.DEFAULT_FROM_EMAIL],
-                fail_silently=True,
-            )
-            messages.info(request, "Lawyer account created. Await approval from admin.")
-            login(request, user)
-            return redirect('home')
+            lawyer = form.save(commit=False)
+            lawyer.is_approved = False
+            lawyer.save()
+            messages.info(request, "Your registration is pending approval.")
+            return redirect("login")
     else:
-        form = LawyerRegisterForm()
-    return render(request, 'register_lawyer.html', {'form': form})
+        form = LawyerRegistrationForm()
+    return render(request, "register_lawyer.html", {"form": form})
 
+# ===============================
+# PROFILE PAGE
+# ===============================
 
 @login_required
 def profile(request):
-    ctx = {
-        'is_lawyer': is_lawyer(request.user),
-        'is_customer': is_customer(request.user),
-    }
-    if is_lawyer(request.user):
-        ctx['lawyer'] = request.user.lawyer_profile
-    if is_customer(request.user):
-        ctx['customer'] = request.user.customer_profile
-    return render(request, 'profile.html', ctx)
+    user = request.user
+    try:
+        lawyer = user.lawyer
+    except:
+        lawyer = None
+    return render(request, "profile.html", {"user": user, "lawyer": lawyer})
 
+# ===============================
+# LAWYER LISTING & DETAIL
+# ===============================
 
-@login_required
-def lawyer_subscribe(request):
-    """
-    Lawyer subscription: 15 CAD/month.
-    If Stripe keys not set, simulates success (dev mode).
-    """
-    if not hasattr(request.user, 'lawyer_profile'):
-        messages.error(request, "Only lawyers can subscribe.")
-        return redirect('home')
+def lawyers_list(request):
+    lawyers = Lawyer.objects.filter(is_approved=True)
+    return render(request, "lawyers_list.html", {"lawyers": lawyers})
 
-    lawyer = request.user.lawyer_profile
+def lawyer_detail(request, lawyer_id):
+    lawyer = get_object_or_404(Lawyer, id=lawyer_id, is_approved=True)
+    return render(request, "lawyer_detail.html", {"lawyer": lawyer})
 
-    if request.method == 'POST':
-        # Dev fallback (no Stripe configured)
-        if not settings.STRIPE_SECRET_KEY or not settings.STRIPE_PUBLIC_KEY:
-            Payment.objects.create(
-                lawyer=lawyer,
-                amount=Decimal('15.00'),
-                payment_type='subscription',
-                success=True,
-            )
-            lawyer.subscription_active = True
-            lawyer.save()
-            messages.success(request, "Subscription activated (development mode).")
-            return redirect('profile')
+# ===============================
+# GENERAL QUESTIONS
+# ===============================
 
-        domain = request.build_absolute_uri('/')[:-1]
-        amount_cents = 1500  # 15 CAD
-
-        checkout_session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            mode='payment',
-            line_items=[{
-                'price_data': {
-                    'currency': 'cad',
-                    'unit_amount': amount_cents,
-                    'product_data': {
-                        'name': 'Guardian Angel Lawyer Monthly Access',
-                    },
-                },
-                'quantity': 1,
-            }],
-            success_url=f"{domain}/profile?sub=success",
-            cancel_url=f"{domain}/profile?sub=cancel",
-            metadata={
-                'payment_type': 'subscription',
-                'lawyer_id': str(lawyer.id),
-            }
-        )
-
-        Payment.objects.create(
-            lawyer=lawyer,
-            amount=Decimal('15.00'),
-            payment_type='subscription',
-            stripe_session_id=checkout_session.id,
-            success=False,
-        )
-
-        return redirect(checkout_session.url, code=303)
-
-    return render(request, 'lawyer_subscribe.html', {'lawyer': lawyer})
-
-
-def lawyer_list(request):
-    lawyers = LawyerProfile.objects.filter(is_approved=True, subscription_active=True)
-    return render(request, 'lawyers_list.html', {'lawyers': lawyers})
-
-
-def lawyer_detail(request, pk):
-    lawyer = get_object_or_404(LawyerProfile, pk=pk, is_approved=True, subscription_active=True)
-    can_message = request.user.is_authenticated and is_customer(request.user)
-    return render(request, 'lawyer_detail.html', {
-        'lawyer': lawyer,
-        'can_message': can_message,
-    })
-
-
-@login_required
-def start_chat_with_lawyer(request, pk):
-    """
-    Customer starts a new paid chat with a lawyer.
-    Each click = a new chat (if not rate-limited).
-    """
-    if not is_customer(request.user):
-        messages.error(request, "Only customers can start chats with lawyers.")
-        return redirect('home')
-
-    lawyer = get_object_or_404(LawyerProfile, pk=pk, is_approved=True, subscription_active=True)
-
-    if not can_start_new_chat(request.user, lawyer):
-        messages.error(
-            request,
-            "You recently opened a chat with this lawyer. Use that chat or wait a few minutes."
-        )
-        return redirect('lawyer_detail', pk=lawyer.id)
-
-    chat = ChatSession.objects.create(
-        customer=request.user,
-        lawyer=lawyer,
-        requires_payment=True,
-        is_paid=False
-    )
-    return redirect('payment_view', chat_id=chat.id)
-
-
-@login_required
 def general_questions(request):
-    """
-    General Q&A:
-    - Customers: up to 2 free anonymous questions, answers are public.
-    - Lawyers: see pending unanswered questions & can answer them.
-    """
-    answered = GeneralQuestion.objects.filter(is_answered=True).order_by('-created_at')
+    questions = Question.objects.filter(is_public=True)
+    return render(request, "general_questions.html", {"questions": questions})
 
-    user_free_count = 0
-    can_ask = False
-    form = None
-
-    # Customer: ask up to 2 questions
-    if is_customer(request.user):
-        user_free_count = GeneralQuestion.objects.filter(author=request.user).count()
-        can_ask = user_free_count < 2
-
-        if request.method == 'POST' and request.POST.get('action') == 'ask' and can_ask:
-            form = GeneralQuestionForm(request.POST)
-            if form.is_valid():
-                q = form.save(commit=False)
-                q.author = request.user
-                q.save()
-                send_mail(
-                    "New general question posted",
-                    f"Customer {request.user.username} posted a general question.",
-                    settings.DEFAULT_FROM_EMAIL,
-                    [settings.DEFAULT_FROM_EMAIL],
-                    fail_silently=True,
-                )
-                messages.success(
-                    request,
-                    "Your question has been submitted. If answered, it will appear here anonymously."
-                )
-                return redirect('general_questions')
-        else:
-            form = GeneralQuestionForm()
-
-    # Lawyer: answer pending questions
-    if is_lawyer(request.user) and request.method == 'POST' and request.POST.get('action') == 'answer':
-        qid = request.POST.get('question_id')
-        question = get_object_or_404(GeneralQuestion, pk=qid, is_answered=False)
-        answer_form = GeneralQuestionAnswerForm(request.POST, instance=question)
-        if answer_form.is_valid():
-            answered_q = answer_form.save(commit=False)
-            answered_q.is_answered = True
-            answered_q.answered_by = request.user.lawyer_profile
-            answered_q.save()
-            messages.success(request, "You answered this general question.")
-            return redirect('general_questions')
-
-    pending_questions = []
-    pending_forms = {}
-    if is_lawyer(request.user):
-        pending_questions = GeneralQuestion.objects.filter(is_answered=False).order_by('-created_at')
-        pending_forms = {q.id: GeneralQuestionAnswerForm(instance=q) for q in pending_questions}
-
-    return render(request, 'general_questions.html', {
-        'questions': answered,
-        'can_ask': can_ask,
-        'form': form,
-        'user_free_count': user_free_count,
-        'pending_questions': pending_questions,
-        'pending_forms': pending_forms,
-        'is_lawyer_flag': is_lawyer(request.user),
-    })
-
+# ===============================
+# CUSTOMER QUESTIONS
+# ===============================
 
 @login_required
-def customer_questions_list(request):
-    """
-    Shared /questions page:
-    - Customers: see and create their own 'offer-price' questions.
-    - Lawyers: see all open customer questions to pick from.
-    """
-    if is_lawyer(request.user):
-        questions = CustomerQuestion.objects.filter(is_open=True).order_by('-created_at')
-        return render(request, 'customer_questions.html', {
-            'questions': questions,
-            'is_lawyer': True,
-            'is_customer': False,
-        })
-
-    elif is_customer(request.user):
-        questions = CustomerQuestion.objects.filter(customer=request.user).order_by('-created_at')
-        form = CustomerQuestionForm()
-        return render(request, 'customer_questions.html', {
-            'questions': questions,
-            'form': form,
-            'is_lawyer': False,
-            'is_customer': True,
-        })
-
-    messages.error(request, "You need an account to view questions.")
-    return redirect('home')
-
-
-@login_required
-def create_customer_question(request):
-    """
-    Customer posts a question with an offered price (10–30 CAD).
-    Lawyers can later choose to answer and start a paid chat.
-    """
-    if not is_customer(request.user):
+def customer_questions(request):
+    if not hasattr(request.user, "customer"):
         messages.error(request, "Only customers can post questions.")
-        return redirect('home')
+        return redirect("home")
 
-    if request.method == 'POST':
-        form = CustomerQuestionForm(request.POST)
+    if request.method == "POST":
+        form = QuestionForm(request.POST)
         if form.is_valid():
-            q = form.save(commit=False)
-            q.customer = request.user
-            q.save()
-            send_mail(
-                "New paid question posted",
-                f"Customer {request.user.username} posted a paid question: {q.title}",
-                settings.DEFAULT_FROM_EMAIL,
-                [settings.DEFAULT_FROM_EMAIL],
-                fail_silently=True,
-            )
-            messages.success(request, "Your question has been posted. Lawyers may contact you.")
-    return redirect('customer_questions_list')
-
-
-@login_required
-def lawyer_answer_customer_question(request, pk):
-    """
-    Lawyer clicks "Answer" on an open customer question:
-    - Reserves that question.
-    - Creates a new chat that requires payment by the customer.
-    """
-    if not is_lawyer(request.user):
-        messages.error(request, "Only approved lawyers can answer questions.")
-        return redirect('home')
-
-    question = get_object_or_404(CustomerQuestion, pk=pk, is_open=True)
-    lawyer = request.user.lawyer_profile
-
-    if request.method == 'POST':
-        chat = ChatSession.objects.create(
-            customer=question.customer,
-            lawyer=lawyer,
-            related_customer_question=question,
-            requires_payment=True,
-            is_paid=False
-        )
-        question.is_open = False
-        question.chosen_lawyer = lawyer
-        question.save()
-
-        send_mail(
-            "A lawyer accepted your question",
-            f"Lawyer {lawyer.user.username} has accepted your question '{question.title}'. "
-            f"Please complete payment to start chatting.",
-            settings.DEFAULT_FROM_EMAIL,
-            [question.customer.email],
-            fail_silently=True,
-        )
-
-        return redirect('payment_view', chat_id=chat.id)
-
-    return redirect('customer_questions_list')
-
-
-@login_required
-def payment_view(request, chat_id):
-    """
-    Handles payment for a chat:
-    - Uses lawyer's price or customer's offered price.
-    - Adds 2 CAD platform fee.
-    - Adds tax (configurable).
-    - If Stripe not configured, simulates success for testing.
-    """
-    chat = get_object_or_404(ChatSession, pk=chat_id)
-
-    # Only participants can see
-    if request.user != chat.customer and request.user != chat.lawyer.user:
-        return HttpResponseForbidden("Not allowed.")
-
-    if chat.is_paid:
-        return redirect('chat_view', chat_id=chat.id)
-
-    # Determine base amount
-    if chat.related_customer_question:
-        base = chat.related_customer_question.offered_price
+            question = form.save(commit=False)
+            question.customer = request.user.customer
+            question.save()
+            messages.success(request, "Your question was posted successfully.")
+            return redirect("customer_questions")
     else:
-        base = chat.lawyer.question_price
+        form = QuestionForm()
 
-    base = Decimal(base)
-    platform_fee = settings.PLATFORM_FEE
-    subtotal = (base + platform_fee).quantize(Decimal('0.01'))
-    tax_amount = (subtotal * settings.TAX_RATE).quantize(Decimal('0.01'))
-    total = (subtotal + tax_amount).quantize(Decimal('0.01'))
-    amount_cents = int(total * 100)
+    questions = Question.objects.filter(customer=request.user.customer)
+    return render(request, "customer_questions.html", {"form": form, "questions": questions})
 
-    if request.method == 'POST':
-        # Dev fallback: auto-pay if no Stripe keys
-        if not settings.STRIPE_SECRET_KEY or not settings.STRIPE_PUBLIC_KEY:
-            Payment.objects.update_or_create(
-                chat=chat,
-                defaults={
-                    'amount': total,
-                    'payment_type': 'chat',
-                    'success': True,
-                }
-            )
-            chat.is_paid = True
-            chat.save()
-            messages.success(request, "Payment confirmed (development mode). Chat unlocked.")
-            return redirect('chat_view', chat_id=chat.id)
-
-        # Real Stripe Checkout
-        domain = request.build_absolute_uri('/')[:-1]
-        checkout_session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            mode='payment',
-            line_items=[{
-                'price_data': {
-                    'currency': 'cad',
-                    'unit_amount': amount_cents,
-                    'product_data': {
-                        'name': f'Guardian Angel Legal Question with {chat.lawyer.user.username}',
-                    },
-                },
-                'quantity': 1,
-            }],
-            success_url=f"{domain}/chat/{chat.id}",
-            cancel_url=f"{domain}/payment/{chat.id}",
-            metadata={
-                'payment_type': 'chat',
-                'chat_id': str(chat.id),
-            }
-        )
-
-        Payment.objects.update_or_create(
-            chat=chat,
-            defaults={
-                'amount': total,
-                'payment_type': 'chat',
-                'stripe_session_id': checkout_session.id,
-                'success': False,
-            }
-        )
-
-        return redirect(checkout_session.url, code=303)
-
-    return render(request, 'payment.html', {
-        'chat': chat,
-        'base': base,
-        'platform_fee': platform_fee,
-        'tax_amount': tax_amount,
-        'amount': total,
-        'stripe_public_key': settings.STRIPE_PUBLIC_KEY,
-    })
-
+# ===============================
+# CHAT PAGE
+# ===============================
 
 @login_required
 def chat_view(request, chat_id):
-    """
-    Chat interface between customer and lawyer.
-    Only available after payment (if required).
-    """
-    chat = get_object_or_404(ChatSession, pk=chat_id)
+    chat = get_object_or_404(Chat, id=chat_id)
+    messages_list = Message.objects.filter(chat=chat).order_by("timestamp")
 
-    if request.user != chat.customer and request.user != chat.lawyer.user:
-        return HttpResponseForbidden("Not allowed.")
+    if request.method == "POST":
+        content = request.POST.get("content")
+        if content:
+            Message.objects.create(chat=chat, sender=request.user, content=content)
+            return redirect("chat_view", chat_id=chat.id)
 
-    if chat.requires_payment and not chat.is_paid:
-        messages.info(request, "Please complete payment before chatting.")
-        return redirect('payment_view', chat_id=chat.id)
+    return render(request, "chat.html", {"chat": chat, "messages": messages_list})
 
-    if request.method == 'POST':
-        form = MessageForm(request.POST)
-        if form.is_valid():
-            msg = form.save(commit=False)
-            msg.chat = chat
-            msg.sender = request.user
-            msg.save()
-            return redirect('chat_view', chat_id=chat.id)
-    else:
-        form = MessageForm()
+# ===============================
+# PAYMENT (STRIPE)
+# ===============================
 
-    messages_qs = chat.messages.all()
-    return render(request, 'chat.html', {
-        'chat': chat,
-        'messages': messages_qs,
-        'form': form,
-    })
+@login_required
+def payment(request, lawyer_id):
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    lawyer = get_object_or_404(Lawyer, id=lawyer_id)
+    amount = int(lawyer.price * 100)
 
-
-@csrf_exempt
-def stripe_webhook(request):
-    """
-    Webhook endpoint for Stripe to confirm real payments.
-    In dev (no STRIPE_WEBHOOK_SECRET), it just returns 200.
-    """
-    payload = request.body
-    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE', '')
-    endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
-
-    # If no secret set, we don't process (dev mode).
-    if not endpoint_secret:
-        return HttpResponse(status=200)
-
-    try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header, endpoint_secret
-        )
-    except Exception:
-        return HttpResponse(status=400)
-
-    if event['type'] == 'checkout.session.completed':
-        session = event['data']['object']
-        session_id = session.get('id')
-        metadata = session.get('metadata', {}) or {}
-        payment_type = metadata.get('payment_type')
-
-        try:
-            payment = Payment.objects.get(stripe_session_id=session_id)
-        except Payment.DoesNotExist:
-            payment = None
-
-        if payment:
-            payment.success = True
-            payment.save()
-
-            if payment_type == 'chat' and payment.chat:
-                chat = payment.chat
-                chat.is_paid = True
-                chat.save()
-                send_mail(
-                    "Chat payment confirmed",
-                    f"Your chat #{chat.id} is now unlocked.",
-                    settings.DEFAULT_FROM_EMAIL,
-                    [chat.customer.email, chat.lawyer.user.email],
-                    fail_silently=True,
-                )
-
-            if payment_type == 'subscription' and payment.lawyer:
-                lawyer = payment.lawyer
-                lawyer.subscription_active = True
-                lawyer.save()
-                send_mail(
-                    "Subscription activated",
-                    "Your Guardian Angel lawyer subscription is now active.",
-                    settings.DEFAULT_FROM_EMAIL,
-                    [lawyer.user.email],
-                    fail_silently=True,
-                )
-
-    return HttpResponse(status=200)
+    session = stripe.checkout.Session.create(
+        payment_method_types=["card"],
+        line_items=[{
+            "price_data": {
+                "currency": "cad",
+                "product_data": {"name": f"Consultation with {lawyer.user.get_full_name()}"},
+                "unit_amount": amount,
+            },
+            "quantity": 1,
+        }],
+        mode="payment",
+        success_url="https://guardianangelconsulting.ca/profile/",
+        cancel_url="https://guardianangelconsulting.ca/",
+    )
+    return redirect(session.url, code=303)
