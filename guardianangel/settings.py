@@ -1,182 +1,113 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+import dj_database_url
+
+# Load environment variables if a .env file exists
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ========================
-# CORE SETTINGS
-# ========================
-
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "change-me-in-production")
-DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() in ("1", "true", "yes")
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'dev-secret-key')
+DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = [
-"guardianangelconsulting.ca",
-"www.guardianangelconsulting.ca",
-"guardian-angel-whcp.onrender.com",
-"localhost",
-"127.0.0.1",
+    '.onrender.com',
+    'localhost',
+    '127.0.0.1',
+    'guardianangelconsulting.ca',
+    'www.guardianangelconsulting.ca'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-"https://guardianangelconsulting.ca",
-"https://www.guardianangelconsulting.ca",
-"https://guardian-angel-whcp.onrender.com",
+    'https://*.onrender.com',
+    'https://guardianangelconsulting.ca',
+    'https://www.guardianangelconsulting.ca'
 ]
 
-# ========================
-# APPLICATIONS
-# ========================
-
+# Application definition
 INSTALLED_APPS = [
-"django.contrib.admin",
-"django.contrib.auth",
-"django.contrib.contenttypes",
-"django.contrib.sessions",
-"django.contrib.messages",
-"django.contrib.staticfiles",
-"core",
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'core',  # your main app
 ]
-
-# ========================
-# MIDDLEWARE
-# ========================
 
 MIDDLEWARE = [
-"django.middleware.security.SecurityMiddleware",
-"django.contrib.sessions.middleware.SessionMiddleware",
-"django.middleware.common.CommonMiddleware",
-"django.middleware.csrf.CsrfViewMiddleware",
-"django.contrib.auth.middleware.AuthenticationMiddleware",
-"django.contrib.messages.middleware.MessageMiddleware",
-"django.middleware.clickjacking.XFrameOptionsMiddleware",
-"core.middleware.security.SecurityHeadersMiddleware",
-"core.middleware.ratelimit.SimpleRateLimitMiddleware",
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = "guardianangel.urls"
-
-# ========================
-# TEMPLATES
-# ========================
+ROOT_URLCONF = 'guardianangel.urls'
 
 TEMPLATES = [
-{
-"BACKEND": "django.template.backends.django.DjangoTemplates",
-"DIRS": [BASE_DIR / "core" / "templates"],
-"APP_DIRS": True,
-"OPTIONS": {
-"context_processors": [
-"django.template.context_processors.debug",
-"django.template.context_processors.request",
-"django.contrib.auth.context_processors.auth",
-"django.contrib.messages.context_processors.messages",
-"core.context_processors.user_roles", # must exist in core/context_processors.py
-],
-},
-},
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / 'templates'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
 ]
 
-WSGI_APPLICATION = "guardianangel.wsgi.application"
+WSGI_APPLICATION = 'guardianangel.wsgi.application'
 
-# ========================
-# DATABASE
-# ========================
-
+# Database
 DATABASES = {
-"default": {
-"ENGINE": "django.db.backends.sqlite3",
-"NAME": BASE_DIR / "db.sqlite3",
-}
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL', f'sqlite:///{BASE_DIR / "db.sqlite3"}'),
+        conn_max_age=600,
+    )
 }
 
-# ========================
-# PASSWORD VALIDATION
-# ========================
-
+# Password validation
 AUTH_PASSWORD_VALIDATORS = [
-{"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-{"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-{"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
-{"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# ========================
-# INTERNATIONALIZATION
-# ========================
-
-LANGUAGE_CODE = "en-us"
-TIME_ZONE = "America/Toronto"
+# Internationalization
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'America/Toronto'
 USE_I18N = True
 USE_TZ = True
 
-# ========================
-# STATIC & MEDIA
-# ========================
+# Static files (CSS, JS, images)
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_DIRS = [
-BASE_DIR / "core" / "static",
-]
+# Media files (if any)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+# Default primary key field type
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ========================
-# EMAIL CONFIGURATION
-# ========================
+# Email (optional for lawyer signup notifications)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 
-EMAIL_BACKEND = os.getenv(
-"DJANGO_EMAIL_BACKEND",
-"django.core.mail.backends.console.EmailBackend"
-)
-EMAIL_HOST = os.getenv("EMAIL_HOST", "")
-EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
-EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").lower() in ("true", "1")
-
-DEFAULT_FROM_EMAIL = os.getenv(
-"DJANGO_DEFAULT_FROM_EMAIL",
-"no-reply@guardianangelconsulting.ca"
-)
-
-# Where lawyer registration notifications go
-LAWYER_REGISTRATION_NOTIFY_EMAIL = os.getenv(
-"LAWYER_REGISTRATION_NOTIFY_EMAIL",
-DEFAULT_FROM_EMAIL,
-)
-
-# ========================
-# STRIPE (OPTIONAL)
-# ========================
-
-STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY", "")
-STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
-
-# ========================
-# AUTH / LOGIN
-# ========================
-
-LOGIN_URL = "/login/"
-LOGIN_REDIRECT_URL = "/"
-LOGOUT_REDIRECT_URL = "/"
-
-# ========================
-# RATE LIMIT
-# ========================
-
-# Format: "seconds:requests"
-RATELIMIT_DEFAULT = os.getenv("RATELIMIT_DEFAULT", "60:1000")
-
-# ========================
-# SECURITY HARDENING
-# ========================
-
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_SSL_REDIRECT = not DEBUG
-SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SECURE = not DEBUG
-X_FRAME_OPTIONS = "DENY"
+# Stripe (optional)
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY', '')
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', '')
