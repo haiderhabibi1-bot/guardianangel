@@ -1,0 +1,437 @@
+/* =========================
+   GUARDIAN ANGEL UI STYLES
+   ========================= */
+
+/* Reset & Base */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+body {
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #0f172a;
+    background:
+        radial-gradient(circle at top left, rgba(111, 177, 252, 0.21), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(63, 43, 150, 0.23), transparent 55%),
+        linear-gradient(to bottom right, #e6f2ff, #f7f9ff);
+    background-attachment: fixed;
+}
+
+/* Layout */
+.ga-page-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.ga-main {
+    flex: 1;
+    width: 100%;
+    max-width: 1120px;
+    margin: 96px auto 40px;
+    padding: 0 16px 32px;
+}
+
+/* Navbar */
+.ga-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    backdrop-filter: blur(16px);
+    background: radial-gradient(circle at top left, rgba(168, 192, 255, 0.26), transparent),
+                rgba(8, 19, 40, 0.84);
+    border-bottom: 1px solid rgba(148, 163, 253, 0.18);
+}
+
+.ga-nav-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+/* Logo */
+.ga-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.ga-logo-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 11px;
+    background: linear-gradient(145deg, #e5e7ff, #6f8cff);
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ga-logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+.ga-logo-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #e5e7ff;
+    letter-spacing: 0.4px;
+}
+
+.ga-logo-subtitle {
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+/* Desktop Nav Links */
+.ga-nav-links {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex: 1;
+    justify-content: center;
+}
+
+.ga-nav-links a {
+    color: #cbd5f5;
+    font-size: 13px;
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 999px;
+    transition: all 0.2s ease;
+}
+
+.ga-nav-links a:hover {
+    background: rgba(129, 140, 248, 0.18);
+    color: #ffffff;
+}
+
+/* Nav Actions */
+.ga-nav-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.ga-btn {
+    font-size: 12px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    text-decoration: none;
+    border: 1px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.ga-btn-primary {
+    background: linear-gradient(to right, #60a5fa, #4f46e5);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+}
+
+.ga-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
+}
+
+.ga-btn-outline {
+    background: transparent;
+    border-color: rgba(148, 163, 253, 0.7);
+    color: #e5e7ff;
+}
+
+.ga-btn-outline:hover {
+    background: rgba(79, 70, 229, 0.14);
+}
+
+.ga-btn-ghost {
+    background: transparent;
+    color: #9ca3af;
+}
+
+.ga-btn-ghost:hover {
+    color: #e5e7ff;
+    background: rgba(156, 163, 175, 0.12);
+}
+
+/* Burger (mobile) */
+.ga-burger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.ga-burger span {
+    width: 20px;
+    height: 2px;
+    background: #e5e7ff;
+    border-radius: 999px;
+    transition: all 0.2s ease;
+}
+
+.ga-burger.open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+.ga-burger.open span:nth-child(2) {
+    opacity: 0;
+}
+.ga-burger.open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Mobile menu */
+.ga-mobile-menu {
+    display: none;
+    flex-direction: column;
+    background: rgba(8, 19, 40, 0.98);
+    backdrop-filter: blur(18px);
+    padding: 14px 16px 18px;
+    gap: 8px;
+}
+
+.ga-mobile-menu a {
+    color: #e5e7ff;
+    text-decoration: none;
+    padding: 8px 10px;
+    border-radius: 10px;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.ga-mobile-menu a:hover {
+    background: rgba(129, 140, 248, 0.16);
+}
+
+.ga-mobile-cta {
+    margin-top: 4px;
+    background: linear-gradient(to right, #60a5fa, #4f46e5);
+    text-align: center;
+}
+
+.ga-mobile-menu.open {
+    display: flex;
+}
+
+/* Cards & Panels */
+.ga-card,
+.ga-form-card {
+    background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.35), transparent),
+                rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    padding: 22px 22px 20px;
+    box-shadow:
+        0 14px 38px rgba(15, 23, 42, 0.16),
+        0 2px 6px rgba(148, 163, 253, 0.12);
+    border: 1px solid rgba(148, 163, 253, 0.2);
+    margin-bottom: 18px;
+}
+
+.ga-card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 6px;
+}
+
+.ga-card-subtitle {
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 14px;
+}
+
+/* Forms */
+.ga-form-card h1,
+.ga-form-card h2 {
+    margin-top: 0;
+    margin-bottom: 4px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.ga-form-help {
+    font-size: 11px;
+    color: #6b7280;
+    margin-bottom: 14px;
+}
+
+.ga-form-group {
+    margin-bottom: 12px;
+}
+
+.ga-form-group label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #4b5563;
+}
+
+.ga-form-group input,
+.ga-form-group select,
+.ga-form-group textarea {
+    width: 100%;
+    padding: 9px 11px;
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 253, 0.6);
+    font-size: 13px;
+    outline: none;
+    background: rgba(248, 250, 252, 0.96);
+    transition: all 0.18s ease;
+}
+
+.ga-form-group input:focus,
+.ga-form-group select:focus,
+.ga-form-group textarea:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.16);
+    background: #ffffff;
+}
+
+.ga-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+/* Messages / Alerts */
+.ga-messages {
+    margin-bottom: 10px;
+}
+
+.ga-alert {
+    padding: 8px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    margin-bottom: 4px;
+}
+
+.ga-alert-success {
+    background: rgba(22, 163, 74, 0.06);
+    color: #15803d;
+    border: 1px solid rgba(22, 163, 74, 0.25);
+}
+
+.ga-alert-error,
+.ga-alert-danger {
+    background: rgba(220, 38, 38, 0.06);
+    color: #b91c1c;
+    border: 1px solid rgba(220, 38, 38, 0.24);
+}
+
+.ga-alert-info {
+    background: rgba(59, 130, 246, 0.06);
+    color: #2563eb;
+    border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+/* Footer */
+.ga-footer {
+    margin-top: auto;
+    padding: 20px 16px 14px;
+    background: rgba(8, 19, 40, 0.98);
+    color: #9ca3af;
+    border-top: 1px solid rgba(75, 85, 99, 0.7);
+}
+
+.ga-footer-inner {
+    max-width: 1120px;
+    margin: 0 auto 6px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    font-size: 11px;
+}
+
+.ga-logo-mini {
+    width: 24px;
+    height: 24px;
+    border-radius: 8px;
+    background: linear-gradient(145deg, #e5e7ff, #6f8cff);
+    color: #0f172a;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+}
+
+.ga-footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.ga-footer-links a {
+    color: #9ca3af;
+    text-decoration: none;
+    font-size: 11px;
+}
+
+.ga-footer-links a:hover {
+    color: #e5e7ff;
+}
+
+.ga-footer-bottom {
+    max-width: 1120px;
+    margin: 0 auto;
+    font-size: 10px;
+    color: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 800px) {
+    .ga-nav-links,
+    .ga-nav-actions {
+        display: none;
+    }
+
+    .ga-burger {
+        display: flex;
+    }
+
+    .ga-main {
+        margin-top: 84px;
+        padding: 0 14px 24px;
+    }
+
+    .ga-card,
+    .ga-form-card {
+        padding: 18px 16px 16px;
+        border-radius: 18px;
+    }
+
+    .ga-footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
