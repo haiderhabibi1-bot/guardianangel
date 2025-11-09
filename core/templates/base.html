@@ -1,197 +1,111 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>{% block title %}Guardian Angel — Legal Answers, On Demand{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guardian Angel</title>
-
-    <style>
-        body {
-            margin: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: radial-gradient(circle at top, #e6f3ff 0%, #c7ddff 40%, #eef4ff 100%);
-            color: #404040;
-        }
-
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 32px;
-            background: #dfeeff;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            border-bottom: 2px solid #4a90e2;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .halo {
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            border: 2px solid #4a90e2;
-            box-shadow: 0 0 6px rgba(74,144,226,0.7);
-        }
-
-        .brand span {
-            font-weight: 700;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            color: #333;
-        }
-
-        nav a {
-            margin-left: 12px;
-            text-decoration: none;
-            font-weight: 500;
-            color: #4a4a4a;
-            padding: 6px 12px;
-            border-radius: 999px;
-            transition: all 0.18s ease;
-            font-size: 0.9rem;
-        }
-
-        nav a:hover {
-            background-color: #4a90e2;
-            color: #fff;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-        }
-
-        .container {
-            max-width: 1080px;
-            margin: 40px auto 32px;
-            padding: 24px 26px 32px;
-            background: rgba(255,255,255,0.98);
-            border-radius: 18px;
-            box-shadow: 0 14px 40px rgba(0,0,0,0.06);
-        }
-
-        .metallic-text {
-            color: #555;
-            text-shadow: 0 1px 1px #fff, 0 -1px 1px #999;
-            margin-top: 0;
-        }
-
-        .card {
-            background: #ffffff;
-            border-radius: 14px;
-            padding: 18px 20px;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.06);
-            margin-bottom: 18px;
-        }
-
-        .btn {
-            background-color: #4a90e2;
-            color: #fff;
-            border: none;
-            padding: 9px 18px;
-            border-radius: 999px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.95rem;
-            transition: all 0.18s ease;
-        }
-
-        .btn:hover {
-            background-color: #357ab7;
-            transform: translateY(-1px);
-            box-shadow: 0 3px 8px rgba(0,0,0,0.18);
-        }
-
-        form input[type="text"],
-        form input[type="email"],
-        form input[type="password"],
-        form input[type="number"],
-        form textarea,
-        form select {
-            width: 100%;
-            padding: 9px 10px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            border: 1px solid #d0d7e2;
-            font-size: 0.95rem;
-            box-sizing: border-box;
-        }
-
-        form label {
-            font-size: 0.87rem;
-            font-weight: 600;
-            color: #555;
-        }
-
-        footer {
-            text-align: center;
-            padding: 14px;
-            font-size: 0.8rem;
-            color: #7a7a7a;
-        }
-
-        @media (max-width: 720px) {
-            header {
-                padding: 10px 16px;
-            }
-
-            nav a {
-                margin-left: 6px;
-                font-size: 0.8rem;
-            }
-
-            .container {
-                margin: 20px 10px 24px;
-                padding: 18px 14px 22px;
-            }
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
-<header>
-    <div class="brand">
-        <div class="halo"></div>
-        <span>Guardian Angel</span>
-    </div>
-    <nav>
-        <a href="/">Home</a>
-        <a href="/general-questions/">General Q&amp;A</a>
+    <div class="ga-page-wrapper">
 
-        {% if user.is_authenticated %}
-            {% if is_customer %}
-                <a href="/lawyers/">Lawyers</a>
-                <a href="/questions/">My Paid Questions</a>
-            {% endif %}
-            {% if is_lawyer %}
-                <a href="/questions/">Client Questions</a>
-            {% endif %}
-            <a href="/profile/">Profile</a>
-            <a href="/logout/">Logout</a>
-        {% else %}
-            <a href="/login/">Login</a>
-            <a href="/register/customer/">Sign up (Client)</a>
-            <a href="/register/lawyer/">Sign up (Lawyer)</a>
-        {% endif %}
-    </nav>
-</header>
+        <!-- Top Navigation -->
+        <header class="ga-navbar">
+            <div class="ga-nav-inner">
+                <a href="{% url 'home' %}" class="ga-logo">
+                    <div class="ga-logo-icon">GA</div>
+                    <div class="ga-logo-text">
+                        <span class="ga-logo-title">Guardian Angel</span>
+                        <span class="ga-logo-subtitle">Ask a lawyer with confidence</span>
+                    </div>
+                </a>
 
-<div class="container">
-    {% if messages %}
-        {% for message in messages %}
-            <div class="card">
-                {{ message }}
+                <nav class="ga-nav-links">
+                    <a href="{% url 'home' %}">Home</a>
+                    <a href="{% url 'public_questions' %}">Public Questions</a>
+                    <a href="{% url 'lawyer_list' %}">Find a Lawyer</a>
+                    <a href="{% url 'pricing' %}">Pricing</a>
+                </nav>
+
+                <div class="ga-nav-actions">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'dashboard' %}" class="ga-btn ga-btn-ghost">Dashboard</a>
+                        <a href="{% url 'logout' %}" class="ga-btn ga-btn-outline">Logout</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="ga-btn ga-btn-ghost">Login</a>
+                        <a href="{% url 'register' %}" class="ga-btn ga-btn-primary">Get Started</a>
+                    {% endif %}
+                </div>
+
+                <button class="ga-burger" id="ga-burger" aria-label="Toggle navigation">
+                    <span></span><span></span><span></span>
+                </button>
             </div>
-        {% endfor %}
-    {% endif %}
+        </header>
 
-    {% block content %}{% endblock %}
-</div>
+        <!-- Mobile Nav -->
+        <div class="ga-mobile-menu" id="ga-mobile-menu">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'public_questions' %}">Public Questions</a>
+            <a href="{% url 'lawyer_list' %}">Find a Lawyer</a>
+            <a href="{% url 'pricing' %}">Pricing</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'register' %}" class="ga-mobile-cta">Get Started</a>
+            {% endif %}
+        </div>
 
-<footer>
-    &copy; {{ now|date:"Y" }} Guardian Angel. All rights reserved.
-</footer>
+        <!-- Hero (optional) -->
+        {% block hero %}{% endblock %}
+
+        <!-- Main Content -->
+        <main class="ga-main">
+            {% if messages %}
+                <div class="ga-messages">
+                    {% for message in messages %}
+                        <div class="ga-alert ga-alert-{{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- Footer -->
+        <footer class="ga-footer">
+            <div class="ga-footer-inner">
+                <div>
+                    <div class="ga-logo-mini">GA</div>
+                    <p>Guardian Angel is a platform to connect with licensed lawyers for clear answers. Not a law firm. Not legal advice until a lawyer-client relationship is formed.</p>
+                </div>
+                <div class="ga-footer-links">
+                    <a href="{% url 'terms' %}">Terms</a>
+                    <a href="{% url 'privacy' %}">Privacy</a>
+                    <a href="{% url 'contact' %}">Contact</a>
+                </div>
+            </div>
+            <div class="ga-footer-bottom">
+                © {{ now|date:"Y" }} Guardian Angel. All rights reserved.
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const burger = document.getElementById('ga-burger');
+        const mobileMenu = document.getElementById('ga-mobile-menu');
+        if (burger && mobileMenu) {
+            burger.addEventListener('click', () => {
+                burger.classList.toggle('open');
+                mobileMenu.classList.toggle('open');
+            });
+        }
+    </script>
+
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
