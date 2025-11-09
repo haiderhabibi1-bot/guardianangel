@@ -1,10 +1,5 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv
-from django.core.management.utils import get_random_secret_key
-
-# Load environment variables (optional, safe for Render)
-load_dotenv()
 
 # -------------------------------------------------------
 # BASE DIRECTORY
@@ -12,21 +7,30 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # -------------------------------------------------------
-# SECURITY SETTINGS
+# SECURITY
 # -------------------------------------------------------
-SECRET_KEY = os.getenv("SECRET_KEY", get_random_secret_key())
-DEBUG = os.getenv("DEBUG", "False") == "True"
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY",
+    "change-me-in-production"  # override on Render with env var
+)
+
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
     "guardianangelconsulting.ca",
     "www.guardianangelconsulting.ca",
     "guardianangel-w7fo.onrender.com",
     "localhost",
-    "127.0.0.1"
+    "127.0.0.1",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://guardianangelconsulting.ca",
+    "https://www.guardianangelconsulting.ca",
 ]
 
 # -------------------------------------------------------
-# INSTALLED APPS
+# APPLICATION DEFINITION
 # -------------------------------------------------------
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -36,13 +40,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    # Your core app
     "core",
 ]
 
-# -------------------------------------------------------
-# MIDDLEWARE
-# -------------------------------------------------------
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -53,9 +53,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-# -------------------------------------------------------
-# URL CONFIGURATION
-# -------------------------------------------------------
 ROOT_URLCONF = "guardianangel.urls"
 
 # -------------------------------------------------------
@@ -64,7 +61,8 @@ ROOT_URLCONF = "guardianangel.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "core" / "templates"],  # points to your core/templates/
+        # Your main templates folder
+        "DIRS": [BASE_DIR / "core" / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -72,21 +70,18 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "core.context_processors.global_settings",  # optional if used
+                # ❌ removed non-existent core.context_processors.global_settings
             ],
         },
     },
 ]
 
-# -------------------------------------------------------
-# WSGI APPLICATION
-# -------------------------------------------------------
 WSGI_APPLICATION = "guardianangel.wsgi.application"
 
 # -------------------------------------------------------
 # DATABASE
+# (keep SQLite for now; you can switch to Postgres on Render later)
 # -------------------------------------------------------
-# Render uses PostgreSQL — adjust if you’re on SQLite locally
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -116,38 +111,35 @@ USE_TZ = True
 # STATIC & MEDIA FILES
 # -------------------------------------------------------
 STATIC_URL = "/static/"
+
+# Where collectstatic will put files (Render serves from here)
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# ⚠️ Remove STATICFILES_DIRS if present
+# Do NOT point to BASE_DIR / "static" since you’re using app-level static folders
 # STATICFILES_DIRS = [BASE_DIR / "static"]
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 # -------------------------------------------------------
-# DEFAULT AUTO FIELD
-# -------------------------------------------------------
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# -------------------------------------------------------
-# AUTHENTICATION / LOGIN
+# AUTH / LOGIN
 # -------------------------------------------------------
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
 # -------------------------------------------------------
-# EMAIL CONFIGURATION (for notifications)
+# EMAIL (configure with env vars when ready)
 # -------------------------------------------------------
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 
 # -------------------------------------------------------
-# RENDER DEPLOYMENT (SECURITY HEADERS)
+# SECURITY FOR PRODUCTION
 # -------------------------------------------------------
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
@@ -158,7 +150,12 @@ if not DEBUG:
     SECURE_HSTS_PRELOAD = True
 
 # -------------------------------------------------------
-# LOGGING (optional but recommended)
+# DEFAULT AUTO FIELD
+# -------------------------------------------------------
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# -------------------------------------------------------
+# LOGGING (simple console logging)
 # -------------------------------------------------------
 LOGGING = {
     "version": 1,
