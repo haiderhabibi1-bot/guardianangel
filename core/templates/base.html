@@ -5,8 +5,11 @@
     <meta charset="UTF-8">
     <title>{% block title %}Guardian Angel — Legal Answers, On Demand{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Font and CSS -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+
     {% block extra_head %}{% endblock %}
 </head>
 <body>
@@ -24,7 +27,7 @@
                     </div>
                 </a>
 
-                <!-- Desktop Links -->
+                <!-- Desktop Nav -->
                 <nav class="ga-nav-links">
                     <a href="/">Home</a>
                     <a href="/public-questions/">Public Questions</a>
@@ -32,7 +35,7 @@
                     <a href="/pricing/">Pricing</a>
                 </nav>
 
-                <!-- Auth / Dashboard Buttons -->
+                <!-- Auth Buttons -->
                 <div class="ga-nav-actions">
                     {% if user.is_authenticated %}
                         <a href="/dashboard/" class="ga-btn ga-btn-ghost">Dashboard</a>
@@ -66,10 +69,10 @@
             {% endif %}
         </div>
 
-        <!-- Optional hero section -->
+        <!-- Hero or page header -->
         {% block hero %}{% endblock %}
 
-        <!-- Main content -->
+        <!-- Page Content -->
         <main class="ga-main">
             {% if messages %}
                 <div class="ga-messages">
@@ -86,7 +89,7 @@
             <div class="ga-footer-inner">
                 <div>
                     <div class="ga-logo-mini">GA</div>
-                    <p>Guardian Angel is a platform to connect with licensed lawyers for clear answers. Not a law firm. Not legal advice until a lawyer-client relationship is formed.</p>
+                    <p>Guardian Angel connects you with licensed lawyers for quick, reliable answers. Not a law firm — no legal relationship is formed until you hire a lawyer directly.</p>
                 </div>
                 <div class="ga-footer-links">
                     <a href="/terms/">Terms</a>
