@@ -7,36 +7,29 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # -------------------------------------------------------
-# SECURITY SETTINGS
+# SECURITY
 # -------------------------------------------------------
-SECRET_KEY = os.environ.get("SECRET_KEY", "change-me-please")
-DEBUG = os.environ.get("DEBUG", "False") == "True"
+SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key")
+DEBUG = False
 
 ALLOWED_HOSTS = [
     "guardianangelconsulting.ca",
-    "www.guardianangelconsulting.ca",
-    "guardianangel-w7fo.onrender.com",
     "localhost",
     "127.0.0.1",
-]
-
-CSRF_TRUSTED_ORIGINS = [
-    "https://guardianangelconsulting.ca",
-    "https://www.guardianangelconsulting.ca",
 ]
 
 # -------------------------------------------------------
 # APPLICATIONS
 # -------------------------------------------------------
 INSTALLED_APPS = [
-    "whitenoise.runserver_nostatic",  # enables whitenoise in dev
+    "whitenoise.runserver_nostatic",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "core",  # your main app
+    "core",
 ]
 
 # -------------------------------------------------------
@@ -44,7 +37,7 @@ INSTALLED_APPS = [
 # -------------------------------------------------------
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # serves static files in production
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # ✅ Enables static files in production
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -54,7 +47,7 @@ MIDDLEWARE = [
 ]
 
 # -------------------------------------------------------
-# URLS & WSGI
+# URLS / WSGI
 # -------------------------------------------------------
 ROOT_URLCONF = "guardianangel.urls"
 WSGI_APPLICATION = "guardianangel.wsgi.application"
@@ -73,13 +66,15 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                # Optional: add your own if you need globals
+                # "core.context_processors.global_settings",
             ],
         },
     },
 ]
 
 # -------------------------------------------------------
-# DATABASE
+# DATABASE (SQLite for now)
 # -------------------------------------------------------
 DATABASES = {
     "default": {
@@ -89,7 +84,7 @@ DATABASES = {
 }
 
 # -------------------------------------------------------
-# PASSWORD VALIDATION
+# AUTHENTICATION
 # -------------------------------------------------------
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -107,47 +102,26 @@ USE_I18N = True
 USE_TZ = True
 
 # -------------------------------------------------------
-# STATIC FILES
+# STATIC FILES (CSS, JS, IMAGES)
 # -------------------------------------------------------
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# Where Django looks during collectstatic
+STATICFILES_DIRS = [
+    BASE_DIR / "core" / "static",
+]
+
+# WhiteNoise optimized storage
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # -------------------------------------------------------
-# MEDIA FILES
+# MEDIA FILES (Optional for uploads)
 # -------------------------------------------------------
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 # -------------------------------------------------------
-# AUTH REDIRECTS
-# -------------------------------------------------------
-LOGIN_URL = "/login/"
-LOGIN_REDIRECT_URL = "/"
-LOGOUT_REDIRECT_URL = "/"
-
-# -------------------------------------------------------
-# EMAIL SETTINGS
-# -------------------------------------------------------
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
-
-# -------------------------------------------------------
-# SECURITY FOR PRODUCTION
-# -------------------------------------------------------
-if not DEBUG:
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_HSTS_SECONDS = 31536000
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
-
-# -------------------------------------------------------
-# DEFAULT PRIMARY KEY FIELD TYPE
+# DEFAULTS
 # -------------------------------------------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
