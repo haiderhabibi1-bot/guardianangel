@@ -5,8 +5,34 @@
 <div class="ga-card">
     <div class="ga-card-title">Public Questions</div>
     <p class="ga-card-subtitle">
-        Browse common questions and example answers shared publicly.
-        You can replace this with real data later.
+        Ask a general legal question to be answered publicly. Do not share names,
+        addresses, or sensitive personal information.
     </p>
+
+    <form method="post" class="ga-form">
+        {% csrf_token %}
+        <div class="ga-form-group">
+            <label for="id_question">Your Question</label>
+            <textarea id="id_question" name="question" required></textarea>
+        </div>
+        <button type="submit" class="ga-btn ga-btn-primary">Post Question</button>
+    </form>
+
+    {% if questions %}
+        <ul class="ga-questions-list">
+            {% for q in questions %}
+                <li class="ga-question-item">
+                    {{ q.text|linebreaksbr }}
+                    <div style="font-size:10px;color:#6b7280;margin-top:2px;">
+                        {{ q.created_at|date:"M j, Y H:i" }}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="ga-form-note" style="margin-top:10px;">
+            There are no questions yet. Be the first to ask.
+        </p>
+    {% endif %}
 </div>
 {% endblock %}
