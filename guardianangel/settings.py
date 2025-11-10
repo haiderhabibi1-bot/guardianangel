@@ -1,10 +1,13 @@
 import os
 from pathlib import Path
 
+# ---------------------------
+# BASE SETTINGS
+# ---------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'dev-secret-key')
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key")
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
     ".onrender.com",
@@ -12,7 +15,9 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
 ]
 
-# Installed apps
+# ---------------------------
+# APPLICATIONS
+# ---------------------------
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -23,7 +28,9 @@ INSTALLED_APPS = [
     "core",
 ]
 
-# Middleware
+# ---------------------------
+# MIDDLEWARE
+# ---------------------------
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -37,6 +44,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "guardianangel.urls"
 
+# ---------------------------
+# TEMPLATES
+# ---------------------------
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -55,7 +65,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "guardianangel.wsgi.application"
 
-# Database
+# ---------------------------
+# DATABASE
+# ---------------------------
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -63,7 +75,9 @@ DATABASES = {
     }
 }
 
-# Password validation
+# ---------------------------
+# PASSWORD VALIDATION
+# ---------------------------
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -71,20 +85,58 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-# Localization
+# ---------------------------
+# INTERNATIONALIZATION
+# ---------------------------
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "America/Toronto"
 USE_I18N = True
 USE_TZ = True
 
-# Static files
+# ---------------------------
+# STATIC FILES
+# ---------------------------
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]
+
+# Project-level static (your main CSS, etc.)
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+# Render collects everything here
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# WhiteNoise handles static serving
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# Media files (optional)
+# App-level static files (like your logo in core/static/images)
+# Django automatically finds them because APP_DIRS=True
+# so no extra setting is needed here
+
+# ---------------------------
+# MEDIA FILES (optional)
+# ---------------------------
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# ---------------------------
+# DEFAULT AUTO FIELD
+# ---------------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# ---------------------------
+# LOGGING (optional)
+# ---------------------------
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+}
