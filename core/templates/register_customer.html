@@ -1,41 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Create Your Client Account — Guardian Angel{% endblock %}
 
 {% block content %}
-<div class="ga-card">
-    <div class="ga-card-title">Create Your Client Account</div>
-    <p class="ga-card-subtitle">
-        Ask up to 2 free general questions and connect with approved lawyers.
-    </p>
+<h1>Create your client account</h1>
 
-    <form method="post" class="ga-form">
-        {% csrf_token %}
+<p>Your identity remains anonymous. Only your username will be visible in the system.</p>
 
-        <div class="ga-form-group">
-            <label>Username</label>
-            <input type="text" name="username" required>
-        </div>
-
-        <div class="ga-form-group">
-            <label>Email</label>
-            <input type="email" name="email" required>
-        </div>
-
-        <div class="ga-form-group">
-            <label>Password</label>
-            <input type="password" name="password1" required>
-        </div>
-
-        <div class="ga-form-group">
-            <label>Confirm Password</label>
-            <input type="password" name="password2" required>
-        </div>
-
-        <button type="submit" class="ga-btn ga-btn-primary">Create Account</button>
-    </form>
-
-    <p class="ga-form-note">
-        Already have an account? <a href="{% url 'login' %}">Log in</a>
-    </p>
-</div>
+<form method="post" class="form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Get Started</button>
+</form>
 {% endblock %}
