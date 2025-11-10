@@ -16,10 +16,6 @@ from .forms import (
 from .models import Profile, PublicQuestion, PublicAnswer
 
 
-# =========================
-# CORE PAGES
-# =========================
-
 def home(request):
     return render(request, "home.html")
 
@@ -29,13 +25,8 @@ def pricing(request):
 
 
 def register(request):
-    # Keep "Register" link simple: go to customer registration
     return redirect("register_customer")
 
-
-# =========================
-# REGISTRATION
-# =========================
 
 def register_customer(request):
     if request.method == "POST":
@@ -47,18 +38,16 @@ def register_customer(request):
             return redirect("customer_profile")
     else:
         form = CustomerRegistrationForm()
-
-    # IMPORTANT: uses your existing templates/register_customer.html
     return render(request, "register_customer.html", {"form": form})
 
 
 def register_lawyer(request):
+    # CHANGED: include request.FILES for bar_certificate upload
     if request.method == "POST":
-        form = LawyerRegistrationForm(request.POST)
+        form = LawyerRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save()
 
-            # Email admin for approval
             approval_email = getattr(settings, "LAWYER_APPROVAL_EMAIL", None)
             if approval_email:
                 profile = user.profile
@@ -85,13 +74,8 @@ def register_lawyer(request):
     else:
         form = LawyerRegistrationForm()
 
-    # IMPORTANT: uses your existing templates/register_lawyer.html
     return render(request, "register_lawyer.html", {"form": form})
 
-
-# =========================
-# PROFILES / DASHBOARDS
-# =========================
 
 @login_required
 def customer_profile(request):
@@ -106,16 +90,10 @@ def lawyer_profile(request):
     profile = request.user.profile
     if not profile.is_lawyer:
         return redirect("home")
-
     if not profile.is_approved:
         return render(request, "profiles/lawyer_pending.html", {"profile": profile})
-
     return render(request, "profiles/lawyer_profile.html", {"profile": profile})
 
-
-# =========================
-# SETTINGS
-# =========================
 
 @login_required
 def customer_settings(request):
@@ -153,13 +131,8 @@ def lawyer_settings(request):
     return render(request, "profiles/lawyer_settings.html", {"form": form})
 
 
-# =========================
-# PUBLIC Q&A
-# =========================
-
 @login_required
 def ask_public_question(request):
-    # Only customers can ask
     profile = request.user.profile
     if not profile.is_customer:
         return redirect("home")
@@ -178,13 +151,11 @@ def ask_public_question(request):
     else:
         form = PublicQuestionForm()
 
-    # Uses top-level templates/ask_public_question.html
     return render(request, "ask_public_question.html", {"form": form})
 
 
 @login_required
 def answer_public_question(request, question_id):
-    # Only approved lawyers can answer
     profile = request.user.profile
     if not (profile.is_lawyer and profile.is_approved):
         return redirect("home")
@@ -206,7 +177,6 @@ def answer_public_question(request, question_id):
     else:
         form = PublicAnswerForm()
 
-    # Uses top-level templates/answer_public_question.html
     return render(
         request,
         "answer_public_question.html",
@@ -215,15 +185,9 @@ def answer_public_question(request, question_id):
 
 
 def public_questions(request):
-    """
-    Public page, no login required:
-    show only questions that have answers.
-    """
     questions = (
         PublicQuestion.objects.filter(answer__isnull=False)
         .select_related("answer")
         .order_by("-answer__created_at")
     )
-
-    # Uses top-level templates/public_questions.html
     return render(request, "public_questions.html", {"questions": questions})
