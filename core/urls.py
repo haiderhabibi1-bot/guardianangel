@@ -1,6 +1,5 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
-
 from . import views
 
 urlpatterns = [
@@ -8,7 +7,7 @@ urlpatterns = [
     path("", views.home, name="home"),
     path("pricing/", views.pricing, name="pricing"),
 
-    # Auth: Login / Logout
+    # Auth
     path(
         "login/",
         auth_views.LoginView.as_view(template_name="login.html"),
@@ -20,22 +19,18 @@ urlpatterns = [
         name="logout",
     ),
 
-    # Registration
-    # Keeps your existing "Register" link working and layout unchanged
+    # Register
     path("register/", views.register, name="register"),
     path("register/customer/", views.register_customer, name="register_customer"),
     path("register/lawyer/", views.register_lawyer, name="register_lawyer"),
 
-    # Customer profile & settings
+    # Profiles & settings
     path("customer/profile/", views.customer_profile, name="customer_profile"),
     path("customer/settings/", views.customer_settings, name="customer_settings"),
-
-    # Lawyer profile & settings
     path("lawyer/profile/", views.lawyer_profile, name="lawyer_profile"),
     path("lawyer/settings/", views.lawyer_settings, name="lawyer_settings"),
 
     # Public Q&A
-    # Navbar "Public Questions" already uses this name, unchanged
     path("public-questions/", views.public_questions, name="public_questions"),
     path("public-questions/ask/", views.ask_public_question, name="ask_public_question"),
     path(
