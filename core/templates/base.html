@@ -3,81 +3,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Guardian Angel{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guardian Angel</title>
+
+    <!-- Link to your single correct CSS -->
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
-    {% block extra_head %}{% endblock %}
+    <link rel="icon" href="{% static 'core/images/logo.png' %}" type="image/png">
+
+    <!-- Google Fonts for a modern UI -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="ga-page-wrapper">
 
-    <!-- Navbar -->
-    <header class="ga-navbar">
-        <div class="ga-nav-inner">
-
-            <!-- Logo with blue circle -->
-            <a href="{% url 'home' %}" class="ga-logo">
-                <div class="ga-logo-icon">GA</div>
-                <div class="ga-logo-text">
-                    <span class="ga-logo-title">GUARDIAN ANGEL</span>
-                    <span class="ga-logo-subtitle">Ask a lawyer with confidence</span>
-                </div>
-            </a>
-
-            <!-- Main nav links -->
-            <nav class="ga-nav-links">
-                <a href="{% url 'home' %}">Ask a Lawyer</a>
-                <a href="{% url 'public_questions' %}">Public Questions</a>
-                <a href="{% url 'lawyers_list' %}">Find a Lawyer</a>
-                <a href="{% url 'pricing' %}">Pricing</a>
-            </nav>
-
-            <!-- Auth buttons -->
-            <div class="ga-nav-actions">
-                {% if user.is_authenticated %}
-                    <a href="/profile/" class="ga-btn ga-btn-ghost">Dashboard</a>
-                    <a href="{% url 'logout' %}" class="ga-btn ga-btn-outline">Logout</a>
-                {% else %}
-                    <a href="{% url 'login' %}" class="ga-btn ga-btn-ghost">Login</a>
-                    <a href="{% url 'register' %}" class="ga-btn ga-btn-primary">Get Started</a>
-                {% endif %}
-            </div>
+    <!-- Navigation Bar -->
+    <header class="navbar">
+        <div class="logo-container">
+            <img src="{% static 'core/images/logo.png' %}" alt="Guardian Angel Logo" class="logo">
+            <h1 class="site-title">Guardian Angel</h1>
         </div>
+        <nav class="nav-links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'public_questions' %}">Public Questions</a>
+            <a href="{% url 'pricing' %}">Pricing</a>
+            <a href="{% url 'register' %}">Register</a>
+            <a href="{% url 'login' %}">Login</a>
+        </nav>
     </header>
 
-    <!-- Main content -->
-    <main class="ga-main">
-        {% if messages %}
-            <div class="ga-messages">
-                {% for message in messages %}
-                    <div class="ga-message ga-{{ message.tags }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-
-        {% block content %}{% endblock %}
+    <!-- Page Content -->
+    <main class="content">
+        {% block content %}
+        {% endblock %}
     </main>
 
     <!-- Footer -->
-    <footer class="ga-footer">
-        <div class="ga-footer-inner">
-            <div class="ga-logo-mini">GA</div>
-            <p>
-                Guardian Angel connects you with licensed lawyers for clear, reliable answers.
-                Not a law firm — no lawyer-client relationship is created until you engage a lawyer directly.
-            </p>
-            <div class="ga-footer-links">
-                <a href="/terms/">Terms</a>
-                <a href="/privacy/">Privacy</a>
-                <a href="/contact/">Contact</a>
-            </div>
-        </div>
-        <div class="ga-footer-bottom">
-            © Guardian Angel. All rights reserved.
-        </div>
+    <footer class="footer">
+        <p>© 2025 Guardian Angel. All rights reserved.</p>
     </footer>
 
-</div>
-{% block extra_js %}{% endblock %}
 </body>
 </html>
