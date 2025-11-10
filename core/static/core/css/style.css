@@ -1,5 +1,5 @@
 /* ======================================
-   GUARDIAN ANGEL - STYLE.CSS (FINAL UI)
+   GUARDIAN ANGEL - STYLE.CSS (FINAL + CENTERED CONTENT)
    ====================================== */
 
 /* RESET */
@@ -42,6 +42,13 @@ body {
     gap: 24px;
 }
 
+/* Center the inner block visually without breaking anything */
+.content > * {
+    max-width: 720px;          /* keeps lines nicely readable */
+    margin-left: auto;
+    margin-right: auto;        /* centers content inside the card */
+}
+
 /* TITLES */
 .content h1,
 .content h2 {
@@ -55,12 +62,22 @@ body {
     margin-bottom: 6px;
 }
 
+/* TEXT */
 .content p {
     color: #333;
     line-height: 1.6;
+    margin-bottom: 10px;
+    text-align: center;        /* center body text for a more "landing page" feel */
 }
 
-/* NAVBAR (DESKTOP) */
+/* If you have lists or similar, keep them tidy */
+.content ul,
+.content ol {
+    text-align: left;
+    margin-left: 18px;
+}
+
+/* NAVBAR (DESKTOP) - UNCHANGED FUNCTIONALLY */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -96,7 +113,7 @@ body {
     letter-spacing: 0.4px;
 }
 
-/* NAV LINKS (same names & URLs, just styled) */
+/* NAV LINKS */
 .nav-links {
     display: flex;
     align-items: center;
@@ -166,7 +183,8 @@ form {
     flex-direction: column;
     gap: 14px;
     max-width: 420px;
-    margin: 0 auto; /* centers forms inside the content card */
+    margin: 0 auto; /* centers forms inside the content area */
+    text-align: left; /* keep labels/inputs readable */
 }
 
 label {
@@ -223,6 +241,7 @@ select:focus {
 .question-card p {
     font-size: 0.92rem;
     color: #444;
+    text-align: left;
 }
 
 /* FOOTER */
@@ -239,7 +258,6 @@ select:focus {
    MOBILE ONLY (DESKTOP UNCHANGED)
    ====================================== */
 @media (max-width: 768px) {
-    /* Navbar stacks neatly, stays readable */
     .navbar {
         flex-direction: column;
         align-items: center;
@@ -274,7 +292,6 @@ select:focus {
         padding-bottom: 2px;
     }
 
-    /* Centered card, full width on small screens */
     .page-wrapper {
         padding: 16px 10px 20px;
         align-items: stretch;
@@ -288,6 +305,10 @@ select:focus {
         border-radius: 18px;
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
         gap: 18px;
+    }
+
+    .content > * {
+        max-width: 100%;
     }
 
     .content h1,
@@ -304,16 +325,8 @@ select:focus {
         font-size: 0.9rem;
     }
 
-    /* Forms stay centered & easy to use */
     form {
-        width: 100%;
         max-width: 100%;
-    }
-
-    input,
-    textarea,
-    select {
-        font-size: 0.9rem;
     }
 
     .question-card {
