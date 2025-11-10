@@ -3,7 +3,7 @@
 {% block content %}
 <h1>Public questions</h1>
 
-{% if user.is_authenticated and user.profile.is_customer %}
+{% if user.is_authenticated %}
 <div style="text-align:center; margin-bottom:16px;">
     <a href="{% url 'ask_public_question' %}" class="btn">Ask a question</a>
 </div>
