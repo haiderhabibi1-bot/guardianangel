@@ -1,38 +1,39 @@
 from django.shortcuts import render
 
+
 def home(request):
     """
     Main 'Ask a Lawyer' page.
-    Uses your existing home.html which should extend base.html.
+    Uses core/templates/home.html (which should extend base.html).
     """
     return render(request, "home.html")
 
 
 def public_questions(request):
     """
-    Public questions listing (simple stub for now).
+    Public questions page (stub content for now).
     """
     return render(request, "public_questions.html")
 
 
 def lawyers_list(request):
     """
-    List of approved / pending lawyers.
-    Hook this up to your Lawyer model later.
+    Approved / pending lawyers listing page.
+    If you add a Lawyer model later, query it here and pass to the template.
     """
     return render(request, "lawyers_list.html")
 
 
 def pricing(request):
     """
-    Simple pricing/plan overview.
+    Pricing information page.
     """
     return render(request, "pricing.html")
 
 
 def register_landing(request):
     """
-    Landing page to choose between customer and lawyer registration.
+    Landing page letting users choose how they want to register.
     """
     return render(request, "register_landing.html")
 
@@ -40,7 +41,7 @@ def register_landing(request):
 def register_customer(request):
     """
     Customer registration page.
-    Uses your existing register_customer.html.
+    Currently just renders your existing register_customer.html.
     """
     return render(request, "register_customer.html")
 
@@ -48,6 +49,6 @@ def register_customer(request):
 def register_lawyer(request):
     """
     Lawyer registration page.
-    Uses your existing register_lawyer.html.
+    Currently just renders your existing register_lawyer.html.
     """
     return render(request, "register_lawyer.html")
