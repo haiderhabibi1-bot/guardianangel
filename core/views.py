@@ -29,7 +29,10 @@ def pricing(request):
 
 
 def register(request):
-    # "Register" top-nav is removed from base.html, but keep this for safety
+    """
+    Legacy entrypoint if /register/ is hit directly.
+    Navbar no longer shows Register, but keep this safe redirect.
+    """
     return redirect("register_customer")
 
 
@@ -47,17 +50,19 @@ def register_customer(request):
             return redirect("customer_profile")
     else:
         form = CustomerRegistrationForm()
+
+    # Uses templates/register_customer.html
     return render(request, "register_customer.html", {"form": form})
 
 
 def register_lawyer(request):
     if request.method == "POST":
-        # IMPORTANT: include request.FILES for bar certificate
+        # Include files for bar_certificate upload
         form = LawyerRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save()
 
-            # Email admin for approval
+            # Notify admin for approval
             approval_email = getattr(settings, "LAWYER_APPROVAL_EMAIL", None)
             if approval_email:
                 profile = user.profile
@@ -84,6 +89,7 @@ def register_lawyer(request):
     else:
         form = LawyerRegistrationForm()
 
+    # Uses templates/register_lawyer.html
     return render(request, "register_lawyer.html", {"form": form})
 
 
@@ -96,6 +102,7 @@ def customer_profile(request):
     profile = request.user.profile
     if not profile.is_customer:
         return redirect("home")
+
     return render(request, "profiles/customer_profile.html", {"profile": profile})
 
 
@@ -157,7 +164,10 @@ def lawyer_settings(request):
 
 @login_required
 def ask_public_question(request):
-    # Only customers can ask (logic, not template)
+    """
+    Only customers can submit public questions.
+    Questions are anonymous publicly and only shown once answered.
+    """
     profile = request.user.profile
     if not profile.is_customer:
         return redirect("home")
@@ -176,19 +186,22 @@ def ask_public_question(request):
     else:
         form = PublicQuestionForm()
 
-    return render(request, "ask_public_question.html", {"form": form})
+    # Uses core/templates/public/ask_public_question.html
+    return render(request, "public/ask_public_question.html", {"form": form})
 
 
 @login_required
 def answer_public_question(request, question_id):
-    # Only approved lawyers
+    """
+    Only approved lawyers can answer.
+    One answer per question.
+    """
     profile = request.user.profile
     if not (profile.is_lawyer and profile.is_approved):
         return redirect("home")
 
     question = get_object_or_404(PublicQuestion, id=question_id)
 
-    # Prevent duplicate answers
     if hasattr(question, "answer"):
         return redirect("public_questions")
 
@@ -204,20 +217,24 @@ def answer_public_question(request, question_id):
     else:
         form = PublicAnswerForm()
 
+    # Uses core/templates/public/answer_public_question.html
     return render(
         request,
-        "answer_public_question.html",
+        "public/answer_public_question.html",
         {"form": form, "question": question},
     )
 
 
 def public_questions(request):
-    # Safe: if no questions/answers exist, returns empty queryset (no error)
+    """
+    Public page: shows ONLY questions that have an answer.
+    No user.profile access -> safe for anonymous visitors.
+    """
     questions = (
         PublicQuestion.objects.filter(answer__isnull=False)
         .select_related("answer")
         .order_by("-answer__created_at")
     )
 
-    # IMPORTANT: template path matches your actual file
-    return render(request, "public_questions.html", {"questions": questions})
+    # Uses core/templates/public/public_questions.html
+    return render(request, "public/public_questions.html", {"questions": questions})
