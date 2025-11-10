@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Lawyer dashboard</h1>
+
+<p>Welcome, {{ profile.full_name|default:request.user.username }}.</p>
+<p>Your account is approved and you can now participate in public legal Q&amp;A.</p>
+
+<div class="actions" style="text-align:center; margin-top:16px;">
+    <a href="{% url 'lawyer_settings' %}" class="btn">Settings</a>
+    <a href="{% url 'public_questions' %}" class="btn">View Public Questions</a>
+</div>
+{% endblock %}
