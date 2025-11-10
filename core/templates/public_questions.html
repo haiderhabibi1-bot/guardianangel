@@ -3,7 +3,9 @@
 {% block content %}
 <h1>Public questions</h1>
 
-{% if user.is_authenticated and user.is_authenticated %}
+{# Show "Ask a question" button only if logged in.
+   No user.profile usage here to avoid 500s for anonymous visitors. #}
+{% if user.is_authenticated %}
 <div style="text-align:center; margin-bottom:16px;">
     <a href="{% url 'ask_public_question' %}" class="btn">Ask a question</a>
 </div>
