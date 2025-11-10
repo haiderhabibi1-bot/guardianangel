@@ -1,8 +1,8 @@
-/* =========================
-   GUARDIAN ANGEL UI STYLES
-   ========================= */
+/* ================================
+   Guardian Angel - Core Styles
+   ================================ */
 
-/* Reset & Base */
+/* Reset & base */
 *,
 *::before,
 *::after {
@@ -13,76 +13,68 @@ html,
 body {
     margin: 0;
     padding: 0;
-    height: 100%;
 }
 
 body {
-    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    color: #0f172a;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, -sans-serif;
+    color: #111827;
     background:
-        radial-gradient(circle at top left, rgba(111, 177, 252, 0.21), transparent 55%),
-        radial-gradient(circle at bottom right, rgba(63, 43, 150, 0.23), transparent 55%),
-        linear-gradient(to bottom right, #e6f2ff, #f7f9ff);
-    background-attachment: fixed;
+        radial-gradient(circle at top left, rgba(111, 177, 252, 0.23), transparent 60%),
+        radial-gradient(circle at bottom right, rgba(155, 81, 224, 0.23), transparent 60%),
+        #dbeafe;
+    min-height: 100vh;
 }
 
-/* Layout */
+/* Layout wrapper */
 .ga-page-wrapper {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
-.ga-main {
-    flex: 1;
-    width: 100%;
-    max-width: 1120px;
-    margin: 96px auto 40px;
-    padding: 0 16px 32px;
-}
+/* ================================
+   Header / Navbar
+   ================================ */
 
-/* Navbar */
 .ga-navbar {
-    position: fixed;
+    position: sticky;
     top: 0;
-    left: 0;
-    right: 0;
-    z-index: 50;
-    backdrop-filter: blur(16px);
-    background: radial-gradient(circle at top left, rgba(168, 192, 255, 0.26), transparent),
-                rgba(8, 19, 40, 0.84);
-    border-bottom: 1px solid rgba(148, 163, 253, 0.18);
+    z-index: 20;
+    background: #111827;
+    color: #e5e7eb;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.4);
 }
 
 .ga-nav-inner {
-    max-width: 1120px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 14px 16px;
+    padding: 14px 24px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 18px;
+    gap: 32px;
 }
 
 /* Logo */
+
 .ga-logo {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     text-decoration: none;
 }
 
 .ga-logo-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 11px;
-    background: linear-gradient(145deg, #e5e7ff, #6f8cff);
-    color: #0f172a;
-    font-weight: 700;
-    font-size: 15px;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    background: linear-gradient(145deg, #e5e7ff, #6366f1);
     display: flex;
     align-items: center;
     justify-content: center;
+    font-weight: 700;
+    color: #111827;
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.5);
+    font-size: 14px;
 }
 
 .ga-logo-text {
@@ -92,10 +84,11 @@ body {
 }
 
 .ga-logo-title {
-    font-size: 17px;
-    font-weight: 600;
-    color: #e5e7ff;
-    letter-spacing: 0.4px;
+    font-size: 16px;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+    color: #f9fafb;
+    text-transform: uppercase;
 }
 
 .ga-logo-subtitle {
@@ -103,335 +96,325 @@ body {
     color: #9ca3af;
 }
 
-/* Desktop Nav Links */
+/* Nav links */
+
 .ga-nav-links {
     display: flex;
-    gap: 16px;
     align-items: center;
+    gap: 20px;
+    font-size: 14px;
+    margin-left: 20px;
     flex: 1;
-    justify-content: center;
 }
 
 .ga-nav-links a {
-    color: #cbd5f5;
-    font-size: 13px;
+    color: #d1d5db;
     text-decoration: none;
-    padding: 6px 10px;
-    border-radius: 999px;
-    transition: all 0.2s ease;
+    padding-bottom: 3px;
+    border-bottom: 2px solid transparent;
+    transition: color 0.18s ease, border-color 0.18s ease;
 }
 
 .ga-nav-links a:hover {
-    background: rgba(129, 140, 248, 0.18);
     color: #ffffff;
+    border-color: #6366f1;
 }
 
-/* Nav Actions */
+/* Auth actions */
+
 .ga-nav-actions {
     display: flex;
-    gap: 8px;
     align-items: center;
+    gap: 10px;
 }
 
-.ga-btn {
-    font-size: 12px;
+/* Buttons / Links */
+
+.ga-btn,
+.ga-btn-primary,
+.ga-btn-outline,
+.ga-btn-ghost,
+.ga-link {
+    font-size: 13px;
     padding: 7px 14px;
     border-radius: 999px;
-    cursor: pointer;
+    border: none;
     text-decoration: none;
-    border: 1px solid transparent;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-}
-
-.ga-btn-primary {
-    background: linear-gradient(to right, #60a5fa, #4f46e5);
-    color: #ffffff;
-    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
-}
-
-.ga-btn-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
-}
-
-.ga-btn-outline {
-    background: transparent;
-    border-color: rgba(148, 163, 253, 0.7);
-    color: #e5e7ff;
-}
-
-.ga-btn-outline:hover {
-    background: rgba(79, 70, 229, 0.14);
-}
-
-.ga-btn-ghost {
-    background: transparent;
-    color: #9ca3af;
-}
-
-.ga-btn-ghost:hover {
-    color: #e5e7ff;
-    background: rgba(156, 163, 175, 0.12);
-}
-
-/* Burger (mobile) */
-.ga-burger {
-    display: none;
-    flex-direction: column;
-    gap: 5px;
-    background: transparent;
-    border: none;
+    justify-content: center;
     cursor: pointer;
-}
-
-.ga-burger span {
-    width: 20px;
-    height: 2px;
-    background: #e5e7ff;
-    border-radius: 999px;
-    transition: all 0.2s ease;
-}
-
-.ga-burger.open span:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
-}
-.ga-burger.open span:nth-child(2) {
-    opacity: 0;
-}
-.ga-burger.open span:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
-}
-
-/* Mobile menu */
-.ga-mobile-menu {
-    display: none;
-    flex-direction: column;
-    background: rgba(8, 19, 40, 0.98);
-    backdrop-filter: blur(18px);
-    padding: 14px 16px 18px;
-    gap: 8px;
-}
-
-.ga-mobile-menu a {
-    color: #e5e7ff;
-    text-decoration: none;
-    padding: 8px 10px;
-    border-radius: 10px;
-    font-size: 13px;
-    transition: all 0.2s ease;
-}
-
-.ga-mobile-menu a:hover {
-    background: rgba(129, 140, 248, 0.16);
-}
-
-.ga-mobile-cta {
-    margin-top: 4px;
-    background: linear-gradient(to right, #60a5fa, #4f46e5);
-    text-align: center;
-}
-
-.ga-mobile-menu.open {
-    display: flex;
-}
-
-/* Cards & Panels */
-.ga-card,
-.ga-form-card {
-    background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.35), transparent),
-                rgba(255, 255, 255, 0.9);
-    border-radius: 20px;
-    padding: 22px 22px 20px;
-    box-shadow:
-        0 14px 38px rgba(15, 23, 42, 0.16),
-        0 2px 6px rgba(148, 163, 253, 0.12);
-    border: 1px solid rgba(148, 163, 253, 0.2);
-    margin-bottom: 18px;
-}
-
-.ga-card-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #111827;
-    margin-bottom: 6px;
-}
-
-.ga-card-subtitle {
-    font-size: 12px;
-    color: #6b7280;
-    margin-bottom: 14px;
-}
-
-/* Forms */
-.ga-form-card h1,
-.ga-form-card h2 {
-    margin-top: 0;
-    margin-bottom: 4px;
-    font-size: 20px;
-    font-weight: 600;
-    color: #111827;
-}
-
-.ga-form-help {
-    font-size: 11px;
-    color: #6b7280;
-    margin-bottom: 14px;
-}
-
-.ga-form-group {
-    margin-bottom: 12px;
-}
-
-.ga-form-group label {
-    display: block;
-    margin-bottom: 4px;
-    font-size: 11px;
-    font-weight: 500;
-    color: #4b5563;
-}
-
-.ga-form-group input,
-.ga-form-group select,
-.ga-form-group textarea {
-    width: 100%;
-    padding: 9px 11px;
-    border-radius: 12px;
-    border: 1px solid rgba(148, 163, 253, 0.6);
-    font-size: 13px;
-    outline: none;
-    background: rgba(248, 250, 252, 0.96);
     transition: all 0.18s ease;
 }
 
-.ga-form-group input:focus,
-.ga-form-group select:focus,
-.ga-form-group textarea:focus {
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.16);
-    background: #ffffff;
+.ga-link {
+    background: transparent;
+    color: #e5e7eb;
 }
 
-.ga-form-actions {
+.ga-link:hover {
+    color: #ffffff;
+}
+
+.ga-btn-primary {
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.6);
+}
+
+.ga-btn-primary:hover {
+    box-shadow: 0 8px 22px rgba(79, 70, 229, 0.7);
+    transform: translateY(-1px);
+}
+
+.ga-btn-outline {
+    padding: 6px 12px;
+    border: 1px solid #9ca3af;
+    color: #e5e7eb;
+    background: transparent;
+}
+
+.ga-btn-outline:hover {
+    border-color: #ffffff;
+    color: #ffffff;
+}
+
+.ga-btn-ghost {
+    padding: 6px 10px;
+    color: #9ca3af;
+    background: transparent;
+}
+
+.ga-btn-ghost:hover {
+    color: #ffffff;
+}
+
+/* ================================
+   Main content wrapper
+   ================================ */
+
+.ga-main {
+    flex: 1;
+    max-width: 1200px;
+    margin: 40px auto 32px;
+    padding: 0 24px;
+}
+
+/* Flash messages */
+.ga-messages {
+    margin-bottom: 16px;
+}
+
+.ga-message {
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 8px;
+    background: rgba(15, 23, 42, 0.85);
+    color: #e5e7eb;
+}
+
+/* ================================
+   Card layout
+   ================================ */
+
+.ga-card {
+    background: rgba(249, 250, 251, 0.98);
+    border-radius: 26px;
+    padding: 32px 32px 26px;
+    margin-bottom: 28px;
+    box-shadow:
+        0 18px 55px rgba(15, 23, 42, 0.22),
+        0 0 0 1px rgba(148, 163, 253, 0.06);
+}
+
+.ga-card-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #111827;
+}
+
+.ga-card-subtitle {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 18px;
+}
+
+.ga-card p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #111827;
+}
+
+/* ================================
+   Forms
+   ================================ */
+
+.ga-form {
     display: flex;
-    justify-content: flex-end;
-    gap: 8px;
+    flex-direction: column;
+    gap: 14px;
     margin-top: 6px;
 }
 
-/* Messages / Alerts */
-.ga-messages {
-    margin-bottom: 10px;
+.ga-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13px;
 }
 
-.ga-alert {
+.ga-form-group label {
+    color: #374151;
+    font-weight: 500;
+}
+
+.ga-form-group input,
+.ga-form-group textarea,
+.ga-form select {
     padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    font-size: 13px;
+    outline: none;
+    transition: all 0.16s ease;
+    background-color: #ffffff;
+}
+
+.ga-form-group textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.ga-form-group input:focus,
+.ga-form-group textarea:focus,
+.ga-form select:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.16);
+}
+
+.ga-form-note {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.ga-form-note a {
+    color: #4f46e5;
+    text-decoration: none;
+}
+
+.ga-form-note a:hover {
+    text-decoration: underline;
+}
+
+/* ================================
+   Public Questions List
+   ================================ */
+
+.ga-questions-list {
+    margin-top: 18px;
+    padding-left: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ga-question-item {
+    padding: 10px 12px;
     border-radius: 12px;
-    font-size: 11px;
-    margin-bottom: 4px;
+    background-color: #f3f4ff;
+    font-size: 13px;
+    color: #111827;
 }
 
-.ga-alert-success {
-    background: rgba(22, 163, 74, 0.06);
-    color: #15803d;
-    border: 1px solid rgba(22, 163, 74, 0.25);
-}
+/* ================================
+   Footer
+   ================================ */
 
-.ga-alert-error,
-.ga-alert-danger {
-    background: rgba(220, 38, 38, 0.06);
-    color: #b91c1c;
-    border: 1px solid rgba(220, 38, 38, 0.24);
-}
-
-.ga-alert-info {
-    background: rgba(59, 130, 246, 0.06);
-    color: #2563eb;
-    border: 1px solid rgba(59, 130, 246, 0.25);
-}
-
-/* Footer */
 .ga-footer {
-    margin-top: auto;
-    padding: 20px 16px 14px;
-    background: rgba(8, 19, 40, 0.98);
+    background: #111827;
     color: #9ca3af;
-    border-top: 1px solid rgba(75, 85, 99, 0.7);
+    padding: 24px 0 16px;
+    margin-top: auto;
 }
 
 .ga-footer-inner {
-    max-width: 1120px;
-    margin: 0 auto 6px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
-    gap: 24px;
+    gap: 18px;
     font-size: 11px;
 }
 
 .ga-logo-mini {
-    width: 24px;
-    height: 24px;
-    border-radius: 8px;
-    background: linear-gradient(145deg, #e5e7ff, #6f8cff);
-    color: #0f172a;
-    font-weight: 700;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: #6366f1;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 4px;
+    color: #f9fafb;
+    font-weight: 700;
+    font-size: 11px;
 }
 
 .ga-footer-links {
     display: flex;
-    flex-direction: column;
-    gap: 3px;
+    gap: 14px;
 }
 
 .ga-footer-links a {
     color: #9ca3af;
     text-decoration: none;
-    font-size: 11px;
 }
 
 .ga-footer-links a:hover {
-    color: #e5e7ff;
+    color: #e5e7eb;
 }
 
 .ga-footer-bottom {
-    max-width: 1120px;
-    margin: 0 auto;
+    max-width: 1200px;
+    margin: 4px auto 0;
+    padding: 0 24px;
     font-size: 10px;
     color: #6b7280;
+    text-align: left;
 }
 
-/* Responsive */
-@media (max-width: 800px) {
-    .ga-nav-links,
-    .ga-nav-actions {
-        display: none;
+/* ================================
+   Responsive tweaks
+   ================================ */
+
+@media (max-width: 768px) {
+    .ga-nav-inner {
+        flex-wrap: wrap;
+        gap: 10px;
     }
 
-    .ga-burger {
-        display: flex;
+    .ga-nav-links {
+        flex-wrap: wrap;
+        margin-left: 0;
+        font-size: 13px;
+    }
+
+    .ga-nav-actions {
+        margin-left: auto;
     }
 
     .ga-main {
-        margin-top: 84px;
-        padding: 0 14px 24px;
+        margin-top: 24px;
     }
 
-    .ga-card,
-    .ga-form-card {
-        padding: 18px 16px 16px;
+    .ga-card {
+        padding: 22px 18px 18px;
         border-radius: 18px;
-    }
-
-    .ga-footer-inner {
-        flex-direction: column;
-        align-items: flex-start;
     }
 }
