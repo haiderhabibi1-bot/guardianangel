@@ -19,7 +19,7 @@ urlpatterns = [
         name="logout",
     ),
 
-    # Register
+    # Registration
     path("register/", views.register, name="register"),
     path("register/customer/", views.register_customer, name="register_customer"),
     path("register/lawyer/", views.register_lawyer, name="register_lawyer"),
