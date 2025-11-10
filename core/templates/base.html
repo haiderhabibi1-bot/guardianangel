@@ -6,11 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guardian Angel</title>
 
-    <!-- Link to stylesheet and favicon -->
+    <!-- Correct CSS path: project-level static/core/css/style.css -->
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
-    <link rel="icon" href="{% static 'core/images/logo.png' %}" type="image/png">
 
-    <!-- Google Fonts -->
+    <!-- Correct favicon path: app-level core/static/images/logo.png -> 'images/logo.png' -->
+    <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png">
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -18,7 +19,8 @@
     <!-- Navbar -->
     <header class="navbar">
         <div class="logo-container">
-            <img src="{% static 'core/images/logo.png' %}" alt="Guardian Angel Logo" class="logo">
+            <!-- IMPORTANT: logo path matches your actual file location -->
+            <img src="{% static 'images/logo.png' %}" alt="Guardian Angel Logo" class="logo">
             <h1 class="site-title">Guardian Angel</h1>
         </div>
         <nav class="nav-links">
@@ -30,7 +32,7 @@
         </nav>
     </header>
 
-    <!-- Main content area -->
+    <!-- Main content -->
     <main class="content">
         {% block content %}
         {% endblock %}
