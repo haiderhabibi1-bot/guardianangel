@@ -6,23 +6,15 @@ from pathlib import Path
 # ========================================
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Secret key and debug from environment
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 # ========================================
-# ALLOWED HOSTS
+# ALLOWED HOSTS (env first, else defaults)
 # ========================================
-# If ALLOWED_HOSTS env variable exists, use it (comma-separated).
-# Otherwise, use the stable default list.
 env_allowed_hosts = os.environ.get("ALLOWED_HOSTS")
-
 if env_allowed_hosts:
-    ALLOWED_HOSTS = [
-        host.strip()
-        for host in env_allowed_hosts.split(",")
-        if host.strip()
-    ]
+    ALLOWED_HOSTS = [h.strip() for h in env_allowed_hosts.split(",") if h.strip()]
 else:
     ALLOWED_HOSTS = [
         ".onrender.com",
@@ -50,7 +42,7 @@ INSTALLED_APPS = [
 # ========================================
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # static files
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -96,22 +88,14 @@ DATABASES = {
 # PASSWORD VALIDATION
 # ========================================
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 # ========================================
-# INTERNATIONALIZATION
+# I18N
 # ========================================
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "America/Toronto"
@@ -119,45 +103,59 @@ USE_I18N = True
 USE_TZ = True
 
 # ========================================
-# STATIC FILES
+# STATIC
 # ========================================
 STATIC_URL = "/static/"
 
-# Project-level static directory (where core/css/style.css lives)
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
-# Where collectstatic puts files on Render
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# WhiteNoise for efficient static serving
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # ========================================
-# MEDIA FILES (optional)
+# MEDIA (optional)
 # ========================================
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 # ========================================
-# DEFAULT PRIMARY KEY FIELD
+# EMAIL (for lawyer approval notifications)
+# ========================================
+# If SMTP vars are set, use real email; else fall back to console backend (safe).
+if os.environ.get("EMAIL_HOST_USER"):
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
+    EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 587))
+    EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "True") == "True"
+    EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+    EMAIL_HOST_USER = ""
+    EMAIL_HOST_PASSWORD = ""
+
+DEFAULT_FROM_EMAIL = os.environ.get(
+    "DEFAULT_FROM_EMAIL",
+    EMAIL_HOST_USER or "no-reply@guardianangelconsulting.ca",
+)
+
+# Where to send lawyer approval notifications (your personal email)
+LAWYER_APPROVAL_EMAIL = os.environ.get(
+    "LAWYER_APPROVAL_EMAIL",
+    "your.personal.email@example.com"  # <— replace in env; this hardcoded fallback is safe for now
+)
+
+# ========================================
+# DEFAULTS
 # ========================================
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# ========================================
-# LOGGING (optional)
-# ========================================
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-        },
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": "INFO",
-    },
+    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    "root": {"handlers": ["console"], "level": "INFO"},
 }
