@@ -17,22 +17,19 @@ from .models import Profile, PublicQuestion, PublicAnswer
 
 
 # =========================
-# CORE PAGES (EXISTING)
+# CORE PAGES
 # =========================
 
 def home(request):
-    # Uses your existing home.html template and layout
     return render(request, "home.html")
 
 
 def pricing(request):
-    # Uses your existing pricing.html template and layout
     return render(request, "pricing.html")
 
 
-# Keep a simple "Register" entrypoint so your existing navbar link still works.
-# This does NOT break anything: it just points "Register" to customer registration.
 def register(request):
+    # Keep "Register" link simple: go to customer registration
     return redirect("register_customer")
 
 
@@ -41,14 +38,6 @@ def register(request):
 # =========================
 
 def register_customer(request):
-    """
-    Customer registration:
-    - Creates user
-    - Creates Profile (role=customer, approved)
-    - Creates BillingProfile
-    - Logs them in
-    - Redirects to their profile
-    """
     if request.method == "POST":
         form = CustomerRegistrationForm(request.POST)
         if form.is_valid():
@@ -59,24 +48,17 @@ def register_customer(request):
     else:
         form = CustomerRegistrationForm()
 
-    return render(request, "auth/register_customer.html", {"form": form})
+    # IMPORTANT: uses your existing templates/register_customer.html
+    return render(request, "register_customer.html", {"form": form})
 
 
 def register_lawyer(request):
-    """
-    Lawyer registration:
-    - Creates user
-    - Creates Profile (role=lawyer, not approved yet)
-    - Creates BillingProfile
-    - Sends email notification to admin (your personal email)
-    - Does NOT auto-login with full access until approved
-    """
     if request.method == "POST":
         form = LawyerRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
 
-            # Notify admin for approval (if configured)
+            # Email admin for approval
             approval_email = getattr(settings, "LAWYER_APPROVAL_EMAIL", None)
             if approval_email:
                 profile = user.profile
@@ -103,7 +85,8 @@ def register_lawyer(request):
     else:
         form = LawyerRegistrationForm()
 
-    return render(request, "auth/register_lawyer.html", {"form": form})
+    # IMPORTANT: uses your existing templates/register_lawyer.html
+    return render(request, "register_lawyer.html", {"form": form})
 
 
 # =========================
@@ -112,24 +95,14 @@ def register_lawyer(request):
 
 @login_required
 def customer_profile(request):
-    """
-    Customer profile page.
-    Only accessible for users with customer profile.
-    """
     profile = request.user.profile
     if not profile.is_customer:
         return redirect("home")
-
     return render(request, "profiles/customer_profile.html", {"profile": profile})
 
 
 @login_required
 def lawyer_profile(request):
-    """
-    Lawyer profile / dashboard.
-    - If not approved yet: show pending screen.
-    - If approved: show dashboard.
-    """
     profile = request.user.profile
     if not profile.is_lawyer:
         return redirect("home")
@@ -146,13 +119,6 @@ def lawyer_profile(request):
 
 @login_required
 def customer_settings(request):
-    """
-    Customers can edit:
-    - username
-    - email
-    - billing method
-    No real name fields: they remain anonymous.
-    """
     profile = request.user.profile
     if not profile.is_customer:
         return redirect("home")
@@ -171,16 +137,6 @@ def customer_settings(request):
 
 @login_required
 def lawyer_settings(request):
-    """
-    Lawyers can edit:
-    - username
-    - email
-    - billing method
-    They CANNOT edit:
-    - name
-    - bar number
-    - other verified details
-    """
     profile = request.user.profile
     if not profile.is_lawyer:
         return redirect("home")
@@ -203,12 +159,7 @@ def lawyer_settings(request):
 
 @login_required
 def ask_public_question(request):
-    """
-    Only customers can submit public questions.
-    - Stored as linked to the customer (internally)
-    - Displayed anonymously
-    - Only shown once answered by an approved lawyer
-    """
+    # Only customers can ask
     profile = request.user.profile
     if not profile.is_customer:
         return redirect("home")
@@ -216,61 +167,57 @@ def ask_public_question(request):
     if request.method == "POST":
         form = PublicQuestionForm(request.POST)
         if form.is_valid():
-            question = form.save(commit=False)
-            question.customer = request.user
-            question.save()
+            q = form.save(commit=False)
+            q.customer = request.user
+            q.save()
             messages.success(
                 request,
-                "Your question was submitted. It will appear on the public page once a lawyer answers.",
+                "Your question has been submitted. It will appear once answered by a lawyer.",
             )
             return redirect("public_questions")
     else:
         form = PublicQuestionForm()
 
-    return render(request, "public/ask_public_question.html", {"form": form})
+    # Uses top-level templates/ask_public_question.html
+    return render(request, "ask_public_question.html", {"form": form})
 
 
 @login_required
 def answer_public_question(request, question_id):
-    """
-    Only approved lawyers can answer.
-    - One answer per question (simple + controlled).
-    - Both asker and lawyer are anonymous on the public page.
-    """
+    # Only approved lawyers can answer
     profile = request.user.profile
     if not (profile.is_lawyer and profile.is_approved):
         return redirect("home")
 
     question = get_object_or_404(PublicQuestion, id=question_id)
 
-    # If already answered, no duplicate answers.
     if hasattr(question, "answer"):
         return redirect("public_questions")
 
     if request.method == "POST":
         form = PublicAnswerForm(request.POST)
         if form.is_valid():
-            answer = form.save(commit=False)
-            answer.question = question
-            answer.lawyer = request.user
-            answer.save()
-            messages.success(request, "Your answer has been submitted.")
+            ans = form.save(commit=False)
+            ans.question = question
+            ans.lawyer = request.user
+            ans.save()
+            messages.success(request, "Answer submitted.")
             return redirect("public_questions")
     else:
         form = PublicAnswerForm()
 
+    # Uses top-level templates/answer_public_question.html
     return render(
         request,
-        "public/answer_public_question.html",
+        "answer_public_question.html",
         {"form": form, "question": question},
     )
 
 
 def public_questions(request):
     """
-    Public page.
-    - Shows ONLY questions that have an answer.
-    - Does NOT display customer or lawyer identities.
+    Public page, no login required:
+    show only questions that have answers.
     """
     questions = (
         PublicQuestion.objects.filter(answer__isnull=False)
@@ -278,4 +225,5 @@ def public_questions(request):
         .order_by("-answer__created_at")
     )
 
-    return render(request, "public/public_questions.html", {"questions": questions})
+    # Uses top-level templates/public_questions.html
+    return render(request, "public_questions.html", {"questions": questions})
