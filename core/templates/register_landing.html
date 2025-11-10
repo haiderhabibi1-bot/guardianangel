@@ -2,11 +2,12 @@
 {% block title %}Get Started — Guardian Angel{% endblock %}
 
 {% block content %}
-<h1>Get Started</h1>
-<p>Tell us how you’d like to use Guardian Angel.</p>
-
-<ul>
-    <li><a href="{% url 'register_customer' %}">I'm looking for legal answers</a></li>
-    <li><a href="{% url 'register_lawyer' %}">I'm a lawyer offering services</a></li>
-</ul>
+<div class="ga-card">
+    <div class="ga-card-title">Get Started</div>
+    <p class="ga-card-subtitle">Tell us how you’d like to use Guardian Angel.</p>
+    <ul>
+        <li><a href="{% url 'register_customer' %}">I'm looking for legal answers</a></li>
+        <li><a href="{% url 'register_lawyer' %}">I'm a lawyer offering services</a></li>
+    </ul>
+</div>
 {% endblock %}
