@@ -5,71 +5,79 @@
     <meta charset="UTF-8">
     <title>{% block title %}Guardian Angel{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Keep using your existing stylesheet -->
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
     {% block extra_head %}{% endblock %}
 </head>
 <body>
+<div class="ga-page-wrapper">
 
-<header class="site-header">
-    <div class="site-header-inner">
-        <!-- Logo: blue circle + text (old feel) -->
-        <a href="{% url 'home' %}" class="brand">
-            <span class="brand-icon">GA</span>
-            <span class="brand-text">Guardian Angel</span>
-        </a>
+    <!-- Navbar -->
+    <header class="ga-navbar">
+        <div class="ga-nav-inner">
 
-        <!-- Navigation -->
-        <nav class="nav-links">
-            <a href="{% url 'home' %}">Ask a Lawyer</a>
-            <a href="{% url 'public_questions' %}">Public Questions</a>
-            <a href="{% url 'lawyers_list' %}">Find a Lawyer</a>
-            <a href"{% url 'pricing' %}">Pricing</a>
-        </nav>
+            <!-- Logo with blue circle -->
+            <a href="{% url 'home' %}" class="ga-logo">
+                <div class="ga-logo-icon">GA</div>
+                <div class="ga-logo-text">
+                    <span class="ga-logo-title">GUARDIAN ANGEL</span>
+                    <span class="ga-logo-subtitle">Ask a lawyer with confidence</span>
+                </div>
+            </a>
 
-        <!-- Auth / Register -->
-        <div class="nav-actions">
-            {% if user.is_authenticated %}
-                <a href="/profile/" class="nav-link">Dashboard</a>
-                <a href="/logout/" class="nav-link">Logout</a>
-            {% else %}
-                <a href="/login/" class="nav-link">Login</a>
-                <a href="{% url 'register' %}" class="btn-primary">Get Started</a>
-            {% endif %}
+            <!-- Main nav links -->
+            <nav class="ga-nav-links">
+                <a href="{% url 'home' %}">Ask a Lawyer</a>
+                <a href="{% url 'public_questions' %}">Public Questions</a>
+                <a href="{% url 'lawyers_list' %}">Find a Lawyer</a>
+                <a href="{% url 'pricing' %}">Pricing</a>
+            </nav>
+
+            <!-- Auth buttons -->
+            <div class="ga-nav-actions">
+                {% if user.is_authenticated %}
+                    <a href="/profile/" class="ga-btn ga-btn-ghost">Dashboard</a>
+                    <a href="{% url 'logout' %}" class="ga-btn ga-btn-outline">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="ga-btn ga-btn-ghost">Login</a>
+                    <a href="{% url 'register' %}" class="ga-btn ga-btn-primary">Get Started</a>
+                {% endif %}
+            </div>
         </div>
-    </div>
-</header>
+    </header>
 
-<main class="page-main">
-    {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-                <div class="message {{ message.tags }}">{{ message }}</div>
-            {% endfor %}
+    <!-- Main content -->
+    <main class="ga-main">
+        {% if messages %}
+            <div class="ga-messages">
+                {% for message in messages %}
+                    <div class="ga-message ga-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="ga-footer">
+        <div class="ga-footer-inner">
+            <div class="ga-logo-mini">GA</div>
+            <p>
+                Guardian Angel connects you with licensed lawyers for clear, reliable answers.
+                Not a law firm — no lawyer-client relationship is created until you engage a lawyer directly.
+            </p>
+            <div class="ga-footer-links">
+                <a href="/terms/">Terms</a>
+                <a href="/privacy/">Privacy</a>
+                <a href="/contact/">Contact</a>
+            </div>
         </div>
-    {% endif %}
-
-    {% block content %}{% endblock %}
-</main>
-
-<footer class="site-footer">
-    <div class="site-footer-inner">
-        <div class="footer-brand">GA</div>
-        <div class="footer-text">
-            Guardian Angel connects you with licensed lawyers for clear, reliable answers.
-            Not a law firm — no lawyer-client relationship is created until you engage a lawyer directly.
+        <div class="ga-footer-bottom">
+            © Guardian Angel. All rights reserved.
         </div>
-        <div class="footer-links">
-            <a href="/terms/">Terms</a>
-            <a href="/privacy/">Privacy</a>
-            <a href="/contact/">Contact</a>
-        </div>
-    </div>
-    <div class="footer-copy">
-        © Guardian Angel. All rights reserved.
-    </div>
-</footer>
+    </footer>
 
+</div>
 {% block extra_js %}{% endblock %}
 </body>
 </html>
