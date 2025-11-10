@@ -1,5 +1,5 @@
 /* ======================================
-   GUARDIAN ANGEL - STYLE.CSS (FINAL STABLE)
+   GUARDIAN ANGEL - STYLE.CSS (FINAL + TITLES ALL PAGES)
    ====================================== */
 
 /* RESET */
@@ -42,41 +42,46 @@ body {
     gap: 24px;
 }
 
-/* Center inner block without changing layout */
+/* Keep inner content visually centered */
 .content > * {
     max-width: 720px;
     margin-left: auto;
     margin-right: auto;
 }
 
-/* ======================================
-   PAGE TITLES (ALL MAIN PAGES)
-   - We style the FIRST heading inside the content/card.
-   - This catches About, Public Questions, Pricing, Login,
-     Get Started, Client Account, Lawyer Registration, etc.
-   ====================================== */
-.content h1:first-of-type,
-.content h2:first-of-type,
-.content h3:first-of-type {
+/* =======================================================
+   PAGE TITLES (APPLIES TO ALL MAIN TITLES INSIDE PAGES)
+   - About Us / À propos
+   - Public Questions
+   - Pricing
+   - Login
+   - Get Started
+   - Create your client account
+   - Lawyer registration
+   ======================================================= */
+
+.content h1,
+.content h2,
+.content .page-title,
+.content .section-title,
+.content .auth-title,
+.content .pricing-title,
+.content .questions-title,
+.content .register-title,
+.content .login-title {
     text-align: center;
     font-weight: 700;
     text-decoration: underline;
     text-decoration-thickness: 2px;
     text-underline-offset: 6px;
     color: #0d47a1;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
-/* Sub-headings (below main title) */
-.content h3:not(:first-of-type),
-.content h4,
-.content h5,
-.content h6 {
+/* Sub-headings (kept clean) */
+.content h3 {
     color: #0d47a1;
     margin-bottom: 6px;
-    text-align: left;
-    text-decoration: none;
-    font-weight: 600;
 }
 
 /* TEXT */
@@ -328,14 +333,25 @@ select:focus {
         max-width: 100%;
     }
 
-    .content h1:first-of-type,
-    .content h2:first-of-type,
-    .content h3:first-of-type {
+    .content h1,
+    .content h2,
+    .content .page-title,
+    .content .section-title,
+    .content .auth-title,
+    .content .pricing-title,
+    .content .questions-title,
+    .content .register-title,
+    .content .login-title {
         font-size: 1.3rem;
-        margin-bottom: 6px;
+        margin-bottom: 4px;
+        text-align: center;
+        font-weight: 700;
+        text-decoration: underline;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 6px;
     }
 
-    .content h3:not(:first-of-type) {
+    .content h3 {
         font-size: 1.05rem;
     }
 
