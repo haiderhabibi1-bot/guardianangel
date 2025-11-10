@@ -42,7 +42,7 @@ body {
     gap: 24px;
 }
 
-/* Make main titles centered; text inside sections can stay clean */
+/* TITLES */
 .content h1,
 .content h2 {
     text-align: center;
@@ -60,7 +60,7 @@ body {
     line-height: 1.6;
 }
 
-/* NAVBAR */
+/* NAVBAR (DESKTOP) */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -96,7 +96,7 @@ body {
     letter-spacing: 0.4px;
 }
 
-/* NAV LINKS (unchanged functionality, modern look) */
+/* NAV LINKS (same names & URLs, just styled) */
 .nav-links {
     display: flex;
     align-items: center;
@@ -134,7 +134,7 @@ body {
     width: 100%;
 }
 
-/* GENERIC BUTTONS */
+/* BUTTONS */
 button,
 .btn {
     background: linear-gradient(135deg, #1976d2, #0d47a1);
@@ -160,13 +160,13 @@ button:hover,
     box-shadow: 0 4px 12px rgba(21, 101, 192, 0.35);
 }
 
-/* FORMS (login, register, ask, etc. auto-center) */
+/* FORMS (login, register, etc.) */
 form {
     display: flex;
     flex-direction: column;
     gap: 14px;
     max-width: 420px;
-    margin: 0 auto; /* centers all forms inside the content card */
+    margin: 0 auto; /* centers forms inside the content card */
 }
 
 label {
@@ -235,36 +235,103 @@ select:focus {
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
 }
 
-/* RESPONSIVE */
+/* ======================================
+   MOBILE ONLY (DESKTOP UNCHANGED)
+   ====================================== */
 @media (max-width: 768px) {
+    /* Navbar stacks neatly, stays readable */
     .navbar {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-        padding: 12px 20px;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 18px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
     }
 
-    .nav-links {
-        flex-wrap: wrap;
-        justify-content: flex-start;
-        gap: 12px;
-    }
-
-    .page-wrapper {
-        padding: 20px 10px 24px;
-    }
-
-    .content {
-        padding: 24px 18px;
-        margin-top: 16px;
+    .logo-container {
+        justify-content: center;
     }
 
     .logo {
         height: 42px;
         width: 42px;
+        margin-right: 8px;
     }
 
     .site-title {
         font-size: 1.25rem;
+    }
+
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .nav-links a {
+        font-size: 0.9rem;
+        padding-bottom: 2px;
+    }
+
+    /* Centered card, full width on small screens */
+    .page-wrapper {
+        padding: 16px 10px 20px;
+        align-items: stretch;
+    }
+
+    .content {
+        margin-top: 10px;
+        padding: 22px 16px;
+        width: 100%;
+        max-width: 100%;
+        border-radius: 18px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        gap: 18px;
+    }
+
+    .content h1,
+    .content h2 {
+        font-size: 1.3rem;
+        margin-bottom: 4px;
+    }
+
+    .content h3 {
+        font-size: 1.05rem;
+    }
+
+    .content p {
+        font-size: 0.9rem;
+    }
+
+    /* Forms stay centered & easy to use */
+    form {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    input,
+    textarea,
+    select {
+        font-size: 0.9rem;
+    }
+
+    .question-card {
+        padding: 14px 14px;
+        margin-bottom: 10px;
+    }
+
+    .question-card h3 {
+        font-size: 0.98rem;
+    }
+
+    .question-card p {
+        font-size: 0.86rem;
+    }
+
+    .footer {
+        font-size: 0.8rem;
+        padding: 10px;
+        box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.04);
     }
 }
