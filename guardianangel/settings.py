@@ -6,21 +6,31 @@ from pathlib import Path
 # ========================================
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Secret key and debug from environment (Render)
+# Secret key and debug from environment
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 # ========================================
 # ALLOWED HOSTS
 # ========================================
-# Includes Render, localhost, and your custom domain
-ALLOWED_HOSTS = [
-    ".onrender.com",
-    "localhost",
-    "127.0.0.1",
-    "guardianangelconsulting.ca",
-    "www.guardianangelconsulting.ca",
-]
+# If ALLOWED_HOSTS env variable exists, use it (comma-separated).
+# Otherwise, use the stable default list.
+env_allowed_hosts = os.environ.get("ALLOWED_HOSTS")
+
+if env_allowed_hosts:
+    ALLOWED_HOSTS = [
+        host.strip()
+        for host in env_allowed_hosts.split(",")
+        if host.strip()
+    ]
+else:
+    ALLOWED_HOSTS = [
+        ".onrender.com",
+        "localhost",
+        "127.0.0.1",
+        "guardianangelconsulting.ca",
+        "www.guardianangelconsulting.ca",
+    ]
 
 # ========================================
 # APPLICATIONS
@@ -40,7 +50,7 @@ INSTALLED_APPS = [
 # ========================================
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # Serve static files efficiently
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # static files
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -75,7 +85,6 @@ WSGI_APPLICATION = "guardianangel.wsgi.application"
 # ========================================
 # DATABASE
 # ========================================
-# Default: SQLite (can replace with PostgreSQL later)
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -87,14 +96,22 @@ DATABASES = {
 # PASSWORD VALIDATION
 # ========================================
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"
+    },
 ]
 
 # ========================================
-# LOCALIZATION
+# INTERNATIONALIZATION
 # ========================================
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "America/Toronto"
@@ -106,25 +123,25 @@ USE_TZ = True
 # ========================================
 STATIC_URL = "/static/"
 
-# Project-level static directory (your CSS, JS, etc.)
+# Project-level static directory (where core/css/style.css lives)
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
-# Directory for Render’s collectstatic command
+# Where collectstatic puts files on Render
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# WhiteNoise handles static file compression and caching
+# WhiteNoise for efficient static serving
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # ========================================
-# MEDIA FILES (optional, for uploads)
+# MEDIA FILES (optional)
 # ========================================
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 # ========================================
-# DEFAULTS
+# DEFAULT PRIMARY KEY FIELD
 # ========================================
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -134,6 +151,13 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "handlers": {"console": {"class": "logging.StreamHandler"}},
-    "root": {"handlers": ["console"], "level": "INFO"},
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
 }
