@@ -1,66 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Lawyer Registration — Guardian Angel{% endblock %}
 
 {% block content %}
-<div class="ga-card">
-    <div class="ga-card-title">Lawyer Registration</div>
-    <p class="ga-card-subtitle">
-        Provide your information and bar certificate. Your profile will be reviewed and activated manually.
-    </p>
+<h1>Lawyer registration</h1>
 
-    <form method="post" enctype="multipart/form-data" class="ga-form">
-        {% csrf_token %}
+<p>Please provide your information. Your account will be reviewed and approved before access is granted.</p>
 
-        <div class="ga-form-group">
-            <label>Username</label>
-            <input type="text" name="username" required>
-        </div>
-
-        <div class="ga-form-group">
-            <label>Email</label>
-            <input type="email" name="email" required>
-        </div>
-
-        <div class="ga-form-group">
-            <label>Password</label>
-            <input type="password" name="password1" required>
-        </div>
-
-        <div class="ga-form-group">
-            <label>Confirm Password</label>
-            <input type="password" name="password2" required>
-        </div>
-
-        <div class="ga-form-group">
-            <label>Speciality</label>
-            <input type="text" name="speciality">
-        </div>
-
-        <div class="ga-form-group">
-            <label>Years of practice</label>
-            <input type="number" name="years_of_practice" min="0">
-        </div>
-
-        <div class="ga-form-group">
-            <label>Law school</label>
-            <input type="text" name="law_school">
-        </div>
-
-        <div class="ga-form-group">
-            <label>Bar number</label>
-            <input type="text" name="bar_number">
-        </div>
-
-        <div class="ga-form-group">
-            <label>Bar membership certificate (PDF/JPG/PNG)</label>
-            <input type="file" name="bar_certificate">
-        </div>
-
-        <button type="submit" class="ga-btn ga-btn-primary">Submit for Approval</button>
-    </form>
-
-    <p class="ga-form-note">
-        Already registered? <a href="{% url 'login' %}">Log in</a>
-    </p>
-</div>
+<form method="post" class="form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Submit for approval</button>
+</form>
 {% endblock %}
