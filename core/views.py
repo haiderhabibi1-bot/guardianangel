@@ -16,6 +16,10 @@ from .forms import (
 from .models import Profile, PublicQuestion, PublicAnswer
 
 
+# =========================
+# CORE PAGES
+# =========================
+
 def home(request):
     return render(request, "home.html")
 
@@ -25,8 +29,13 @@ def pricing(request):
 
 
 def register(request):
+    # "Register" top-nav is removed from base.html, but keep this for safety
     return redirect("register_customer")
 
+
+# =========================
+# REGISTRATION
+# =========================
 
 def register_customer(request):
     if request.method == "POST":
@@ -42,12 +51,13 @@ def register_customer(request):
 
 
 def register_lawyer(request):
-    # CHANGED: include request.FILES for bar_certificate upload
     if request.method == "POST":
+        # IMPORTANT: include request.FILES for bar certificate
         form = LawyerRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save()
 
+            # Email admin for approval
             approval_email = getattr(settings, "LAWYER_APPROVAL_EMAIL", None)
             if approval_email:
                 profile = user.profile
@@ -77,6 +87,10 @@ def register_lawyer(request):
     return render(request, "register_lawyer.html", {"form": form})
 
 
+# =========================
+# PROFILES / DASHBOARDS
+# =========================
+
 @login_required
 def customer_profile(request):
     profile = request.user.profile
@@ -90,10 +104,16 @@ def lawyer_profile(request):
     profile = request.user.profile
     if not profile.is_lawyer:
         return redirect("home")
+
     if not profile.is_approved:
         return render(request, "profiles/lawyer_pending.html", {"profile": profile})
+
     return render(request, "profiles/lawyer_profile.html", {"profile": profile})
 
+
+# =========================
+# SETTINGS
+# =========================
 
 @login_required
 def customer_settings(request):
@@ -131,8 +151,13 @@ def lawyer_settings(request):
     return render(request, "profiles/lawyer_settings.html", {"form": form})
 
 
+# =========================
+# PUBLIC Q&A
+# =========================
+
 @login_required
 def ask_public_question(request):
+    # Only customers can ask (logic, not template)
     profile = request.user.profile
     if not profile.is_customer:
         return redirect("home")
@@ -156,12 +181,14 @@ def ask_public_question(request):
 
 @login_required
 def answer_public_question(request, question_id):
+    # Only approved lawyers
     profile = request.user.profile
     if not (profile.is_lawyer and profile.is_approved):
         return redirect("home")
 
     question = get_object_or_404(PublicQuestion, id=question_id)
 
+    # Prevent duplicate answers
     if hasattr(question, "answer"):
         return redirect("public_questions")
 
@@ -185,9 +212,12 @@ def answer_public_question(request, question_id):
 
 
 def public_questions(request):
+    # Safe: if no questions/answers exist, returns empty queryset (no error)
     questions = (
         PublicQuestion.objects.filter(answer__isnull=False)
         .select_related("answer")
         .order_by("-answer__created_at")
     )
+
+    # IMPORTANT: template path matches your actual file
     return render(request, "public_questions.html", {"questions": questions})
