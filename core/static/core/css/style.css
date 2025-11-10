@@ -1,420 +1,225 @@
-/* ================================
-   Guardian Angel - Core Styles
-   ================================ */
+/* ============================
+   GUARDIAN ANGEL - STYLE.CSS
+   ============================ */
 
-/* Reset & base */
-*,
-*::before,
-*::after {
+/* ---------- GLOBAL ---------- */
+* {
     box-sizing: border-box;
-}
-
-html,
-body {
     margin: 0;
     padding: 0;
 }
 
 body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, -sans-serif;
-    color: #111827;
-    background:
-        radial-gradient(circle at top left, rgba(111, 177, 252, 0.23), transparent 60%),
-        radial-gradient(circle at bottom right, rgba(155, 81, 224, 0.23), transparent 60%),
-        #dbeafe;
-    min-height: 100vh;
-}
-
-/* Layout wrapper */
-.ga-page-wrapper {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #b3e5fc, #e1f5fe);
+    color: #2f2f2f;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
-/* ================================
-   Header / Navbar
-   ================================ */
-
-.ga-navbar {
+/* ---------- NAVBAR ---------- */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 15px 40px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     position: sticky;
     top: 0;
-    z-index: 20;
-    background: #111827;
-    color: #e5e7eb;
-    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.4);
+    z-index: 100;
+    backdrop-filter: blur(6px);
 }
 
-.ga-nav-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 14px 24px;
+.logo-container {
     display: flex;
     align-items: center;
-    gap: 32px;
 }
 
-/* Logo */
-
-.ga-logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
+.logo {
+    height: 52px;
+    width: 52px;
+    border-radius: 50%;
+    margin-right: 12px;
+    object-fit: cover;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
 }
 
-.ga-logo-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 999px;
-    background: linear-gradient(145deg, #e5e7ff, #6366f1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.site-title {
+    font-size: 1.6rem;
     font-weight: 700;
-    color: #111827;
-    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.5);
-    font-size: 14px;
+    color: #0d47a1;
+    letter-spacing: 0.5px;
 }
 
-.ga-logo-text {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.1;
-}
-
-.ga-logo-title {
-    font-size: 16px;
-    letter-spacing: 0.12em;
-    font-weight: 700;
-    color: #f9fafb;
-    text-transform: uppercase;
-}
-
-.ga-logo-subtitle {
-    font-size: 11px;
-    color: #9ca3af;
-}
-
-/* Nav links */
-
-.ga-nav-links {
+/* ---------- NAV LINKS ---------- */
+.nav-links {
     display: flex;
     align-items: center;
-    gap: 20px;
-    font-size: 14px;
-    margin-left: 20px;
-    flex: 1;
 }
 
-.ga-nav-links a {
-    color: #d1d5db;
+.nav-links a {
     text-decoration: none;
-    padding-bottom: 3px;
-    border-bottom: 2px solid transparent;
-    transition: color 0.18s ease, border-color 0.18s ease;
-}
-
-.ga-nav-links a:hover {
-    color: #ffffff;
-    border-color: #6366f1;
-}
-
-/* Auth actions */
-
-.ga-nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* Buttons / Links */
-
-.ga-btn,
-.ga-btn-primary,
-.ga-btn-outline,
-.ga-btn-ghost,
-.ga-link {
-    font-size: 13px;
-    padding: 7px 14px;
-    border-radius: 999px;
-    border: none;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.18s ease;
-}
-
-.ga-link {
-    background: transparent;
-    color: #e5e7eb;
-}
-
-.ga-link:hover {
-    color: #ffffff;
-}
-
-.ga-btn-primary {
-    background: linear-gradient(135deg, #6366f1, #a855f7);
-    color: #ffffff;
-    font-weight: 600;
-    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.6);
-}
-
-.ga-btn-primary:hover {
-    box-shadow: 0 8px 22px rgba(79, 70, 229, 0.7);
-    transform: translateY(-1px);
-}
-
-.ga-btn-outline {
-    padding: 6px 12px;
-    border: 1px solid #9ca3af;
-    color: #e5e7eb;
-    background: transparent;
-}
-
-.ga-btn-outline:hover {
-    border-color: #ffffff;
-    color: #ffffff;
-}
-
-.ga-btn-ghost {
-    padding: 6px 10px;
-    color: #9ca3af;
-    background: transparent;
-}
-
-.ga-btn-ghost:hover {
-    color: #ffffff;
-}
-
-/* ================================
-   Main content wrapper
-   ================================ */
-
-.ga-main {
-    flex: 1;
-    max-width: 1200px;
-    margin: 40px auto 32px;
-    padding: 0 24px;
-}
-
-/* Flash messages */
-.ga-messages {
-    margin-bottom: 16px;
-}
-
-.ga-message {
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-size: 13px;
-    margin-bottom: 8px;
-    background: rgba(15, 23, 42, 0.85);
-    color: #e5e7eb;
-}
-
-/* ================================
-   Card layout
-   ================================ */
-
-.ga-card {
-    background: rgba(249, 250, 251, 0.98);
-    border-radius: 26px;
-    padding: 32px 32px 26px;
-    margin-bottom: 28px;
-    box-shadow:
-        0 18px 55px rgba(15, 23, 42, 0.22),
-        0 0 0 1px rgba(148, 163, 253, 0.06);
-}
-
-.ga-card-title {
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 4px;
-    color: #111827;
-}
-
-.ga-card-subtitle {
-    font-size: 14px;
-    color: #6b7280;
-    margin-bottom: 18px;
-}
-
-.ga-card p {
-    font-size: 14px;
-    line-height: 1.6;
-    color: #111827;
-}
-
-/* ================================
-   Forms
-   ================================ */
-
-.ga-form {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    margin-top: 6px;
-}
-
-.ga-form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 13px;
-}
-
-.ga-form-group label {
-    color: #374151;
+    margin-left: 25px;
+    color: #0d47a1;
     font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
 }
 
-.ga-form-group input,
-.ga-form-group textarea,
-.ga-form select {
-    padding: 8px 10px;
+.nav-links a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 0%;
+    height: 2px;
+    background: #0d47a1;
+    transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+/* ---------- MAIN CONTENT ---------- */
+.content {
+    flex: 1;
+    width: 90%;
+    max-width: 900px;
+    margin: 50px auto;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(4px);
+}
+
+/* Headings */
+h1, h2, h3 {
+    color: #0d47a1;
+    margin-bottom: 15px;
+}
+
+/* Paragraphs */
+p {
+    color: #333;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+/* ---------- BUTTONS ---------- */
+button, .btn {
+    background: linear-gradient(135deg, #1976d2, #0d47a1);
+    color: white;
+    border: none;
     border-radius: 10px;
-    border: 1px solid #d1d5db;
-    font-size: 13px;
-    outline: none;
-    transition: all 0.16s ease;
-    background-color: #ffffff;
-}
-
-.ga-form-group textarea {
-    min-height: 80px;
-    resize: vertical;
-}
-
-.ga-form-group input:focus,
-.ga-form-group textarea:focus,
-.ga-form select:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.16);
-}
-
-.ga-form-note {
-    margin-top: 6px;
-    font-size: 12px;
-    color: #6b7280;
-}
-
-.ga-form-note a {
-    color: #4f46e5;
+    padding: 10px 22px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
     text-decoration: none;
+    display: inline-block;
 }
 
-.ga-form-note a:hover {
-    text-decoration: underline;
+button:hover, .btn:hover {
+    background: linear-gradient(135deg, #2196f3, #1565c0);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(21, 101, 192, 0.3);
 }
 
-/* ================================
-   Public Questions List
-   ================================ */
-
-.ga-questions-list {
-    margin-top: 18px;
-    padding-left: 0;
-    list-style: none;
+/* ---------- FORMS ---------- */
+form {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
+    margin-top: 15px;
 }
 
-.ga-question-item {
-    padding: 10px 12px;
-    border-radius: 12px;
-    background-color: #f3f4ff;
-    font-size: 13px;
-    color: #111827;
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #90caf9;
+    font-size: 1rem;
+    width: 100%;
+    outline: none;
+    transition: border 0.3s ease;
 }
 
-/* ================================
-   Footer
-   ================================ */
-
-.ga-footer {
-    background: #111827;
-    color: #9ca3af;
-    padding: 24px 0 16px;
-    margin-top: auto;
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: #1565c0;
 }
 
-.ga-footer-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 18px;
-    font-size: 11px;
+/* ---------- QUESTION CARDS ---------- */
+.question-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease;
 }
 
-.ga-logo-mini {
-    width: 28px;
-    height: 28px;
-    border-radius: 999px;
-    background: #6366f1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #f9fafb;
-    font-weight: 700;
-    font-size: 11px;
+.question-card:hover {
+    transform: translateY(-3px);
 }
 
-.ga-footer-links {
-    display: flex;
-    gap: 14px;
+.question-card h3 {
+    color: #0d47a1;
+    margin-bottom: 10px;
 }
 
-.ga-footer-links a {
-    color: #9ca3af;
-    text-decoration: none;
+.question-card p {
+    font-size: 0.95rem;
 }
 
-.ga-footer-links a:hover {
-    color: #e5e7eb;
+/* ---------- FOOTER ---------- */
+.footer {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    font-size: 0.9rem;
+    padding: 18px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
 }
 
-.ga-footer-bottom {
-    max-width: 1200px;
-    margin: 4px auto 0;
-    padding: 0 24px;
-    font-size: 10px;
-    color: #6b7280;
-    text-align: left;
-}
-
-/* ================================
-   Responsive tweaks
-   ================================ */
-
+/* ---------- RESPONSIVE ---------- */
 @media (max-width: 768px) {
-    .ga-nav-inner {
+    .navbar {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .nav-links {
         flex-wrap: wrap;
-        gap: 10px;
+        justify-content: center;
+        margin-top: 10px;
     }
 
-    .ga-nav-links {
-        flex-wrap: wrap;
-        margin-left: 0;
-        font-size: 13px;
+    .nav-links a {
+        margin: 8px 10px;
     }
 
-    .ga-nav-actions {
-        margin-left: auto;
+    .content {
+        width: 95%;
+        padding: 25px;
     }
 
-    .ga-main {
-        margin-top: 24px;
+    .logo {
+        height: 45px;
+        width: 45px;
     }
 
-    .ga-card {
-        padding: 22px 18px 18px;
-        border-radius: 18px;
+    .site-title {
+        font-size: 1.3rem;
     }
 }
