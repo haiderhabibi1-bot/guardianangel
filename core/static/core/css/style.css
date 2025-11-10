@@ -1,5 +1,5 @@
 /* ======================================
-   GUARDIAN ANGEL - STYLE.CSS (FINAL)
+   GUARDIAN ANGEL - STYLE.CSS (FINAL UI)
    ====================================== */
 
 /* RESET */
@@ -19,18 +19,59 @@ body {
     flex-direction: column;
 }
 
+/* PAGE WRAPPER */
+.page-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 15px 40px;
+}
+
+/* MAIN CARD */
+.content {
+    width: 100%;
+    max-width: 960px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 24px;
+    padding: 40px 32px;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(6px);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Make main titles centered; text inside sections can stay clean */
+.content h1,
+.content h2 {
+    text-align: center;
+    color: #0d47a1;
+    margin-bottom: 8px;
+}
+
+.content h3 {
+    color: #0d47a1;
+    margin-bottom: 6px;
+}
+
+.content p {
+    color: #333;
+    line-height: 1.6;
+}
+
 /* NAVBAR */
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(255, 255, 255, 0.92);
-    padding: 15px 40px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.96);
+    padding: 14px 40px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     position: sticky;
     top: 0;
     z-index: 100;
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(8px);
 }
 
 /* LOGO + TITLE */
@@ -40,163 +81,190 @@ body {
 }
 
 .logo {
-    height: 52px;
-    width: 52px;
+    height: 48px;
+    width: 48px;
     border-radius: 50%;
-    margin-right: 14px;
+    margin-right: 12px;
     object-fit: cover;
     box-shadow: 0 0 10px rgba(13, 71, 161, 0.5);
 }
 
 .site-title {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: #0d47a1;
     letter-spacing: 0.4px;
 }
 
-/* NAV LINKS */
+/* NAV LINKS (unchanged functionality, modern look) */
 .nav-links {
     display: flex;
     align-items: center;
+    gap: 18px;
 }
 
 .nav-links a {
     text-decoration: none;
-    margin-left: 25px;
     color: #0d47a1;
     font-weight: 500;
+    font-size: 0.98rem;
     position: relative;
-    transition: color 0.3s ease;
+    padding-bottom: 4px;
+    transition: color 0.25s ease, transform 0.2s ease;
 }
 
 .nav-links a::after {
     content: "";
     position: absolute;
     left: 0;
-    bottom: -4px;
+    bottom: 0;
     width: 0%;
     height: 2px;
     background: #0d47a1;
-    transition: width 0.3s ease;
+    border-radius: 999px;
+    transition: width 0.25s ease;
 }
 
 .nav-links a:hover {
     color: #1565c0;
+    transform: translateY(-1px);
 }
 
 .nav-links a:hover::after {
     width: 100%;
 }
 
-/* MAIN CONTENT WRAPPER */
-.content {
-    flex: 1;
-    width: 90%;
-    max-width: 900px;
-    margin: 60px auto;
-    background: rgba(255, 255, 255, 0.85);
-    border-radius: 20px;
-    padding: 40px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(4px);
-    text-align: left;
-}
-
-/* TYPOGRAPHY */
-h1, h2, h3 {
-    color: #0d47a1;
-    margin-bottom: 15px;
-}
-
-p {
-    color: #333;
-    line-height: 1.6;
-    margin-bottom: 15px;
-}
-
-/* BUTTONS */
+/* GENERIC BUTTONS */
 button,
 .btn {
     background: linear-gradient(135deg, #1976d2, #0d47a1);
     color: #fff;
     border: none;
-    border-radius: 10px;
+    border-radius: 999px;
     padding: 10px 22px;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.98rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
     text-decoration: none;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
 button:hover,
 .btn:hover {
     background: linear-gradient(135deg, #2196f3, #1565c0);
     transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(21, 101, 192, 0.3);
+    box-shadow: 0 4px 12px rgba(21, 101, 192, 0.35);
 }
 
-/* QUESTION CARDS */
+/* FORMS (login, register, ask, etc. auto-center) */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 420px;
+    margin: 0 auto; /* centers all forms inside the content card */
+}
+
+label {
+    font-size: 0.9rem;
+    color: #0d47a1;
+    font-weight: 500;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid #bbdefb;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.2s ease;
+    width: 100%;
+    background: #f9fcff;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: #1976d2;
+    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.12);
+    background: #ffffff;
+}
+
+/* PUBLIC QUESTIONS / LISTS */
 .question-card {
     background: #ffffff;
-    border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    transition: transform 0.2s ease;
+    border-radius: 18px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .question-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.09);
 }
 
 .question-card h3 {
     color: #0d47a1;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
+    font-size: 1.02rem;
+}
+
+.question-card p {
+    font-size: 0.92rem;
+    color: #444;
 }
 
 /* FOOTER */
 .footer {
     text-align: center;
-    background: rgba(255, 255, 255, 0.9);
-    color: #333;
-    font-size: 0.9rem;
-    padding: 18px;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.96);
+    color: #555;
+    font-size: 0.85rem;
+    padding: 14px;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
 }
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
     .navbar {
         flex-direction: column;
-        text-align: center;
-        padding: 20px;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 12px 20px;
     }
 
     .nav-links {
         flex-wrap: wrap;
-        justify-content: center;
-        margin-top: 10px;
+        justify-content: flex-start;
+        gap: 12px;
     }
 
-    .nav-links a {
-        margin: 8px 10px;
+    .page-wrapper {
+        padding: 20px 10px 24px;
     }
 
     .content {
-        width: 95%;
-        padding: 25px;
-        margin-top: 30px;
+        padding: 24px 18px;
+        margin-top: 16px;
     }
 
     .logo {
-        height: 45px;
-        width: 45px;
+        height: 42px;
+        width: 42px;
     }
 
     .site-title {
-        font-size: 1.3rem;
+        font-size: 1.25rem;
     }
 }
