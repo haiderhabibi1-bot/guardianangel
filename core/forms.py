@@ -10,10 +10,6 @@ from .models import Profile, BillingProfile, PublicQuestion, PublicAnswer
 # =======================================================
 
 class CustomerRegistrationForm(UserCreationForm):
-    """
-    Customer registration form.
-    Customers are auto-approved and immediately gain access to their profile.
-    """
     email = forms.EmailField(required=True)
 
     class Meta:
@@ -23,24 +19,24 @@ class CustomerRegistrationForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=commit)
         if commit:
-            # Create associated Profile & BillingProfile
             Profile.objects.create(
                 user=user,
                 role=Profile.ROLE_CUSTOMER,
-                is_approved=True,  # customers are instantly approved
+                is_approved=True,
             )
             BillingProfile.objects.create(user=user)
         return user
 
 
 class LawyerRegistrationForm(UserCreationForm):
-    """
-    Lawyer registration form.
-    Lawyers require manual approval before access to profile.
-    """
     email = forms.EmailField(required=True)
     full_name = forms.CharField(label="Full Name", required=True)
     bar_number = forms.CharField(label="Bar Number", required=False)
+    # NEW: upload field
+    bar_certificate = forms.FileField(
+        label="Bar Certificate (PDF or image)",
+        required=False,
+    )
 
     class Meta:
         model = User
@@ -49,14 +45,19 @@ class LawyerRegistrationForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=commit)
         if commit:
-            # Create Profile and BillingProfile (not approved yet)
-            Profile.objects.create(
+            profile = Profile.objects.create(
                 user=user,
                 role=Profile.ROLE_LAWYER,
                 is_approved=False,
                 full_name=self.cleaned_data["full_name"],
                 bar_number=self.cleaned_data.get("bar_number", ""),
             )
+            # Save certificate file if provided
+            cert = self.cleaned_data.get("bar_certificate")
+            if cert:
+                profile.bar_certificate = cert
+                profile.save()
+
             BillingProfile.objects.create(user=user)
         return user
 
@@ -66,10 +67,6 @@ class LawyerRegistrationForm(UserCreationForm):
 # =======================================================
 
 class CustomerSettingsForm(forms.Form):
-    """
-    Customers can edit username, email, and billing method.
-    They remain anonymous — no real names used.
-    """
     username = forms.CharField(max_length=150)
     email = forms.EmailField()
     billing_method = forms.CharField(max_length=255, required=False)
@@ -78,7 +75,6 @@ class CustomerSettingsForm(forms.Form):
         user = kwargs.pop("user")
         super().__init__(*args, **kwargs)
         self.user = user
-        # Initialize fields with current data
         self.fields["username"].initial = user.username
         self.fields["email"].initial = user.email
         self.fields["billing_method"].initial = getattr(
@@ -86,7 +82,6 @@ class CustomerSettingsForm(forms.Form):
         )
 
     def save(self):
-        """Save updated customer settings."""
         self.user.username = self.cleaned_data["username"]
         self.user.email = self.cleaned_data["email"]
         self.user.save()
@@ -97,10 +92,6 @@ class CustomerSettingsForm(forms.Form):
 
 
 class LawyerSettingsForm(forms.Form):
-    """
-    Lawyers can only edit username, email, and billing method.
-    Their professional name and bar info are locked.
-    """
     username = forms.CharField(max_length=150)
     email = forms.EmailField()
     billing_method = forms.CharField(max_length=255, required=False)
@@ -109,7 +100,6 @@ class LawyerSettingsForm(forms.Form):
         user = kwargs.pop("user")
         super().__init__(*args, **kwargs)
         self.user = user
-        # Initialize fields with current data
         self.fields["username"].initial = user.username
         self.fields["email"].initial = user.email
         self.fields["billing_method"].initial = getattr(
@@ -117,7 +107,6 @@ class LawyerSettingsForm(forms.Form):
         )
 
     def save(self):
-        """Save updated lawyer settings."""
         self.user.username = self.cleaned_data["username"]
         self.user.email = self.cleaned_data["email"]
         self.user.save()
@@ -132,10 +121,6 @@ class LawyerSettingsForm(forms.Form):
 # =======================================================
 
 class PublicQuestionForm(forms.ModelForm):
-    """
-    Customers can post anonymous public questions.
-    Displayed only once answered by a lawyer.
-    """
     class Meta:
         model = PublicQuestion
         fields = ["question_text"]
@@ -151,9 +136,6 @@ class PublicQuestionForm(forms.ModelForm):
 
 
 class PublicAnswerForm(forms.ModelForm):
-    """
-    Approved lawyers can answer questions.
-    """
     class Meta:
         model = PublicAnswer
         fields = ["answer_text"]
