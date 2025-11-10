@@ -11,16 +11,21 @@
 <body>
 <header class="ga-header">
     <div class="ga-header-inner">
+        <!-- Logo -->
         <a href="{% url 'home' %}" class="ga-logo">
             <span class="ga-logo-icon">GA</span>
             <span class="ga-logo-text">Guardian Angel</span>
         </a>
+
+        <!-- Main Nav -->
         <nav class="ga-nav">
             <a href="{% url 'home' %}">Ask a Lawyer</a>
             <a href="{% url 'public_questions' %}">Public Questions</a>
             <a href="{% url 'lawyers_list' %}">Find a Lawyer</a>
             <a href="{% url 'pricing' %}">Pricing</a>
         </nav>
+
+        <!-- Auth / Register -->
         <div class="ga-nav-actions">
             {% if user.is_authenticated %}
                 <a href="/profile/" class="ga-link">Dashboard</a>
@@ -41,6 +46,7 @@
             {% endfor %}
         </div>
     {% endif %}
+
     {% block content %}{% endblock %}
 </main>
 
