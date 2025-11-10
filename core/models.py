@@ -22,6 +22,13 @@ class Profile(models.Model):
     full_name = models.CharField(max_length=150, blank=True)
     bar_number = models.CharField(max_length=100, blank=True)
 
+    # NEW: bar certificate upload (backend-only, no layout change)
+    bar_certificate = models.FileField(
+        upload_to="bar_certificates/",
+        blank=True,
+        null=True,
+    )
+
     def __str__(self):
         return f"{self.user.username} ({self.role})"
 
@@ -36,7 +43,6 @@ class Profile(models.Model):
 
 class BillingProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="billing")
-    # Simple placeholder field; you can wire a real processor later
     billing_method = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
@@ -44,11 +50,6 @@ class BillingProfile(models.Model):
 
 
 class PublicQuestion(models.Model):
-    """
-    Asked by a registered customer.
-    Only displayed once answered by an approved lawyer.
-    Both sides remain anonymous publicly.
-    """
     customer = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
@@ -68,9 +69,6 @@ class PublicQuestion(models.Model):
 
 
 class PublicAnswer(models.Model):
-    """
-    Single answer per question from an approved lawyer.
-    """
     question = models.OneToOneField(
         PublicQuestion,
         on_delete=models.CASCADE,
