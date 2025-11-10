@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Answer question</h1>
+
+<div class="question-card">
+    <h3>Question</h3>
+    <p>{{ question.question_text }}</p>
+</div>
+
+<form method="post" class="form" style="margin-top:16px;">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Submit answer</button>
+</form>
+{% endblock %}
