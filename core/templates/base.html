@@ -5,44 +5,46 @@
     <meta charset="UTF-8">
     <title>{% block title %}Guardian Angel{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Keep using your existing stylesheet -->
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
     {% block extra_head %}{% endblock %}
 </head>
 <body>
-<header class="ga-header">
-    <div class="ga-header-inner">
-        <!-- Logo -->
-        <a href="{% url 'home' %}" class="ga-logo">
-            <span class="ga-logo-icon">GA</span>
-            <span class="ga-logo-text">Guardian Angel</span>
+
+<header class="site-header">
+    <div class="site-header-inner">
+        <!-- Logo: blue circle + text (old feel) -->
+        <a href="{% url 'home' %}" class="brand">
+            <span class="brand-icon">GA</span>
+            <span class="brand-text">Guardian Angel</span>
         </a>
 
-        <!-- Main Nav -->
-        <nav class="ga-nav">
+        <!-- Navigation -->
+        <nav class="nav-links">
             <a href="{% url 'home' %}">Ask a Lawyer</a>
             <a href="{% url 'public_questions' %}">Public Questions</a>
             <a href="{% url 'lawyers_list' %}">Find a Lawyer</a>
-            <a href="{% url 'pricing' %}">Pricing</a>
+            <a href"{% url 'pricing' %}">Pricing</a>
         </nav>
 
         <!-- Auth / Register -->
-        <div class="ga-nav-actions">
+        <div class="nav-actions">
             {% if user.is_authenticated %}
-                <a href="/profile/" class="ga-link">Dashboard</a>
-                <a href="/logout/" class="ga-link">Logout</a>
+                <a href="/profile/" class="nav-link">Dashboard</a>
+                <a href="/logout/" class="nav-link">Logout</a>
             {% else %}
-                <a href="/login/" class="ga-link">Login</a>
-                <a href="{% url 'register' %}" class="ga-btn-primary">Get Started</a>
+                <a href="/login/" class="nav-link">Login</a>
+                <a href="{% url 'register' %}" class="btn-primary">Get Started</a>
             {% endif %}
         </div>
     </div>
 </header>
 
-<main class="ga-main">
+<main class="page-main">
     {% if messages %}
-        <div class="ga-messages">
+        <div class="messages">
             {% for message in messages %}
-                <div class="ga-message ga-{{ message.tags }}">{{ message }}</div>
+                <div class="message {{ message.tags }}">{{ message }}</div>
             {% endfor %}
         </div>
     {% endif %}
@@ -50,20 +52,20 @@
     {% block content %}{% endblock %}
 </main>
 
-<footer class="ga-footer">
-    <div class="ga-footer-inner">
-        <div class="ga-footer-brand">GA</div>
-        <div class="ga-footer-text">
-            Guardian Angel connects you with licensed lawyers for quick, reliable answers.
-            Not a law firm — no legal relationship is formed until you hire a lawyer directly.
+<footer class="site-footer">
+    <div class="site-footer-inner">
+        <div class="footer-brand">GA</div>
+        <div class="footer-text">
+            Guardian Angel connects you with licensed lawyers for clear, reliable answers.
+            Not a law firm — no lawyer-client relationship is created until you engage a lawyer directly.
         </div>
-        <div class="ga-footer-links">
+        <div class="footer-links">
             <a href="/terms/">Terms</a>
             <a href="/privacy/">Privacy</a>
             <a href="/contact/">Contact</a>
         </div>
     </div>
-    <div class="ga-footer-copy">
+    <div class="footer-copy">
         © Guardian Angel. All rights reserved.
     </div>
 </footer>
