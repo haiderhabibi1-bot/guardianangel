@@ -1,122 +1,39 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Login | Guardian Angel{% endblock %}
+{% block title %}Login — Guardian Angel{% endblock %}
 
 {% block content %}
-<div class="form-container">
-<h2 class="form-title">Login to Your Account</h2>
+<div class="ga-card">
+    <div class="ga-card-title">Login</div>
+    <p class="ga-card-subtitle">
+        Sign in to continue with your Guardian Angel account.
+    </p>
 
-{% if messages %}
-<ul class="messages">
-{% for message in messages %}
-<li class="alert {{ message.tags }}">{{ message }}</li>
-{% endfor %}
-</ul>
-{% endif %}
+    <form method="post" class="ga-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
 
-<form method="post" class="form-box">
-{% csrf_token %}
-{{ form.non_field_errors }}
+        <div class="ga-form-group">
+            <label for="id_username">Email or Username</label>
+            {{ form.username }}
+            {{ form.username.errors }}
+        </div>
 
-<div class="form-group">
-<label for="{{ form.username.id_for_label }}">Username</label>
-{{ form.username }}
+        <div class="ga-form-group">
+            <label for="id_password">Password</label>
+            {{ form.password }}
+            {{ form.password.errors }}
+        </div>
+
+        <button type="submit" class="ga-btn ga-btn-primary">
+            Login
+        </button>
+    </form>
+
+    <p class="ga-form-note">
+        Don't have an account yet?
+        <a href="{% url 'register' %}">Get Started</a>
+    </p>
 </div>
-
-<div class="form-group">
-<label for="{{ form.password.id_for_label }}">Password</label>
-{{ form.password }}
-</div>
-
-<button type="submit" class="btn-primary">Log in</button>
-</form>
-
-<div class="extra-links">
-<p>Don't have an account?</p>
-<p>
-<a href="{% url 'register_customer' %}" class="link">Sign up as Client</a> |
-<a href="{% url 'register_lawyer' %}" class="link">Sign up as Lawyer</a>
-</p>
-</div>
-</div>
-{% endblock %}
-
-{% block extra_css %}
-<style>
-.form-container {
-max-width: 420px;
-margin: 60px auto;
-padding: 30px;
-background: white;
-border-radius: 12px;
-box-shadow: 0 0 10px rgba(0,0,0,0.15);
-text-align: center;
-}
-.form-title {
-color: #0b3c5d;
-font-weight: bold;
-margin-bottom: 25px;
-}
-.form-group {
-margin-bottom: 15px;
-text-align: left;
-}
-label {
-display: block;
-font-weight: 600;
-color: #333;
-margin-bottom: 5px;
-}
-input.form-input, input[type="text"], input[type="password"] {
-width: 100%;
-padding: 10px;
-border: 1px solid #ccc;
-border-radius: 6px;
-outline: none;
-font-size: 15px;
-transition: border-color 0.2s ease-in-out;
-}
-input:focus {
-border-color: #0b3c5d;
-}
-.btn-primary {
-width: 100%;
-padding: 10px;
-background: linear-gradient(90deg, #0b3c5d, #00aaff);
-color: white;
-border: none;
-border-radius: 6px;
-font-size: 16px;
-cursor: pointer;
-transition: background 0.3s;
-}
-.btn-primary:hover {
-background: linear-gradient(90deg, #09324c, #008ecc);
-}
-.messages {
-list-style: none;
-padding: 0;
-margin-bottom: 15px;
-}
-.messages li {
-background: #ffe5e5;
-color: #900;
-padding: 8px;
-border-radius: 6px;
-margin-bottom: 5px;
-font-size: 14px;
-}
-.extra-links {
-margin-top: 20px;
-font-size: 14px;
-}
-.link {
-color: #0077cc;
-text-decoration: none;
-}
-.link:hover {
-text-decoration: underline;
-}
-</style>
 {% endblock %}
