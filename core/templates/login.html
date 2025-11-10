@@ -1,39 +1,11 @@
 {% extends "base.html" %}
-{% load static %}
-
-{% block title %}Login — Guardian Angel{% endblock %}
 
 {% block content %}
-<div class="ga-card">
-    <div class="ga-card-title">Login</div>
-    <p class="ga-card-subtitle">
-        Sign in to continue with your Guardian Angel account.
-    </p>
+<h1>Log in</h1>
 
-    <form method="post" class="ga-form">
-        {% csrf_token %}
-        {{ form.non_field_errors }}
-
-        <div class="ga-form-group">
-            <label for="id_username">Email or Username</label>
-            {{ form.username }}
-            {{ form.username.errors }}
-        </div>
-
-        <div class="ga-form-group">
-            <label for="id_password">Password</label>
-            {{ form.password }}
-            {{ form.password.errors }}
-        </div>
-
-        <button type="submit" class="ga-btn ga-btn-primary">
-            Login
-        </button>
-    </form>
-
-    <p class="ga-form-note">
-        Don't have an account yet?
-        <a href="{% url 'register' %}">Get Started</a>
-    </p>
-</div>
+<form method="post" class="form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Login</button>
+</form>
 {% endblock %}
