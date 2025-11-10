@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Your Profile</h1>
+
+<p><strong>Username:</strong> {{ request.user.username }}</p>
+<p><strong>Email:</strong> {{ request.user.email }}</p>
+<p>Your identity remains anonymous to lawyers and the public.</p>
+
+<div class="actions" style="text-align:center; margin-top:16px;">
+    <a href="{% url 'customer_settings' %}" class="btn">Settings</a>
+    <a href="{% url 'public_questions' %}" class="btn">View Public Questions</a>
+</div>
+{% endblock %}
