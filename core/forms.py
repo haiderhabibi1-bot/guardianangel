@@ -1,148 +1,119 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import AuthenticationForm
 
-from .models import LawyerProfile, GeneralQuestion
-
-
-# ---------------------------
-# LOGIN FORM
-# ---------------------------
-class LoginForm(AuthenticationForm):
-    username = forms.CharField(
-        max_length=150,
-        widget=forms.TextInput(
-            attrs={"class": "form-input", "placeholder": "Username"}
-        ),
-    )
-    password = forms.CharField(
-        widget=forms.PasswordInput(
-            attrs={"class": "form-input", "placeholder": "Password"}
-        ),
-    )
+from .models import Profile, BillingProfile, PublicQuestion, PublicAnswer
 
 
-# ---------------------------
-# CUSTOMER REGISTRATION FORM
-# ---------------------------
-class CustomerRegistrationForm(forms.ModelForm):
-    password1 = forms.CharField(
-        label="Password",
-        widget=forms.PasswordInput(attrs={"class": "form-input"}),
-    )
-    password2 = forms.CharField(
-        label="Confirm Password",
-        widget=forms.PasswordInput(attrs={"class": "form-input"}),
-    )
+class CustomerRegistrationForm(UserCreationForm):
+    email = forms.EmailField(required=True)
 
     class Meta:
         model = User
-        fields = ["username", "email"]
-        widgets = {
-            "username": forms.TextInput(attrs={"class": "form-input"}),
-            "email": forms.EmailInput(attrs={"class": "form-input"}),
-        }
-
-    def clean(self):
-        cleaned = super().clean()
-        p1 = cleaned.get("password1")
-        p2 = cleaned.get("password2")
-        if p1 and p2 and p1 != p2:
-            self.add_error("password2", "Passwords do not match.")
-        return cleaned
+        fields = ["username", "email", "password1", "password2"]
 
     def save(self, commit=True):
-        user = super().save(commit=False)
-        user.set_password(self.cleaned_data["password1"])
+        user = super().save(commit=commit)
         if commit:
-            user.save()
+            Profile.objects.create(
+                user=user,
+                role=Profile.ROLE_CUSTOMER,
+                is_approved=True,  # customers auto-approved
+            )
+            BillingProfile.objects.create(user=user)
         return user
 
 
-# ---------------------------
-# LAWYER REGISTRATION FORM
-# ---------------------------
-class LawyerRegistrationForm(forms.ModelForm):
-    username = forms.CharField(
-        max_length=150,
-        widget=forms.TextInput(attrs={"class": "form-input"}),
-    )
-    email = forms.EmailField(
-        widget=forms.EmailInput(attrs={"class": "form-input"}),
-    )
-    password1 = forms.CharField(
-        label="Password",
-        widget=forms.PasswordInput(attrs={"class": "form-input"}),
-    )
-    password2 = forms.CharField(
-        label="Confirm Password",
-        widget=forms.PasswordInput(attrs={"class": "form-input"}),
-    )
+class LawyerRegistrationForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+    full_name = forms.CharField(required=True)
+    bar_number = forms.CharField(required=False)
 
     class Meta:
-        model = LawyerProfile
-        fields = [
-            "speciality",
-            "years_experience",
-            "law_school",
-            "bar_number",
-            "bar_certificate",
-        ]
-        widgets = {
-            "speciality": forms.TextInput(attrs={"class": "form-input"}),
-            "years_experience": forms.NumberInput(attrs={"class": "form-input"}),
-            "law_school": forms.TextInput(attrs={"class": "form-input"}),
-            "bar_number": forms.TextInput(attrs={"class": "form-input"}),
-        }
-
-    def clean(self):
-        cleaned = super().clean()
-        p1 = cleaned.get("password1")
-        p2 = cleaned.get("password2")
-        if p1 and p2 and p1 != p2:
-            self.add_error("password2", "Passwords do not match.")
-        return cleaned
+        model = User
+        fields = ["username", "email", "password1", "password2"]
 
     def save(self, commit=True):
-        # Create related User
-        username = self.cleaned_data["username"]
-        email = self.cleaned_data["email"]
-        password = self.cleaned_data["password1"]
-
-        user = User(username=username, email=email)
-        user.set_password(password)
+        user = super().save(commit=commit)
         if commit:
-            user.save()
+            profile = Profile.objects.create(
+                user=user,
+                role=Profile.ROLE_LAWYER,
+                is_approved=False,  # must be manually approved
+                full_name=self.cleaned_data["full_name"],
+                bar_number=self.cleaned_data.get("bar_number", ""),
+            )
+            BillingProfile.objects.create(user=user)
+        return user
 
-        # Create LawyerProfile
-        lawyer = LawyerProfile(
-            user=user,
-            speciality=self.cleaned_data.get("speciality", ""),
-            years_experience=self.cleaned_data.get("years_experience") or 0,
-            law_school=self.cleaned_data.get("law_school", ""),
-            bar_number=self.cleaned_data.get("bar_number", ""),
-            bar_certificate=self.cleaned_data.get("bar_certificate"),
-            approved=False,  # will be approved via admin
+
+class CustomerSettingsForm(forms.Form):
+    username = forms.CharField(max_length=150)
+    email = forms.EmailField()
+    billing_method = forms.CharField(max_length=255, required=False)
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user")
+        super().__init__(*args, **kwargs)
+        self.user = user
+        self.fields["username"].initial = user.username
+        self.fields["email"].initial = user.email
+        self.fields["billing_method"].initial = getattr(
+            getattr(user, "billing", None), "billing_method", ""
         )
-        if commit:
-            lawyer.save()
 
-        return lawyer
+    def save(self):
+        self.user.username = self.cleaned_data["username"]
+        self.user.email = self.cleaned_data["email"]
+        self.user.save()
+        billing, _ = BillingProfile.objects.get_or_create(user=self.user)
+        billing.billing_method = self.cleaned_data["billing_method"]
+        billing.save()
 
 
-# ---------------------------
-# GENERAL QUESTION FORM
-# ---------------------------
-class GeneralQuestionForm(forms.ModelForm):
+class LawyerSettingsForm(forms.Form):
+    username = forms.CharField(max_length=150)
+    email = forms.EmailField()
+    billing_method = forms.CharField(max_length=255, required=False)
+
+    # Names & fixed info are NOT editable here.
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user")
+        super().__init__(*args, **kwargs)
+        self.user = user
+        self.fields["username"].initial = user.username
+        self.fields["email"].initial = user.email
+        self.fields["billing_method"].initial = getattr(
+            getattr(user, "billing", None), "billing_method", ""
+        )
+
+    def save(self):
+        self.user.username = self.cleaned_data["username"]
+        self.user.email = self.cleaned_data["email"]
+        self.user.save()
+        billing, _ = BillingProfile.objects.get_or_create(user=self.user)
+        billing.billing_method = self.cleaned_data["billing_method"]
+        billing.save()
+
+
+class PublicQuestionForm(forms.ModelForm):
     class Meta:
-        model = GeneralQuestion
-        fields = ["text"]
+        model = PublicQuestion
+        fields = ["question_text"]
         widgets = {
-            "text": forms.Textarea(
-                attrs={
-                    "class": "form-input",
-                    "rows": 4,
-                    "placeholder": "Ask your question here...",
-                }
+            "question_text": forms.Textarea(
+                attrs={"rows": 4, "placeholder": "Ask your question anonymously..."}
+            )
+        }
+
+
+class PublicAnswerForm(forms.ModelForm):
+    class Meta:
+        model = PublicAnswer
+        fields = ["answer_text"]
+        widgets = {
+            "answer_text": forms.Textarea(
+                attrs={"rows": 4, "placeholder": "Write a clear, helpful answer."}
             )
         }
