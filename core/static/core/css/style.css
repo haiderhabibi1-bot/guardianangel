@@ -1,5 +1,5 @@
 /* ======================================
-   GUARDIAN ANGEL - STYLE.CSS (FINAL + CENTERED TITLES)
+   GUARDIAN ANGEL - STYLE.CSS (FINAL + TITLES ALL PAGES)
    ====================================== */
 
 /* RESET */
@@ -42,16 +42,33 @@ body {
     gap: 24px;
 }
 
-/* Center the inner block visually without breaking anything */
+/* Keep inner content visually centered */
 .content > * {
     max-width: 720px;
     margin-left: auto;
     margin-right: auto;
 }
 
-/* TITLES (UPDATED - centered, bold, underlined) */
+/* =======================================================
+   PAGE TITLES (APPLIES TO ALL MAIN TITLES INSIDE PAGES)
+   - About Us / À propos
+   - Public Questions
+   - Pricing
+   - Login
+   - Get Started
+   - Create your client account
+   - Lawyer registration
+   ======================================================= */
+
 .content h1,
-.content h2 {
+.content h2,
+.content .page-title,
+.content .section-title,
+.content .auth-title,
+.content .pricing-title,
+.content .questions-title,
+.content .register-title,
+.content .login-title {
     text-align: center;
     font-weight: 700;
     text-decoration: underline;
@@ -61,6 +78,7 @@ body {
     margin-bottom: 8px;
 }
 
+/* Sub-headings (kept clean) */
 .content h3 {
     color: #0d47a1;
     margin-bottom: 6px;
@@ -316,7 +334,14 @@ select:focus {
     }
 
     .content h1,
-    .content h2 {
+    .content h2,
+    .content .page-title,
+    .content .section-title,
+    .content .auth-title,
+    .content .pricing-title,
+    .content .questions-title,
+    .content .register-title,
+    .content .login-title {
         font-size: 1.3rem;
         margin-bottom: 4px;
         text-align: center;
