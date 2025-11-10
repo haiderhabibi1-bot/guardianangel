@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Public questions</h1>
+
+{% if user.is_authenticated and user.profile.is_customer %}
+<div style="text-align:center; margin-bottom:16px;">
+    <a href="{% url 'ask_public_question' %}" class="btn">Ask a question</a>
+</div>
+{% endif %}
+
+{% if questions %}
+    {% for q in questions %}
+        <div class="question-card">
+            <h3>Question</h3>
+            <p>{{ q.question_text }}</p>
+
+            <h3>Answer</h3>
+            <p>{{ q.answer.answer_text }}</p>
+
+            <p><em>Answered by a verified lawyer</em></p>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No answered questions yet.</p>
+{% endif %}
+{% endblock %}
