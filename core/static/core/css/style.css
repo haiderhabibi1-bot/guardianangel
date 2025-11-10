@@ -1,8 +1,8 @@
-/* ============================
-   GUARDIAN ANGEL - STYLE.CSS
-   ============================ */
+/* ======================================
+   GUARDIAN ANGEL - STYLE.CSS (Updated)
+   ====================================== */
 
-/* ---------- GLOBAL ---------- */
+/* GLOBAL RESET */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -18,12 +18,12 @@ body {
     flex-direction: column;
 }
 
-/* ---------- NAVBAR ---------- */
+/* NAVBAR */
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.92);
     padding: 15px 40px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     position: sticky;
@@ -32,6 +32,7 @@ body {
     backdrop-filter: blur(6px);
 }
 
+/* LOGO + TITLE */
 .logo-container {
     display: flex;
     align-items: center;
@@ -41,19 +42,19 @@ body {
     height: 52px;
     width: 52px;
     border-radius: 50%;
-    margin-right: 12px;
+    margin-right: 14px;
     object-fit: cover;
-    box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 10px rgba(13, 71, 161, 0.5);
 }
 
 .site-title {
     font-size: 1.6rem;
     font-weight: 700;
     color: #0d47a1;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
 }
 
-/* ---------- NAV LINKS ---------- */
+/* NAV LINKS */
 .nav-links {
     display: flex;
     align-items: center;
@@ -64,8 +65,8 @@ body {
     margin-left: 25px;
     color: #0d47a1;
     font-weight: 500;
-    transition: all 0.3s ease;
     position: relative;
+    transition: color 0.3s ease;
 }
 
 .nav-links a::after {
@@ -79,37 +80,41 @@ body {
     transition: width 0.3s ease;
 }
 
+.nav-links a:hover {
+    color: #1565c0;
+}
+
 .nav-links a:hover::after {
     width: 100%;
 }
 
-/* ---------- MAIN CONTENT ---------- */
+/* MAIN CONTENT */
 .content {
     flex: 1;
     width: 90%;
     max-width: 900px;
-    margin: 50px auto;
+    margin: 60px auto;
     background: rgba(255, 255, 255, 0.85);
     border-radius: 20px;
     padding: 40px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(4px);
+    text-align: left;
 }
 
-/* Headings */
+/* TEXT STYLES */
 h1, h2, h3 {
     color: #0d47a1;
     margin-bottom: 15px;
 }
 
-/* Paragraphs */
 p {
     color: #333;
     line-height: 1.6;
     margin-bottom: 15px;
 }
 
-/* ---------- BUTTONS ---------- */
+/* BUTTONS */
 button, .btn {
     background: linear-gradient(135deg, #1976d2, #0d47a1);
     color: white;
@@ -130,35 +135,7 @@ button:hover, .btn:hover {
     box-shadow: 0 4px 10px rgba(21, 101, 192, 0.3);
 }
 
-/* ---------- FORMS ---------- */
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 15px;
-}
-
-input[type="text"],
-input[type="email"],
-input[type="password"],
-textarea,
-select {
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid #90caf9;
-    font-size: 1rem;
-    width: 100%;
-    outline: none;
-    transition: border 0.3s ease;
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-    border-color: #1565c0;
-}
-
-/* ---------- QUESTION CARDS ---------- */
+/* QUESTION CARDS */
 .question-card {
     background: white;
     border-radius: 15px;
@@ -177,11 +154,7 @@ select:focus {
     margin-bottom: 10px;
 }
 
-.question-card p {
-    font-size: 0.95rem;
-}
-
-/* ---------- FOOTER ---------- */
+/* FOOTER */
 .footer {
     text-align: center;
     background: rgba(255, 255, 255, 0.9);
@@ -191,7 +164,7 @@ select:focus {
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
 }
 
-/* ---------- RESPONSIVE ---------- */
+/* RESPONSIVE */
 @media (max-width: 768px) {
     .navbar {
         flex-direction: column;
