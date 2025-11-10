@@ -3,7 +3,7 @@
 {% block content %}
 <h1>Log in</h1>
 
-<p>Welcome back! Please log in to access your account.</p>
+<p>Welcome back. Please log in to access your account.</p>
 
 <form method="post" class="form">
     {% csrf_token %}
@@ -11,8 +11,8 @@
     <button type="submit" class="btn">Login</button>
 </form>
 
-<div style="text-align:center; margin-top: 20px;">
-    <p>Don’t have an account yet?</p>
+<div style="text-align:center; margin-top:20px;">
+    <p>Don't have an account?</p>
     <a href="{% url 'register_customer' %}" class="btn">Create Customer Account</a>
     <a href="{% url 'register_lawyer' %}" class="btn">Register as Lawyer</a>
 </div>
