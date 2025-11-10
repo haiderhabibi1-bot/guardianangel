@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Ask a public question</h1>
+
+<p>Your question will be anonymous and shown only once answered by a verified lawyer.</p>
+
+<form method="post" class="form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Submit question</button>
+</form>
+{% endblock %}
