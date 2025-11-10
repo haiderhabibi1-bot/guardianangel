@@ -1,5 +1,5 @@
 /* ======================================
-   GUARDIAN ANGEL - STYLE.CSS (FINAL + CENTERED CONTENT)
+   GUARDIAN ANGEL - STYLE.CSS (FINAL + CENTERED TITLES)
    ====================================== */
 
 /* RESET */
@@ -44,15 +44,19 @@ body {
 
 /* Center the inner block visually without breaking anything */
 .content > * {
-    max-width: 720px;          /* keeps lines nicely readable */
+    max-width: 720px;
     margin-left: auto;
-    margin-right: auto;        /* centers content inside the card */
+    margin-right: auto;
 }
 
-/* TITLES */
+/* TITLES (UPDATED - centered, bold, underlined) */
 .content h1,
 .content h2 {
     text-align: center;
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
     color: #0d47a1;
     margin-bottom: 8px;
 }
@@ -67,17 +71,17 @@ body {
     color: #333;
     line-height: 1.6;
     margin-bottom: 10px;
-    text-align: center;        /* center body text for a more "landing page" feel */
+    text-align: center;
 }
 
-/* If you have lists or similar, keep them tidy */
+/* LISTS */
 .content ul,
 .content ol {
     text-align: left;
     margin-left: 18px;
 }
 
-/* NAVBAR (DESKTOP) - UNCHANGED FUNCTIONALLY */
+/* NAVBAR (DESKTOP - UNCHANGED) */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -183,8 +187,8 @@ form {
     flex-direction: column;
     gap: 14px;
     max-width: 420px;
-    margin: 0 auto; /* centers forms inside the content area */
-    text-align: left; /* keep labels/inputs readable */
+    margin: 0 auto;
+    text-align: left;
 }
 
 label {
@@ -315,6 +319,11 @@ select:focus {
     .content h2 {
         font-size: 1.3rem;
         margin-bottom: 4px;
+        text-align: center;
+        font-weight: 700;
+        text-decoration: underline;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 6px;
     }
 
     .content h3 {
