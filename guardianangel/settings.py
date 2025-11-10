@@ -1,23 +1,30 @@
 import os
 from pathlib import Path
 
-# ===========================
-# BASE
-# ===========================
+# ========================================
+# BASE SETTINGS
+# ========================================
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Secret key and debug from environment (Render)
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
+# ========================================
+# ALLOWED HOSTS
+# ========================================
+# Includes Render, localhost, and your custom domain
 ALLOWED_HOSTS = [
     ".onrender.com",
     "localhost",
     "127.0.0.1",
+    "guardianangelconsulting.ca",
+    "www.guardianangelconsulting.ca",
 ]
 
-# ===========================
-# APPS
-# ===========================
+# ========================================
+# APPLICATIONS
+# ========================================
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -28,12 +35,12 @@ INSTALLED_APPS = [
     "core",
 ]
 
-# ===========================
+# ========================================
 # MIDDLEWARE
-# ===========================
+# ========================================
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # Serve static files efficiently
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -44,9 +51,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "guardianangel.urls"
 
-# ===========================
+# ========================================
 # TEMPLATES
-# ===========================
+# ========================================
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -65,9 +72,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "guardianangel.wsgi.application"
 
-# ===========================
+# ========================================
 # DATABASE
-# ===========================
+# ========================================
+# Default: SQLite (can replace with PostgreSQL later)
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -75,57 +83,57 @@ DATABASES = {
     }
 }
 
-# ===========================
-# AUTH / PASSWORDS
-# ===========================
+# ========================================
+# PASSWORD VALIDATION
+# ========================================
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-# ===========================
-# I18N
-# ===========================
+# ========================================
+# LOCALIZATION
+# ========================================
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "America/Toronto"
 USE_I18N = True
 USE_TZ = True
 
-# ===========================
+# ========================================
 # STATIC FILES
-# ===========================
+# ========================================
 STATIC_URL = "/static/"
 
-# Project-level static dir for things like core/css/style.css
+# Project-level static directory (your CSS, JS, etc.)
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
-# Where collectstatic puts files in production (Render)
+# Directory for Render’s collectstatic command
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Use WhiteNoise for serving static files
+# WhiteNoise handles static file compression and caching
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# App-level static (e.g. core/static/images/logo.png) is auto-detected via APP_DIRS = True
-
-# ===========================
-# MEDIA (optional, future use)
-# ===========================
+# ========================================
+# MEDIA FILES (optional, for uploads)
+# ========================================
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# ===========================
+# ========================================
 # DEFAULTS
-# ===========================
+# ========================================
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# ========================================
+# LOGGING (optional)
+# ========================================
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    "root": {"handlers": ["console"], "level": "INFO"},
+}
