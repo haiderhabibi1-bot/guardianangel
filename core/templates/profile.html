@@ -1,14 +1,50 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Your Profile</h1>
+<h1>Profile</h1>
 
-<p><strong>Username:</strong> {{ request.user.username }}</p>
-<p><strong>Email:</strong> {{ request.user.email }}</p>
-<p>Your identity remains anonymous to lawyers and the public.</p>
+{% if user.is_authenticated %}
 
-<div class="actions" style="text-align:center; margin-top:16px;">
-    <a href="{% url 'customer_settings' %}" class="btn">Settings</a>
-    <a href="{% url 'public_questions' %}" class="btn">View Public Questions</a>
-</div>
+    {% if user.profile.is_customer %}
+        <div class="content-section">
+            <h2>Your Customer Profile</h2>
+            <p><strong>Username:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p>Your identity remains anonymous to lawyers and the public.</p>
+
+            <div style="text-align:center; margin-top:16px;">
+                <a href="{% url 'customer_settings' %}" class="btn">Settings</a>
+                <a href="{% url 'public_questions' %}" class="btn">View Public Questions</a>
+                <a href="{% url 'ask_public_question' %}" class="btn">Ask a Question</a>
+            </div>
+        </div>
+
+    {% elif user.profile.is_lawyer %}
+        {% if not user.profile.is_approved %}
+            <div class="content-section">
+                <h2>Account Pending Approval</h2>
+                <p>Your registration has been received and is awaiting admin approval.</p>
+                <p>You’ll gain access to your dashboard once your account is verified.</p>
+            </div>
+        {% else %}
+            <div class="content-section">
+                <h2>Lawyer Dashboard</h2>
+                <p>Welcome, {{ user.profile.full_name|default:user.username }}.</p>
+                <p>Your account is approved. You may now answer public questions and manage your account settings.</p>
+
+                <div style="text-align:center; margin-top:16px;">
+                    <a href="{% url 'lawyer_settings' %}" class="btn">Settings</a>
+                    <a href="{% url 'public_questions' %}" class="btn">View Public Questions</a>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+
+{% else %}
+    <p>You must be logged in to view your profile.</p>
+    <div style="text-align:center;">
+        <a href="{% url 'login' %}" class="btn">Log in</a>
+        <a href="{% url 'register_customer' %}" class="btn">Create Account</a>
+    </div>
+{% endif %}
 {% endblock %}
