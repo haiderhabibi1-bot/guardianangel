@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>My customers</h1>
+
+{% if chats %}
+    {% for chat in chats %}
+        <div class="question-card">
+            <h3>{{ chat.customer.username }}</h3>
+            <p>Chat started on {{ chat.created_at|date:"Y-m-d H:i" }}</p>
+            <a href="{% url 'chat_detail' chat.id %}" class="btn">Open chat</a>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>You have no active customer chats yet.</p>
+{% endif %}
+{% endblock %}
