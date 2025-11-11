@@ -1,29 +1,14 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
-<h1 class="questions-title">Public questions</h1>
+<h1 class="questions-title">Public Questions</h1>
+<p>Browse answered public questions. Identities are always anonymous.</p>
 
-{# For logged-in customers: show only their own pending questions #}
-{% if customer_pending %}
-    <div class="pending-questions">
-        <h3>Your pending questions</h3>
-        {% for q in customer_pending %}
-            <div class="question-card">
-                <h3>{{ q.question_text }}</h3>
-                <p>Status: Pending lawyer answer</p>
-            </div>
-        {% empty %}
-            <p>You have no pending questions.</p>
-        {% endfor %}
-    </div>
-{% endif %}
-
-{# Public, answered questions visible to everyone #}
-{% if questions %}
-    {% for q in questions %}
+{% if answered_questions %}
+    {% for qa in answered_questions %}
         <div class="question-card">
-            <h3>{{ q.question_text }}</h3>
-            <p><strong>Answer:</strong> {{ q.answer.answer_text }}</p>
+            <h3>{{ qa.question_text }}</h3>
+            <p>{{ qa.answer_text }}</p>
         </div>
     {% endfor %}
 {% else %}
