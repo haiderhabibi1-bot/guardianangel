@@ -1,11 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Settings</h1>
+<h1>Lawyer settings</h1>
 
-<p>Your professional details (name, bar number) are verified and cannot be changed here.</p>
-
-<form method="post" class="form">
+<form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit" class="btn">Save changes</button>
