@@ -1,27 +1,18 @@
-from pathlib import Path
 import os
-from dotenv import load_dotenv
-
-load_dotenv()  # Optional: only if you use a .env file locally
+from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ==============================
-# BASIC CONFIG
-# ==============================
-SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
-DEBUG = os.getenv("DEBUG", "False") == "True"
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "change-me-in-prod")
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "guardianangelconsulting.ca",
-    ".onrender.com",
+    ".guardianangelconsulting.ca",
 ]
 
-# ==============================
-# INSTALLED APPS
-# ==============================
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -32,13 +23,8 @@ INSTALLED_APPS = [
     "core",
 ]
 
-# ==============================
-# MIDDLEWARE
-# ==============================
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    # Whitenoise to serve static files directly
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -49,9 +35,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "guardianangel.urls"
 
-# ==============================
-# TEMPLATES
-# ==============================
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -70,9 +53,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "guardianangel.wsgi.application"
 
-# ==============================
-# DATABASE (SQLite by default)
-# ==============================
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -80,47 +60,33 @@ DATABASES = {
     }
 }
 
-# ==============================
-# AUTH + PASSWORDS
-# ==============================
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {"min_length": 8},
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
 ]
 
-# ==============================
-# INTERNATIONALIZATION
-# ==============================
 LANGUAGE_CODE = "en-us"
-TIME_ZONE = "America/Toronto"
+TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-# ==============================
-# STATIC FILES (CRITICAL FOR RENDER)
-# ==============================
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [BASE_DIR / "core" / "static"]
+
+STATICFILES_DIRS = [
+    BASE_DIR / "core" / "static",
+]
+
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Whitenoise handles compression and caching in production
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-# ==============================
-# MEDIA (if you later add file uploads)
-# ==============================
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
-
-# ==============================
-# LOGIN / LOGOUT REDIRECTS
-# ==============================
-LOGIN_REDIRECT_URL = "home"
-LOGOUT_REDIRECT_URL = "home"
-
-# ==============================
-# DEFAULT AUTO FIELD
-# ==============================
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
