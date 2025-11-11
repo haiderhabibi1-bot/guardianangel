@@ -6,10 +6,8 @@ from django.contrib import messages
 from .forms import (
     CustomerRegistrationForm,
     LawyerRegistrationForm,
-    PublicQuestionForm,
-    PublicAnswerForm,
 )
-from .models import PublicQuestion, PublicAnswer, LawyerProfile
+from .models import PublicQuestion, LawyerProfile
 
 
 def home(request):
@@ -26,20 +24,14 @@ def lawyers_list(request):
 
 
 def public_questions(request):
-    """
-    Show only answered public questions to everyone.
-    No layout changes; template handles display.
-    """
-    answered = PublicQuestion.objects.filter(
+    # show only answered questions publicly
+    questions = PublicQuestion.objects.filter(
         answers__isnull=False
     ).distinct().order_by('-created_at')
-    return render(request, 'public_questions.html', {'questions': answered})
+    return render(request, 'public_questions.html', {'questions': questions})
 
 
 def register_customer(request):
-    """
-    Create customer account then log them in and send to My Questions.
-    """
     if request.method == 'POST':
         form = CustomerRegistrationForm(request.POST)
         if form.is_valid():
@@ -53,18 +45,16 @@ def register_customer(request):
 
 
 def register_lawyer(request):
-    """
-    Create lawyer account in pending state; no style change.
-    """
     if request.method == 'POST':
         form = LawyerRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
-            lawyer_profile = form.save(commit=False)
-            lawyer_profile.is_approved = False  # pending manual approval
-            lawyer_profile.save()
+            profile = form.save(commit=False)
+            # mark as pending; you already review/approve manually
+            profile.is_approved = False
+            profile.save()
             messages.success(
                 request,
-                "Your application has been submitted. You will be notified once approved."
+                "Your application has been submitted for approval."
             )
             return redirect('home')
     else:
@@ -74,8 +64,5 @@ def register_lawyer(request):
 
 @login_required
 def my_questions(request):
-    """
-    Placeholder page for logged-in customers.
-    Simple and cannot 500.
-    """
+    # Simple placeholder; no layout change.
     return render(request, 'my_questions.html')
