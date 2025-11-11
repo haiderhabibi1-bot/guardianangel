@@ -14,8 +14,6 @@ ALLOWED_HOSTS = [
     "guardianangelconsulting.ca",
 ]
 
-# Application definition
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -56,17 +54,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "guardianangel.wsgi.application"
 
-# Database
-# (Use your existing database config; this keeps the default sqlite3 for reference)
-
+# Database (keep whatever you were using; sqlite here as default)
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
-# Password validation
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -88,34 +82,37 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-# Static files
+# ============ STATIC & MEDIA ============
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_DIRS = [
-    BASE_DIR / "core" / "static",
-]
 
-# Media files (for bar certificates)
+# IMPORTANT:
+# We rely on the built-in app static loader.
+# Your CSS and images live in:
+# core/static/core/css/style.css
+# core/static/core/images/logo.png
+# so DO NOT override STATICFILES_DIRS in a way that breaks that.
+STATICFILES_DIRS = []  # leave empty; Django will use app 'static/core/...'
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Email for lawyer approval notifications
-DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "no-reply@guardianangelconsulting.ca")
-LAWYER_APPROVAL_EMAIL = os.environ.get("LAWYER_APPROVAL_EMAIL", "haiderhabibi1@gmail.com")
+# Email (for lawyer approval notifications)
+DEFAULT_FROM_EMAIL = os.environ.get(
+    "DEFAULT_FROM_EMAIL",
+    "no-reply@guardianangelconsulting.ca",
+)
+LAWYER_APPROVAL_EMAIL = os.environ.get(
+    "LAWYER_APPROVAL_EMAIL",
+    "haiderhabibi1@gmail.com",
+)
 
-# ==============================
-# AUTH REDIRECTS (FIXES /accounts/profile/)
-# ==============================
+# ============ AUTH REDIRECTS ============
 
-# After successful login, send users to the home page (which already shows the correct UI)
+# Fix the /accounts/profile/ issue: always go to the home page UI you like
 LOGIN_REDIRECT_URL = "home"
-
-# If someone hits the login-required decorator, send them to your existing login page
-LOGIN_URL = "login"
-
-# After logout (even though we handle it in the view), this is a safe default
 LOGOUT_REDIRECT_URL = "home"
+LOGIN_URL = "login"
