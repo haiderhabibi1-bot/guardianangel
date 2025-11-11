@@ -18,11 +18,13 @@
         <h1 class="site-title">Guardian Angel</h1>
     </div>
     <nav class="nav-links">
+        <!-- Always-visible links (same for everyone) -->
         <a href="{% url 'home' %}">Home</a>
         <a href="{% url 'public_questions' %}">Public Questions</a>
         <a href="{% url 'pricing' %}">Pricing</a>
         <a href="{% url 'lawyers_list' %}">Lawyers List</a>
 
+        <!-- Auth-specific links (added on top of the common ones) -->
         {% if user.is_authenticated %}
             {% if user.profile.role == 'customer' %}
                 <a href="{% url 'my_questions' %}">My Questions</a>
