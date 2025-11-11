@@ -12,8 +12,16 @@ from .forms import (
     LawyerSettingsForm,
     PublicQuestionForm,
     PublicAnswerForm,
+    ChatMessageForm,
 )
-from .models import Profile, PublicQuestion, PublicAnswer
+from .models import (
+    Profile,
+    BillingProfile,
+    PublicQuestion,
+    PublicAnswer,
+    Chat,
+    ChatMessage,
+)
 
 
 # =========================
@@ -29,10 +37,7 @@ def pricing(request):
 
 
 def register(request):
-    """
-    Legacy entrypoint if /register/ is hit directly.
-    Navbar no longer shows Register, but keep this safe redirect.
-    """
+    # Legacy safety redirect
     return redirect("register_customer")
 
 
@@ -51,18 +56,15 @@ def register_customer(request):
     else:
         form = CustomerRegistrationForm()
 
-    # Uses templates/register_customer.html
     return render(request, "register_customer.html", {"form": form})
 
 
 def register_lawyer(request):
     if request.method == "POST":
-        # Include files for bar_certificate upload
         form = LawyerRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save()
 
-            # Notify admin for approval
             approval_email = getattr(settings, "LAWYER_APPROVAL_EMAIL", None)
             if approval_email:
                 profile = user.profile
@@ -83,13 +85,13 @@ def register_lawyer(request):
 
             messages.success(
                 request,
-                "Your registration has been received. You will be granted access once approved.",
+                "Your registration has been received. "
+                "You will be granted access once approved.",
             )
             return redirect("login")
     else:
         form = LawyerRegistrationForm()
 
-    # Uses templates/register_lawyer.html
     return render(request, "register_lawyer.html", {"form": form})
 
 
@@ -103,7 +105,12 @@ def customer_profile(request):
     if not profile.is_customer:
         return redirect("home")
 
-    return render(request, "profiles/customer_profile.html", {"profile": profile})
+    billing = getattr(request.user, "billing", None)
+    return render(
+        request,
+        "profiles/customer_profile.html",
+        {"profile": profile, "billing": billing},
+    )
 
 
 @login_required
@@ -113,9 +120,18 @@ def lawyer_profile(request):
         return redirect("home")
 
     if not profile.is_approved:
-        return render(request, "profiles/lawyer_pending.html", {"profile": profile})
+        return render(
+            request,
+            "profiles/lawyer_pending.html",
+            {"profile": profile},
+        )
 
-    return render(request, "profiles/lawyer_profile.html", {"profile": profile})
+    billing = getattr(request.user, "billing", None)
+    return render(
+        request,
+        "profiles/lawyer_profile.html",
+        {"profile": profile, "billing": billing},
+    )
 
 
 # =========================
@@ -165,12 +181,21 @@ def lawyer_settings(request):
 @login_required
 def ask_public_question(request):
     """
-    Only customers can submit public questions.
-    Questions are anonymous publicly and only shown once answered.
+    Customers get up to 2 free public questions.
     """
     profile = request.user.profile
     if not profile.is_customer:
         return redirect("home")
+
+    existing_count = PublicQuestion.objects.filter(
+        customer=request.user
+    ).count()
+    if existing_count >= 2:
+        messages.error(
+            request,
+            "You have used your two free public questions.",
+        )
+        return redirect("public_questions")
 
     if request.method == "POST":
         form = PublicQuestionForm(request.POST)
@@ -180,21 +205,24 @@ def ask_public_question(request):
             q.save()
             messages.success(
                 request,
-                "Your question has been submitted. It will appear once answered by a lawyer.",
+                "Your question has been submitted. "
+                "It will appear once answered by a lawyer.",
             )
             return redirect("public_questions")
     else:
         form = PublicQuestionForm()
 
-    # Uses core/templates/public/ask_public_question.html
-    return render(request, "public/ask_public_question.html", {"form": form})
+    return render(
+        request,
+        "public/ask_public_question.html",
+        {"form": form},
+    )
 
 
 @login_required
 def answer_public_question(request, question_id):
     """
-    Only approved lawyers can answer.
-    One answer per question.
+    Approved lawyers can answer any pending question.
     """
     profile = request.user.profile
     if not (profile.is_lawyer and profile.is_approved):
@@ -217,7 +245,6 @@ def answer_public_question(request, question_id):
     else:
         form = PublicAnswerForm()
 
-    # Uses core/templates/public/answer_public_question.html
     return render(
         request,
         "public/answer_public_question.html",
@@ -227,14 +254,182 @@ def answer_public_question(request, question_id):
 
 def public_questions(request):
     """
-    Public page: shows ONLY questions that have an answer.
-    No user.profile access -> safe for anonymous visitors.
+    Public page:
+    - Always shows all answered questions.
+    - Logged-in customers additionally see ONLY their own pending questions.
     """
-    questions = (
+    answered = (
         PublicQuestion.objects.filter(answer__isnull=False)
         .select_related("answer")
         .order_by("-answer__created_at")
     )
 
-    # Uses core/templates/public/public_questions.html
-    return render(request, "public/public_questions.html", {"questions": questions})
+    customer_pending = None
+    if request.user.is_authenticated:
+        try:
+            profile = request.user.profile
+        except Profile.DoesNotExist:
+            profile = None
+        if profile and profile.is_customer:
+            customer_pending = (
+                PublicQuestion.objects.filter(
+                    customer=request.user,
+                    answer__isnull=True,
+                )
+                .order_by("-created_at")
+            )
+
+    return render(
+        request,
+        "public/public_questions.html",
+        {
+            "questions": answered,
+            "customer_pending": customer_pending,
+        },
+    )
+
+
+# =========================
+# LAWYERS LIST
+# =========================
+
+def lawyers_list(request):
+    """
+    Visible to everyone:
+    - Shows approved lawyers with name, years of practice, bio, fee.
+    - 'Start chat' behavior handled in template + start_chat_with_lawyer view.
+    """
+    lawyers = (
+        Profile.objects.filter(
+            role=Profile.ROLE_LAWYER,
+            is_approved=True,
+        )
+        .select_related("user")
+        .order_by("full_name", "user__username")
+    )
+    return render(request, "lawyers_list.html", {"lawyers": lawyers})
+
+
+# =========================
+# CHATS
+# =========================
+
+@login_required
+def start_chat_with_lawyer(request, lawyer_id):
+    """
+    Start chat from Lawyers List.
+    - If not customer: redirect to register_customer.
+    - If already has chat: go directly to chat.
+    - Simulated payment: confirm screen -> POST to create chat.
+    """
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        return redirect("register_customer")
+
+    if not profile.is_customer:
+        return redirect("register_customer")
+
+    lawyer_profile = get_object_or_404(
+        Profile,
+        user__id=lawyer_id,
+        role=Profile.ROLE_LAWYER,
+        is_approved=True,
+    )
+    lawyer = lawyer_profile.user
+
+    chat, created = Chat.objects.get_or_create(
+        customer=request.user,
+        lawyer=lawyer,
+    )
+
+    if not created:
+        # Already has an active chat: go straight to it
+        return redirect("chat_detail", chat_id=chat.id)
+
+    # Simple confirmation step in UI (payment placeholder)
+    if request.method == "POST":
+        messages.success(
+            request,
+            "Your payment has been recorded and your chat is now active.",
+        )
+        return redirect("chat_detail", chat_id=chat.id)
+
+    return render(
+        request,
+        "chats/start_chat_payment.html",
+        {
+            "lawyer_profile": lawyer_profile,
+            "chat": chat,
+        },
+    )
+
+
+@login_required
+def my_questions(request):
+    """
+    Customer: list of chats with lawyers.
+    """
+    profile = request.user.profile
+    if not profile.is_customer:
+        return redirect("home")
+
+    chats = Chat.objects.filter(customer=request.user).select_related("lawyer__profile")
+    return render(
+        request,
+        "chats/my_questions.html",
+        {"chats": chats},
+    )
+
+
+@login_required
+def my_customers(request):
+    """
+    Lawyer: list of customers they have chats with.
+    """
+    profile = request.user.profile
+    if not profile.is_lawyer:
+        return redirect("home")
+
+    chats = Chat.objects.filter(lawyer=request.user).select_related(
+        "customer__profile"
+    )
+    return render(
+        request,
+        "chats/my_customers.html",
+        {"chats": chats},
+    )
+
+
+@login_required
+def chat_detail(request, chat_id):
+    """
+    Shared chat view for customer & lawyer.
+    Only participants can access.
+    """
+    chat = get_object_or_404(Chat, id=chat_id)
+
+    if request.user != chat.customer and request.user != chat.lawyer:
+        return redirect("home")
+
+    if request.method == "POST":
+        form = ChatMessageForm(request.POST)
+        if form.is_valid():
+            msg = form.save(commit=False)
+            msg.chat = chat
+            msg.sender = request.user
+            msg.save()
+            return redirect("chat_detail", chat_id=chat.id)
+    else:
+        form = ChatMessageForm()
+
+    messages_qs = chat.messages.select_related("sender")
+    return render(
+        request,
+        "chats/chat_detail.html",
+        {
+            "chat": chat,
+            "messages": messages_qs,
+            "form": form,
+        },
+    )
