@@ -1,13 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Create your client account</h1>
+<h1 class="register-title">Create your client account</h1>
+<p>Please fill in the details below to create your anonymous customer account.</p>
 
-<p>Your identity remains anonymous. Only your username will ever be shown.</p>
-
-<form method="post" class="form">
+<form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ form.non_field_errors }}
+
+    {% for field in form %}
+        <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
+        {{ field }}
+        {% if field.errors %}
+            <p>{{ field.errors|striptags }}</p>
+        {% endif %}
+    {% endfor %}
+
     <button type="submit" class="btn">Get Started</button>
 </form>
 {% endblock %}
