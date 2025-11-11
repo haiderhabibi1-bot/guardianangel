@@ -1,25 +1,24 @@
 {% extends 'base.html' %}
-
 {% block content %}
 <h1 class="register-title">Lawyer registration</h1>
-<p>Submit your details to join as a verified lawyer.</p>
 
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form.non_field_errors }}
+    <label for="id_username">Username</label>
+    <input type="text" name="username" id="id_username" required>
 
-    {% for field in form %}
-        <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
-        {{ field }}
-        {% if field.errors %}
-            <div style="color: red; font-size: 0.8rem;">{{ field.errors|striptags }}</div>
-        {% endif %}
-    {% endfor %}
+    <label for="id_email">Email</label>
+    <input type="email" name="email" id="id_email" required>
 
-    <button type="submit">Register</button>
+    <label for="id_password">Password</label>
+    <input type="password" name="password" id="id_password" required>
+
+    <label for="id_confirm_password">Confirm Password</label>
+    <input type="password" name="confirm_password" id="id_confirm_password" required>
+
+    <label for="id_bar_certificate">Bar certificate (PDF/Image)</label>
+    <input type="file" name="bar_certificate" id="id_bar_certificate">
+
+    <button type="submit" class="btn">Register as Lawyer</button>
 </form>
-
-<p style="margin-top: 10px; font-size: 0.85rem; text-align: center;">
-    Your profile will be reviewed. You’ll be granted access once approved.
-</p>
 {% endblock %}
