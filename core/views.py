@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect, render
@@ -39,6 +39,16 @@ def pricing(request):
 def register(request):
     # Legacy safety redirect
     return redirect("register_customer")
+
+
+def logout_view(request):
+    """
+    Simple logout that works via GET and redirects home.
+    UI: uses the existing 'Logout' link, no layout change.
+    """
+    if request.user.is_authenticated:
+        logout(request)
+    return redirect("home")
 
 
 # =========================
@@ -297,7 +307,6 @@ def lawyers_list(request):
     """
     Visible to everyone:
     - Shows approved lawyers with name, years of practice, bio, fee.
-    - 'Start chat' behavior handled in template + start_chat_with_lawyer view.
     """
     lawyers = (
         Profile.objects.filter(
@@ -320,7 +329,7 @@ def start_chat_with_lawyer(request, lawyer_id):
     Start chat from Lawyers List.
     - If not customer: redirect to register_customer.
     - If already has chat: go directly to chat.
-    - Simulated payment: confirm screen -> POST to create chat.
+    - Simulated payment: confirmation form.
     """
     try:
         profile = request.user.profile
@@ -344,10 +353,8 @@ def start_chat_with_lawyer(request, lawyer_id):
     )
 
     if not created:
-        # Already has an active chat: go straight to it
         return redirect("chat_detail", chat_id=chat.id)
 
-    # Simple confirmation step in UI (payment placeholder)
     if request.method == "POST":
         messages.success(
             request,
@@ -374,7 +381,9 @@ def my_questions(request):
     if not profile.is_customer:
         return redirect("home")
 
-    chats = Chat.objects.filter(customer=request.user).select_related("lawyer__profile")
+    chats = Chat.objects.filter(customer=request.user).select_related(
+        "lawyer__profile"
+    )
     return render(
         request,
         "chats/my_questions.html",
