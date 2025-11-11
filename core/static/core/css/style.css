@@ -1,5 +1,5 @@
 /* ======================================
-   GUARDIAN ANGEL - STYLE.CSS (FINAL + TITLES ALL PAGES)
+   GUARDIAN ANGEL - STYLE.CSS (FINAL)
    ====================================== */
 
 /* RESET */
@@ -50,14 +50,7 @@ body {
 }
 
 /* =======================================================
-   PAGE TITLES (APPLIES TO ALL MAIN TITLES INSIDE PAGES)
-   - About Us / À propos
-   - Public Questions
-   - Pricing
-   - Login
-   - Get Started
-   - Create your client account
-   - Lawyer registration
+   PAGE TITLES (ALL MAIN TITLES INSIDE PAGES)
    ======================================================= */
 
 .content h1,
@@ -78,7 +71,7 @@ body {
     margin-bottom: 8px;
 }
 
-/* Sub-headings (kept clean) */
+/* Sub-headings */
 .content h3 {
     color: #0d47a1;
     margin-bottom: 6px;
@@ -99,7 +92,7 @@ body {
     margin-left: 18px;
 }
 
-/* NAVBAR (DESKTOP - UNCHANGED) */
+/* NAVBAR */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -173,6 +166,12 @@ body {
     width: 100%;
 }
 
+/* user label in nav */
+.nav-user-label {
+    font-weight: 600;
+    color: #0d47a1;
+}
+
 /* BUTTONS */
 button,
 .btn {
@@ -199,7 +198,7 @@ button:hover,
     box-shadow: 0 4px 12px rgba(21, 101, 192, 0.35);
 }
 
-/* FORMS (login, register, etc.) */
+/* FORMS */
 form {
     display: flex;
     flex-direction: column;
@@ -258,6 +257,7 @@ select:focus {
     color: #0d47a1;
     margin-bottom: 6px;
     font-size: 1.02rem;
+    text-align: left;
 }
 
 .question-card p {
@@ -277,7 +277,7 @@ select:focus {
 }
 
 /* ======================================
-   MOBILE ONLY (DESKTOP UNCHANGED)
+   MOBILE ONLY
    ====================================== */
 @media (max-width: 768px) {
     .navbar {
