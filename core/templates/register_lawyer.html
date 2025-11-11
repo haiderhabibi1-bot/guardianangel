@@ -1,25 +1,25 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
 <h1 class="register-title">Lawyer registration</h1>
-<p>Please provide your details to request access as a verified lawyer.</p>
+<p>Submit your details to join as a verified lawyer.</p>
 
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.non_field_errors }}
 
     {% for field in form %}
-        <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
+        <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
         {{ field }}
         {% if field.errors %}
-            <p>{{ field.errors|striptags }}</p>
+            <div style="color: red; font-size: 0.8rem;">{{ field.errors|striptags }}</div>
         {% endif %}
     {% endfor %}
 
-    <button type="submit" class="btn">Submit Registration</button>
+    <button type="submit">Register</button>
 </form>
 
-<p style="text-align:center; margin-top:16px;">
-    Your information will be reviewed. You will be notified once approved.
+<p style="margin-top: 10px; font-size: 0.85rem; text-align: center;">
+    Your profile will be reviewed. You’ll be granted access once approved.
 </p>
 {% endblock %}
