@@ -1,26 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Public questions</h1>
+<h1 class="questions-title">Public questions</h1>
 
-{# Show "Ask a question" button only if logged in.
-   No user.profile usage here to avoid 500s for anonymous visitors. #}
-{% if user.is_authenticated %}
-<div style="text-align:center; margin-bottom:16px;">
-    <a href="{% url 'ask_public_question' %}" class="btn">Ask a question</a>
-</div>
+{% if customer_pending %}
+    <div class="pending-questions">
+        <h3>Your pending questions</h3>
+        {% for q in customer_pending %}
+            <div class="question-card">
+                <h3>{{ q.question_text }}</h3>
+                <p>Status: Pending lawyer answer</p>
+            </div>
+        {% empty %}
+            <p>You have no pending questions.</p>
+        {% endfor %}
+    </div>
 {% endif %}
 
 {% if questions %}
     {% for q in questions %}
         <div class="question-card">
-            <h3>Question</h3>
-            <p>{{ q.question_text }}</p>
-
-            <h3>Answer</h3>
-            <p>{{ q.answer.answer_text }}</p>
-
-            <p><em>Answered by a verified lawyer</em></p>
+            <h3>{{ q.question_text }}</h3>
+            <p><strong>Answer:</strong> {{ q.answer.answer_text }}</p>
         </div>
     {% endfor %}
 {% else %}
