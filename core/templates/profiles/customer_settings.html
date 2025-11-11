@@ -1,11 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Settings</h1>
+<h1>Customer settings</h1>
 
-<p>Update your account details. You remain anonymous; only your username is used.</p>
-
-<form method="post" class="form">
+<form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit" class="btn">Save changes</button>
