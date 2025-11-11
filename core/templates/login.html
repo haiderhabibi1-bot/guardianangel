@@ -1,25 +1,22 @@
 {% extends 'base.html' %}
-
 {% block content %}
 <h1 class="login-title">Log in</h1>
 <p>Welcome back. Please log in to access your account.</p>
 
 <form method="post">
     {% csrf_token %}
-    {{ form.non_field_errors }}
-
     <label for="id_username">Username:</label>
-    {{ form.username }}
+    <input type="text" name="username" id="id_username" required>
 
     <label for="id_password">Password:</label>
-    {{ form.password }}
+    <input type="password" name="password" id="id_password" required>
 
-    <button type="submit">Login</button>
+    <button type="submit" class="btn">Login</button>
 </form>
 
-<p style="margin-top: 16px; text-align: center;">Don't have an account?</p>
-<div style="display: flex; justify-content: center; gap: 16px; margin-top: 8px;">
-    <a class="btn" href="{% url 'register_customer' %}">Create Customer Account</a>
-    <a class="btn" href="{% url 'register_lawyer' %}">Register as Lawyer</a>
+<p style="margin-top:18px;">Don’t have an account?</p>
+<div style="display:flex; gap:16px; justify-content:center; margin-top:4px;">
+    <a href="{% url 'register_customer' %}" class="btn">Create Customer Account</a>
+    <a href="{% url 'register_lawyer' %}" class="btn">Register as Lawyer</a>
 </div>
 {% endblock %}
