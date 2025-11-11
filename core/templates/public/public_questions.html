@@ -3,10 +3,20 @@
 {% block content %}
 <h1>Public questions</h1>
 
-{% if user.is_authenticated %}
+{% if user.is_authenticated and user.profile.role == 'customer' %}
 <div style="text-align:center; margin-bottom:16px;">
     <a href="{% url 'ask_public_question' %}" class="btn">Ask a question</a>
 </div>
+
+{% if customer_pending %}
+    <h3>Your pending questions</h3>
+    {% for q in customer_pending %}
+        <div class="question-card">
+            <h3>Pending</h3>
+            <p>{{ q.question_text }}</p>
+        </div>
+    {% endfor %}
+{% endif %}
 {% endif %}
 
 {% if questions %}
