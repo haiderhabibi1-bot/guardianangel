@@ -1,24 +1,15 @@
 {% extends 'base.html' %}
-
 {% block content %}
 <h1 class="page-title">Lawyers List</h1>
-<p>Browse verified lawyers. Choose who you want to consult with.</p>
 
 {% if lawyers %}
     {% for lawyer in lawyers %}
         <div class="question-card">
-            <h3>{{ lawyer.full_name }}</h3>
-            <p><strong>Years of practice:</strong> {{ lawyer.years_of_practice }}</p>
-            <p><strong>Specialty:</strong> {{ lawyer.specialty }}</p>
-            <p><strong>Bio:</strong> {{ lawyer.bio }}</p>
-            <p><strong>Fee per chat:</strong> {{ lawyer.fee_per_chat }}</p>
-
-            {% if user.is_authenticated and not user.is_lawyer %}
-                <a class="btn" href="{% url 'start_chat_with_lawyer' lawyer.id %}">Start chat</a>
-            {% endif %}
+            <h3>{{ lawyer.name }}</h3>
+            <p>{{ lawyer.bio }}</p>
         </div>
     {% endfor %}
 {% else %}
-    <p>No approved lawyers yet.</p>
+    <p>Approved lawyers will appear here.</p>
 {% endif %}
 {% endblock %}
