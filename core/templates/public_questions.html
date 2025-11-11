@@ -1,14 +1,12 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<h1 class="questions-title">Public Questions</h1>
-<p>Browse answered public questions. Identities are always anonymous.</p>
+<h1 class="questions-title">Public questions</h1>
 
-{% if answered_questions %}
-    {% for qa in answered_questions %}
+{% if questions %}
+    {% for q in questions %}
         <div class="question-card">
-            <h3>{{ qa.question_text }}</h3>
-            <p>{{ qa.answer_text }}</p>
+            <h3>{{ q.title }}</h3>
+            <p>{{ q.answer }}</p>
         </div>
     {% endfor %}
 {% else %}
