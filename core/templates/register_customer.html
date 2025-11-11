@@ -1,21 +1,21 @@
 {% extends 'base.html' %}
-
 {% block content %}
 <h1 class="register-title">Create your client account</h1>
-<p>Stay anonymous. Choose a username and secure your access.</p>
 
 <form method="post">
     {% csrf_token %}
-    {{ form.non_field_errors }}
+    <label for="id_username">Username</label>
+    <input type="text" name="username" id="id_username" required>
 
-    {% for field in form %}
-        <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
-        {{ field }}
-        {% if field.errors %}
-            <div style="color: red; font-size: 0.8rem;">{{ field.errors|striptags }}</div>
-        {% endif %}
-    {% endfor %}
+    <label for="id_email">Email</label>
+    <input type="email" name="email" id="id_email" required>
 
-    <button type="submit">Get Started</button>
+    <label for="id_password">Password</label>
+    <input type="password" name="password" id="id_password" required>
+
+    <label for="id_confirm_password">Confirm Password</label>
+    <input type="password" name="confirm_password" id="id_confirm_password" required>
+
+    <button type="submit" class="btn">Create Account</button>
 </form>
 {% endblock %}
