@@ -1,36 +1,24 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
 <h1 class="page-title">Lawyers List</h1>
-<p>Browse verified lawyers available to answer your questions.</p>
+<p>Browse verified lawyers. Choose who you want to consult with.</p>
 
 {% if lawyers %}
     {% for lawyer in lawyers %}
         <div class="question-card">
             <h3>{{ lawyer.full_name }}</h3>
             <p><strong>Years of practice:</strong> {{ lawyer.years_of_practice }}</p>
-            {% if lawyer.speciality %}
-                <p><strong>Speciality:</strong> {{ lawyer.speciality }}</p>
-            {% endif %}
-            {% if lawyer.bio %}
-                <p>{{ lawyer.bio }}</p>
-            {% endif %}
-            {% if lawyer.chat_fee %}
-                <p><strong>Fee per chat:</strong> {{ lawyer.chat_fee }}</p>
-            {% endif %}
+            <p><strong>Specialty:</strong> {{ lawyer.specialty }}</p>
+            <p><strong>Bio:</strong> {{ lawyer.bio }}</p>
+            <p><strong>Fee per chat:</strong> {{ lawyer.fee_per_chat }}</p>
 
-            {% if user.is_authenticated %}
-                {% if user.profile.role == 'customer' %}
-                    <a href="{% url 'start_chat_with_lawyer' lawyer.id %}" class="btn">Start chat</a>
-                {% else %}
-                    <!-- Lawyers (and others) see info only; no button for themselves -->
-                {% endif %}
-            {% else %}
-                <a href="{% url 'register_customer' %}" class="btn">Start chat</a>
+            {% if user.is_authenticated and not user.is_lawyer %}
+                <a class="btn" href="{% url 'start_chat_with_lawyer' lawyer.id %}">Start chat</a>
             {% endif %}
         </div>
     {% endfor %}
 {% else %}
-    <p>No lawyers are listed yet.</p>
+    <p>No approved lawyers yet.</p>
 {% endif %}
 {% endblock %}
