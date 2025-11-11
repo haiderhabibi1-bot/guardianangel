@@ -6,25 +6,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guardian Angel</title>
 
+    <!-- Your final global stylesheet -->
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
-    <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png">
+    <!-- Favicon using the same logo -->
+    <link rel="icon" href="{% static 'core/images/logo.png' %}" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
 <header class="navbar">
     <div class="logo-container">
-        <img src="{% static 'images/logo.png' %}" alt="Guardian Angel Logo" class="logo">
+        <img src="{% static 'core/images/logo.png' %}" alt="Guardian Angel Logo" class="logo">
         <h1 class="site-title">Guardian Angel</h1>
     </div>
+
     <nav class="nav-links">
-        <!-- Always-visible links (same for everyone) -->
+        <!-- Always visible -->
         <a href="{% url 'home' %}">Home</a>
         <a href="{% url 'public_questions' %}">Public Questions</a>
         <a href="{% url 'pricing' %}">Pricing</a>
         <a href="{% url 'lawyers_list' %}">Lawyers List</a>
 
-        <!-- Auth-specific links (added on top of the common ones) -->
         {% if user.is_authenticated %}
             {% if user.profile.role == 'customer' %}
                 <a href="{% url 'my_questions' %}">My Questions</a>
