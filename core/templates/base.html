@@ -6,14 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guardian Angel</title>
 
-    <!-- Main stylesheet -->
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
     <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<!-- Header -->
 <header class="navbar">
     <div class="logo-container">
         <img src="{% static 'images/logo.png' %}" alt="Guardian Angel Logo" class="logo">
@@ -23,33 +21,33 @@
         <a href="{% url 'home' %}">Home</a>
         <a href="{% url 'public_questions' %}">Public Questions</a>
         <a href="{% url 'pricing' %}">Pricing</a>
-        <a href="{% url 'login' %}">Login</a>
+
+        {% if user.is_authenticated %}
+            {% if user.profile.role == 'customer' %}
+                <a href="{% url 'my_questions' %}">My Questions</a>
+                <span class="nav-user-label">{{ user.username }}</span>
+            {% elif user.profile.role == 'lawyer' %}
+                <a href="{% url 'my_customers' %}">My Customers</a>
+                <span class="nav-user-label">
+                    {{ user.profile.full_name|default:user.username }}
+                </span>
+            {% endif %}
+            <a href="{% url 'logout' %}">Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+        {% endif %}
     </nav>
 </header>
 
-<!-- Page wrapper -->
 <main class="page-wrapper">
     <section class="content">
         {% block content %}{% endblock %}
     </section>
 </main>
 
-<!-- Footer -->
 <footer class="footer">
     <p>© 2025 Guardian Angel. All rights reserved.</p>
 </footer>
-
-<!-- File upload support for lawyer registration (no layout change) -->
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const form = document.querySelector('form[enctype="multipart/form-data"]');
-        if (form) {
-            form.addEventListener("submit", () => {
-                console.log("Submitting file upload form...");
-            });
-        }
-    });
-</script>
 
 </body>
 </html>
