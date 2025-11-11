@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Confirm chat</h1>
+
+<p>You are about to start a chat with <strong>{{ lawyer_profile.display_name }}</strong>.</p>
+<p>
+    Fee per chat:
+    {% if lawyer_profile.fee_per_chat %}
+        {{ lawyer_profile.fee_per_chat }}
+    {% else %}
+        Not specified
+    {% endif %}
+</p>
+<p>This page simulates payment confirmation for now.</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn">Confirm and start chat</button>
+</form>
+{% endblock %}
