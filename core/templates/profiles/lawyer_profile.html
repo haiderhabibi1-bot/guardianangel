@@ -1,13 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Lawyer dashboard</h1>
+<h1>Lawyer profile</h1>
 
-<p>Welcome, {{ profile.full_name|default:request.user.username }}.</p>
-<p>Your account is approved and you can now participate in public legal Q&amp;A.</p>
+<p><strong>Name:</strong> {{ profile.full_name }}</p>
+<p><strong>Specialty:</strong> {{ profile.specialty|default:"Not set" }}</p>
+<p><strong>Years of practice:</strong> {{ profile.years_of_practice|default:"N/A" }}</p>
+<p><strong>Fee per chat:</strong>
+    {% if profile.fee_per_chat %}{{ profile.fee_per_chat }}{% else %}Not set{% endif %}
+</p>
+<p><strong>Bio:</strong> {{ profile.bio|default:"Not set" }}</p>
+<p><strong>Billing method:</strong> {{ billing.billing_method|default:"Not set" }}</p>
 
-<div class="actions" style="text-align:center; margin-top:16px;">
+<div style="text-align:center; margin-top:16px;">
     <a href="{% url 'lawyer_settings' %}" class="btn">Settings</a>
-    <a href="{% url 'public_questions' %}" class="btn">View Public Questions</a>
+    <a href="{% url 'lawyers_list' %}" class="btn">Lawyers list</a>
 </div>
 {% endblock %}
