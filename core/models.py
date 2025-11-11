@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
+from datetime import date
 
 
 class Profile(models.Model):
@@ -15,18 +16,22 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
 
-    # Lawyers must be approved by you before full access
+    # Lawyer approval
     is_approved = models.BooleanField(default=False)
 
-    # Optional extra info for lawyers (not editable by them, only admin)
+    # Lawyer details
     full_name = models.CharField(max_length=150, blank=True)
     bar_number = models.CharField(max_length=100, blank=True)
-
-    # NEW: bar certificate upload (backend-only, no layout change)
     bar_certificate = models.FileField(
-        upload_to="bar_certificates/",
-        blank=True,
-        null=True,
+        upload_to="bar_certificates/", blank=True, null=True
+    )
+
+    # Extra lawyer info
+    specialty = models.CharField(max_length=255, blank=True)
+    practice_start_year = models.PositiveIntegerField(blank=True, null=True)
+    bio = models.TextField(blank=True, max_length=1000)
+    fee_per_chat = models.DecimalField(
+        max_digits=8, decimal_places=2, blank=True, null=True
     )
 
     def __str__(self):
@@ -40,6 +45,18 @@ class Profile(models.Model):
     def is_customer(self):
         return self.role == self.ROLE_CUSTOMER
 
+    @property
+    def years_of_practice(self):
+        if self.practice_start_year:
+            return max(0, date.today().year - self.practice_start_year)
+        return None
+
+    @property
+    def display_name(self):
+        if self.is_lawyer:
+            return self.full_name or self.user.username
+        return self.user.username
+
 
 class BillingProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="billing")
@@ -50,6 +67,7 @@ class BillingProfile(models.Model):
 
 
 class PublicQuestion(models.Model):
+    # Customer who asked (nullable so old data still works)
     customer = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
@@ -86,3 +104,41 @@ class PublicAnswer(models.Model):
 
     def __str__(self):
         return f"Answer to Q#{self.question_id}"
+
+
+class Chat(models.Model):
+    """
+    One chat between a customer and a lawyer, created after 'payment'.
+    """
+
+    customer = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="customer_chats"
+    )
+    lawyer = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="lawyer_chats"
+    )
+    created_at = models.DateTimeField(default=timezone.now)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = ("customer", "lawyer")
+
+    def __str__(self):
+        return f"Chat {self.id} - {self.customer.username} x {self.lawyer.username}"
+
+
+class ChatMessage(models.Model):
+    chat = models.ForeignKey(
+        Chat, on_delete=models.CASCADE, related_name="messages"
+    )
+    sender = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="sent_messages"
+    )
+    message = models.TextField()
+    created_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ["created_at"]
+
+    def __str__(self):
+        return f"Msg {self.id} in Chat {self.chat_id}"
