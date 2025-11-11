@@ -1,28 +1,25 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
 <h1 class="login-title">Log in</h1>
 <p>Welcome back. Please log in to access your account.</p>
 
-<form method="post" action="{% url 'login' %}">
+<form method="post">
     {% csrf_token %}
-    {% if form.errors %}
-        <p>Invalid username or password. Please try again.</p>
-    {% endif %}
+    {{ form.non_field_errors }}
 
     <label for="id_username">Username:</label>
-    <input type="text" name="username" id="id_username" required>
+    {{ form.username }}
 
     <label for="id_password">Password:</label>
-    <input type="password" name="password" id="id_password" required>
+    {{ form.password }}
 
-    <button type="submit" class="btn">Login</button>
+    <button type="submit">Login</button>
 </form>
 
-<p style="text-align:center; margin-top: 24px;">Don't have an account?</p>
-
-<div style="display:flex; justify-content:center; gap:16px; margin-top:8px;">
-    <a href="{% url 'register_customer' %}" class="btn">Create Customer Account</a>
-    <a href="{% url 'register_lawyer' %}" class="btn">Register as Lawyer</a>
+<p style="margin-top: 16px; text-align: center;">Don't have an account?</p>
+<div style="display: flex; justify-content: center; gap: 16px; margin-top: 8px;">
+    <a class="btn" href="{% url 'register_customer' %}">Create Customer Account</a>
+    <a class="btn" href="{% url 'register_lawyer' %}">Register as Lawyer</a>
 </div>
 {% endblock %}
