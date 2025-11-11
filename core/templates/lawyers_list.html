@@ -1,69 +1,43 @@
 {% extends "base.html" %}
 
-{% block title %}Lawyers | Guardian Angel{% endblock %}
-
 {% block content %}
-<div class="page-wrap">
-<h2>Approved Lawyers</h2>
-<p class="intro">
-These lawyers have registered with Guardian Angel and are pending or approved for direct consultations.
-Only approved profiles are shown here.
-</p>
+<h1>Lawyers list</h1>
 
-<ul class="lawyer-list">
-{% for l in lawyers %}
-<li class="lawyer-card">
-<div class="lawyer-name">{{ l.user.username }}</div>
-{% if l.speciality %}
-<div class="lawyer-field">{{ l.speciality }}</div>
+{% if lawyers %}
+    {% for p in lawyers %}
+        <div class="question-card">
+            <h3>{{ p.display_name }}</h3>
+            <p><strong>Specialty:</strong> {{ p.specialty|default:"Not specified" }}</p>
+            <p><strong>Years of practice:</strong>
+                {% if p.years_of_practice %}
+                    {{ p.years_of_practice }}
+                {% else %}
+                    N/A
+                {% endif %}
+            </p>
+            <p><strong>Fee per chat:</strong>
+                {% if p.fee_per_chat %}
+                    {{ p.fee_per_chat }}
+                {% else %}
+                    Not specified
+                {% endif %}
+            </p>
+            <p><strong>Bio:</strong> {{ p.bio|default:"No bio provided yet." }}</p>
+
+            {% if user.is_authenticated and user.profile.role == 'customer' %}
+                <a href="{% url 'start_chat_with_lawyer' p.user.id %}" class="btn">
+                    Start chat
+                </a>
+            {% elif user.is_authenticated and user.profile.role == 'lawyer' %}
+                {# Lawyers see list but no button #}
+            {% else %}
+                <a href="{% url 'register_customer' %}" class="btn">
+                    Start chat
+                </a>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No approved lawyers yet.</p>
 {% endif %}
-<div class="lawyer-meta">
-{% if l.years_experience %}{{ l.years_experience }} years experience{% endif %}
-{% if l.law_school %} • {{ l.law_school }}{% endif %}
-</div>
-</li>
-{% empty %}
-<li>No approved lawyers yet. Check back soon.</li>
-{% endfor %}
-</ul>
-</div>
-{% endblock %}
-
-{% block extra_css %}
-<style>
-.page-wrap {
-max-width: 720px;
-margin: 30px auto;
-padding: 24px;
-background: #fff;
-border-radius: 14px;
-box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-}
-.intro {
-font-size: 0.95rem;
-color: #555;
-margin-bottom: 18px;
-}
-.lawyer-list {
-list-style: none;
-padding: 0;
-margin: 0;
-}
-.lawyer-card {
-padding: 12px 10px;
-border-bottom: 1px solid #eef1f5;
-}
-.lawyer-name {
-font-weight: 600;
-color: #0b3c5d;
-}
-.lawyer-field {
-font-size: 0.9rem;
-color: #0077cc;
-}
-.lawyer-meta {
-font-size: 0.8rem;
-color: #777;
-}
-</style>
 {% endblock %}
