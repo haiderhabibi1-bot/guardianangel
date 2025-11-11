@@ -49,9 +49,9 @@ body {
     margin-right: auto;
 }
 
-/* =======================================================
-   PAGE TITLES (ALL MAIN TITLES INSIDE PAGES)
-   ======================================================= */
+/* ======================================
+   TITLES (all main titles reuse this)
+   ====================================== */
 
 .content h1,
 .content h2,
@@ -166,12 +166,6 @@ body {
     width: 100%;
 }
 
-/* user label in nav */
-.nav-user-label {
-    font-weight: 600;
-    color: #0d47a1;
-}
-
 /* BUTTONS */
 button,
 .btn {
@@ -238,7 +232,7 @@ select:focus {
     background: #ffffff;
 }
 
-/* PUBLIC QUESTIONS / LISTS */
+/* PUBLIC QUESTIONS / CARDS */
 .question-card {
     background: #ffffff;
     border-radius: 18px;
@@ -257,7 +251,6 @@ select:focus {
     color: #0d47a1;
     margin-bottom: 6px;
     font-size: 1.02rem;
-    text-align: left;
 }
 
 .question-card p {
@@ -276,17 +269,13 @@ select:focus {
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
 }
 
-/* ======================================
-   MOBILE ONLY
-   ====================================== */
+/* MOBILE */
 @media (max-width: 768px) {
     .navbar {
         flex-direction: column;
         align-items: center;
-        justify-content: center;
         gap: 8px;
         padding: 10px 18px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
     }
 
     .logo-container {
@@ -333,52 +322,8 @@ select:focus {
         max-width: 100%;
     }
 
-    .content h1,
-    .content h2,
-    .content .page-title,
-    .content .section-title,
-    .content .auth-title,
-    .content .pricing-title,
-    .content .questions-title,
-    .content .register-title,
-    .content .login-title {
-        font-size: 1.3rem;
-        margin-bottom: 4px;
-        text-align: center;
-        font-weight: 700;
-        text-decoration: underline;
-        text-decoration-thickness: 2px;
-        text-underline-offset: 6px;
-    }
-
-    .content h3 {
-        font-size: 1.05rem;
-    }
-
-    .content p {
-        font-size: 0.9rem;
-    }
-
-    form {
-        max-width: 100%;
-    }
-
-    .question-card {
-        padding: 14px 14px;
-        margin-bottom: 10px;
-    }
-
-    .question-card h3 {
-        font-size: 0.98rem;
-    }
-
-    .question-card p {
-        font-size: 0.86rem;
-    }
-
     .footer {
         font-size: 0.8rem;
         padding: 10px;
-        box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.04);
     }
 }
