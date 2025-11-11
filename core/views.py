@@ -1,115 +1,81 @@
-from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
-from django.db import IntegrityError
+from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
-# HOME
+from .forms import (
+    CustomerRegistrationForm,
+    LawyerRegistrationForm,
+    PublicQuestionForm,
+    PublicAnswerForm,
+)
+from .models import PublicQuestion, PublicAnswer, LawyerProfile
+
 
 def home(request):
-    return render(request, "home.html")
+    return render(request, 'home.html')
 
-# SIMPLE PAGES
 
 def pricing(request):
-    return render(request, "pricing.html")
-
-
-def public_questions(request):
-    # For now: simple "no answered questions yet" message.
-    # (Safe: does not hit any missing tables.)
-    context = {
-        "questions": [],
-    }
-    return render(request, "public_questions.html", context)
+    return render(request, 'pricing.html')
 
 
 def lawyers_list(request):
-    # For now: placeholder list, to be wired to real LawyerProfile later.
-    lawyers = []
-    return render(request, "lawyers_list.html", {"lawyers": lawyers})
+    lawyers = LawyerProfile.objects.filter(approved=True)
+    return render(request, 'lawyers_list.html', {'lawyers': lawyers})
 
 
-# AUTH
-
-def login_view(request):
-    if request.method == "POST":
-        username = request.POST.get("username", "").strip()
-        password = request.POST.get("password", "").strip()
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect("home")
-        messages.error(request, "Invalid username or password.")
-    return render(request, "login.html")
-
-
-def logout_view(request):
-    if request.method == "POST":
-        logout(request)
-        return redirect("home")
-    # If someone hits /logout/ via GET, just send them home.
-    return redirect("home")
+def public_questions(request):
+    """
+    Show only answered public questions to everyone.
+    No layout changes; template handles display.
+    """
+    answered = PublicQuestion.objects.filter(
+        answers__isnull=False
+    ).distinct().order_by('-created_at')
+    return render(request, 'public_questions.html', {'questions': answered})
 
 
 def register_customer(request):
-    if request.method == "POST":
-        username = request.POST.get("username", "").strip()
-        email = request.POST.get("email", "").strip()
-        password = request.POST.get("password", "")
-        confirm = request.POST.get("confirm_password", "")
-
-        if not username or not email or not password:
-            messages.error(request, "All fields are required.")
-        elif password != confirm:
-            messages.error(request, "Passwords do not match.")
-        else:
-            try:
-                User.objects.create_user(
-                    username=username,
-                    email=email,
-                    password=password,
-                )
-                messages.success(request, "Account created. Please log in.")
-                return redirect("login")
-            except IntegrityError:
-                messages.error(request, "Username already taken.")
-
-    return render(request, "register_customer.html")
+    """
+    Create customer account then log them in and send to My Questions.
+    """
+    if request.method == 'POST':
+        form = CustomerRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, "Your customer account has been created.")
+            return redirect('my_questions')
+    else:
+        form = CustomerRegistrationForm()
+    return render(request, 'register_customer.html', {'form': form})
 
 
 def register_lawyer(request):
-    if request.method == "POST":
-        username = request.POST.get("username", "").strip()
-        email = request.POST.get("email", "").strip()
-        password = request.POST.get("password", "")
-        confirm = request.POST.get("confirm_password", "")
+    """
+    Create lawyer account in pending state; no style change.
+    """
+    if request.method == 'POST':
+        form = LawyerRegistrationForm(request.POST, request.FILES)
+        if form.is_valid():
+            lawyer_profile = form.save(commit=False)
+            lawyer_profile.is_approved = False  # pending manual approval
+            lawyer_profile.save()
+            messages.success(
+                request,
+                "Your application has been submitted. You will be notified once approved."
+            )
+            return redirect('home')
+    else:
+        form = LawyerRegistrationForm()
+    return render(request, 'register_lawyer.html', {'form': form})
 
-        if not username or not email or not password:
-            messages.error(request, "All fields are required.")
-        elif password != confirm:
-            messages.error(request, "Passwords do not match.")
-        else:
-            try:
-                # Mark as staff just so we can distinguish later if needed.
-                User.objects.create_user(
-                    username=username,
-                    email=email,
-                    password=password,
-                    is_staff=True,
-                )
-                messages.success(request, "Lawyer account created. Please log in.")
-                return redirect("login")
-            except IntegrityError:
-                messages.error(request, "Username already taken.")
-
-    return render(request, "register_lawyer.html")
-
-
-# CUSTOMER "MY QUESTIONS" PLACEHOLDER
 
 @login_required
 def my_questions(request):
-    # Placeholder; no DB calls that can blow up.
-    return render(request, "my_questions.html")
+    """
+    Placeholder page for logged-in customers.
+    Simple and cannot 500.
+    """
+    return render(request, 'my_questions.html')
