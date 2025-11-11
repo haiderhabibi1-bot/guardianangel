@@ -3,6 +3,7 @@
 {% block content %}
 <h1 class="questions-title">Public questions</h1>
 
+{# For logged-in customers: show only their own pending questions #}
 {% if customer_pending %}
     <div class="pending-questions">
         <h3>Your pending questions</h3>
@@ -17,6 +18,7 @@
     </div>
 {% endif %}
 
+{# Public, answered questions visible to everyone #}
 {% if questions %}
     {% for q in questions %}
         <div class="question-card">
