@@ -1,133 +1,147 @@
-from django.conf import settings
 from django.db import models
-from django.utils import timezone
+from django.contrib.auth.models import User
+
+
+class CustomerProfile(models.Model):
+    """
+    Basic customer profile.
+
+    Keep it simple and stable: one-to-one with the auth user plus a counter
+    for how many free public questions they have.
+    """
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="customer_profile",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    free_public_questions_remaining = models.PositiveIntegerField(default=2)
+
+    def __str__(self) -> str:
+        return f"CustomerProfile({self.user.username})"
 
 
 class LawyerProfile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    full_name = models.CharField(max_length=255)
-    specialty = models.CharField(max_length=255, blank=True)
-    years_of_practice = models.PositiveIntegerField(default=0)
-    bar_number = models.CharField(max_length=128, blank=True)
-    bio = models.TextField(blank=True)
-    fee_per_chat = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-    is_approved = models.BooleanField(default=True)
-
-    def __str__(self):
-        return self.full_name or self.user.get_username()
-
-
-class Profile(models.Model):
     """
-    Simple wrapper so existing imports work.
-    Flags whether a user is a customer or a lawyer.
+    Basic lawyer profile used on the Lawyers List page.
     """
-    USER_TYPE_CHOICES = (
-        ("customer", "Customer"),
-        ("lawyer", "Lawyer"),
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="lawyer_profile",
     )
-
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    user_type = models.CharField(max_length=20, choices=USER_TYPE_CHOICES, default="customer")
-    lawyer_profile = models.OneToOneField(
-        LawyerProfile,
-        on_delete=models.SET_NULL,
+    speciality = models.CharField(max_length=255, blank=True)
+    bar_number = models.CharField(max_length=64, blank=True)
+    years_of_practice = models.PositiveIntegerField(default=0)
+    bio = models.TextField(blank=True)
+    fee_per_chat = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
         null=True,
         blank=True,
-        related_name="base_profile",
     )
+    is_approved = models.BooleanField(
+        default=True
+    )  # treat as approved; keeps Lawyers List working
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"{self.user.username} ({self.user_type})"
+    def __str__(self) -> str:
+        return f"LawyerProfile({self.user.username})"
 
-
-class BillingProfile(models.Model):
-    """
-    Minimal billing info to satisfy existing imports and templates.
-    """
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    full_name = models.CharField(max_length=255, blank=True)
-    address_line1 = models.CharField(max_length=255, blank=True)
-    address_line2 = models.CharField(max_length=255, blank=True)
-    city = models.CharField(max_length=128, blank=True)
-    country = models.CharField(max_length=128, blank=True)
-
-    def __str__(self):
-        return f"Billing for {self.user.username}"
+    @property
+    def name(self) -> str:
+        full = (self.user.get_full_name() or "").strip()
+        return full or self.user.username
 
 
 class PublicQuestion(models.Model):
-    STATUS_PENDING = "pending"
-    STATUS_ANSWERED = "answered"
+    """
+    Public questions shown on the Public Questions page.
 
-    STATUS_CHOICES = (
-        (STATUS_PENDING, "Pending"),
-        (STATUS_ANSWERED, "Answered"),
-    )
-
+    Template expects 'question_text' and 'answer' accessible via q.answer.
+    """
     customer = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        CustomerProfile,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name="public_questions",
     )
     question_text = models.TextField()
-    created_at = models.DateTimeField(default=timezone.now)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
-    # used to enforce the "two free questions" rule
-    is_free = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_answered = models.BooleanField(default=False)
 
-    def __str__(self):
-        return f"Question #{self.id}"
+    def __str__(self) -> str:
+        return f"PublicQuestion({self.pk})"
+
+    @property
+    def answer(self) -> str:
+        """
+        Used directly in the template as q.answer.
+        """
+        try:
+            return self.answer_obj.answer_text
+        except PublicAnswer.DoesNotExist:
+            return ""
 
 
 class PublicAnswer(models.Model):
+    """
+    Answer to a PublicQuestion by a lawyer.
+    """
     question = models.OneToOneField(
         PublicQuestion,
         on_delete=models.CASCADE,
-        related_name="answer",
+        related_name="answer_obj",
     )
     lawyer = models.ForeignKey(
         LawyerProfile,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
+        on_delete=models.CASCADE,
         related_name="public_answers",
     )
     answer_text = models.TextField()
-    created_at = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"Answer to #{self.question_id}"
+    def __str__(self) -> str:
+        return f"PublicAnswer(q={self.question_id}, lawyer={self.lawyer.user.username})"
 
 
-class Chat(models.Model):
+class ChatRoom(models.Model):
+    """
+    Simple chat room between a customer and a lawyer.
+    (Structure only; hook-up/payment logic can be added later.)
+    """
     customer = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        CustomerProfile,
         on_delete=models.CASCADE,
-        related_name="chats_as_customer",
+        related_name="chat_rooms",
     )
     lawyer = models.ForeignKey(
         LawyerProfile,
         on_delete=models.CASCADE,
-        related_name="chats_as_lawyer",
+        related_name="chat_rooms",
     )
-    created_at = models.DateTimeField(default=timezone.now)
-    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"Chat {self.id} {self.customer} ↔ {self.lawyer}"
+    def __str__(self) -> str:
+        return f"ChatRoom({self.customer.user.username} ↔ {self.lawyer.user.username})"
 
 
 class ChatMessage(models.Model):
-    chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name="messages")
-    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    content = models.TextField()
-    timestamp = models.DateTimeField(default=timezone.now)
+    """
+    Messages inside a ChatRoom.
+    """
+    room = models.ForeignKey(
+        ChatRoom,
+        on_delete=models.CASCADE,
+        related_name="messages",
+    )
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ["timestamp"]
+        ordering = ("created_at",)
 
-    def __str__(self):
-        return f"{self.sender}: {self.content[:40]}"
+    def __str__(self) -> str:
+        return f"ChatMessage(room={self.room_id}, sender={self.sender.username})"
