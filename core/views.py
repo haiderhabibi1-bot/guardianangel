@@ -1,171 +1,196 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
+from django.contrib.auth.models import User
+
+from .models import (
+    CustomerProfile,
+    LawyerProfile,
+    PublicQuestion,
+    PublicAnswer,
+)
 from .forms import (
+    LoginForm,
     CustomerRegistrationForm,
     LawyerRegistrationForm,
-    LoginForm,
-    QuestionForm,
-    AnswerForm,
+    PublicQuestionForm,
+    PublicAnswerForm,
 )
-from .models import CustomerProfile, LawyerProfile, PublicQuestion, PublicAnswer
 
 
-# ------------------------------------
-# HOME PAGE
-# ------------------------------------
+# -------- Static-style pages (UI unchanged) --------
+
 def home(request):
     return render(request, "home.html")
 
 
-# ------------------------------------
-# ABOUT PAGE
-# ------------------------------------
-def about(request):
-    return render(request, "about.html")
+def pricing(request):
+    return render(request, "pricing.html")
 
 
-# ------------------------------------
-# PUBLIC QUESTIONS (visible to everyone)
-# ------------------------------------
-def public_questions(request):
-    questions = PublicQuestion.objects.all().order_by("-created_at")
-    return render(request, "public_questions.html", {"questions": questions})
+# -------- Auth --------
 
-
-# ------------------------------------
-# ASK QUESTION (Customer must be logged in)
-# ------------------------------------
-@login_required
-def ask_question(request):
-    if hasattr(request.user, "customerprofile"):
-        if request.method == "POST":
-            form = QuestionForm(request.POST)
-            if form.is_valid():
-                question = form.save(commit=False)
-                question.customer = request.user.customerprofile
-                question.save()
-                messages.success(request, "Your question was submitted successfully!")
-                return redirect("public_questions")
-        else:
-            form = QuestionForm()
-        return render(request, "ask_question.html", {"form": form})
+def login_view(request):
+    if request.method == "POST":
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            user = authenticate(
+                request,
+                username=form.cleaned_data["username"],
+                password=form.cleaned_data["password"],
+            )
+            if user is not None:
+                login(request, user)
+                return redirect("home")
     else:
-        messages.error(request, "Only customers can ask questions.")
-        return redirect("home")
+        form = LoginForm()
+    return render(request, "login.html", {"form": form})
 
 
-# ------------------------------------
-# ANSWER QUESTION (Lawyer must be logged in)
-# ------------------------------------
-@login_required
-def answer_question(request, question_id):
-    if hasattr(request.user, "lawyerprofile"):
-        question = get_object_or_404(PublicQuestion, id=question_id)
-        if request.method == "POST":
-            form = AnswerForm(request.POST)
-            if form.is_valid():
-                answer = form.save(commit=False)
-                answer.question = question
-                answer.lawyer = request.user.lawyerprofile
-                answer.save()
-                messages.success(request, "Your answer was posted successfully!")
-                return redirect("public_questions")
-        else:
-            form = AnswerForm()
-        return render(
-            request,
-            "answer_question.html",
-            {"form": form, "question": question},
-        )
-    else:
-        messages.error(request, "Only lawyers can answer questions.")
-        return redirect("home")
+def logout_view(request):
+    logout(request)
+    return redirect("home")
 
 
-# ------------------------------------
-# CUSTOMER REGISTRATION
-# ------------------------------------
 def register_customer(request):
     if request.method == "POST":
         form = CustomerRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
             CustomerProfile.objects.create(user=user)
-            messages.success(request, "Customer account created successfully.")
-            return redirect("login")
+            login(request, user)
+            return redirect("home")
     else:
         form = CustomerRegistrationForm()
     return render(request, "register_customer.html", {"form": form})
 
 
-# ------------------------------------
-# LAWYER REGISTRATION
-# ------------------------------------
 def register_lawyer(request):
     if request.method == "POST":
-        form = LawyerRegistrationForm(request.POST)
+        form = LawyerRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save()
-            LawyerProfile.objects.create(user=user)
-            messages.success(request, "Lawyer account created successfully.")
-            return redirect("login")
+            LawyerProfile.objects.create(
+                user=user,
+                bar_certificate=form.cleaned_data.get("bar_certificate"),
+            )
+            login(request, user)
+            return redirect("home")
     else:
         form = LawyerRegistrationForm()
     return render(request, "register_lawyer.html", {"form": form})
 
 
-# ------------------------------------
-# LOGIN
-# ------------------------------------
-def user_login(request):
-    if request.method == "POST":
-        form = LoginForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get("username")
-            password = form.cleaned_data.get("password")
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                messages.success(request, f"Welcome back, {user.username}!")
-                return redirect("home")
-            else:
-                messages.error(request, "Invalid username or password.")
+# -------- Public Questions --------
+
+def public_questions(request):
+    """
+    Anyone: see answered questions.
+    Logged-in customers: can submit up to 2 questions.
+    Does NOT change your existing wording/layout.
+    """
+    answered = (
+        PublicAnswer.objects
+        .select_related("question", "lawyer")
+        .order_by("-created_at")
+    )
+
+    question_form = None
+
+    if request.user.is_authenticated and hasattr(request.user, "customer_profile"):
+        if request.method == "POST":
+            question_form = PublicQuestionForm(request.POST)
+            if question_form.is_valid():
+                existing_count = PublicQuestion.objects.filter(
+                    customer=request.user
+                ).count()
+                if existing_count < 2:
+                    q = question_form.save(commit=False)
+                    q.customer = request.user
+                    q.save()
+                return redirect("public_questions")
         else:
-            messages.error(request, "Invalid credentials.")
-    else:
-        form = LoginForm()
-    return render(request, "login.html", {"form": form})
+            question_form = PublicQuestionForm()
+
+    context = {
+        "answers": answered,
+        "question_form": question_form,
+    }
+    return render(request, "public_questions.html", context)
 
 
-# ------------------------------------
-# LOGOUT
-# ------------------------------------
-@login_required
-def user_logout(request):
-    logout(request)
-    messages.info(request, "You have been logged out successfully.")
-    return redirect("home")
+# -------- Lawyers List --------
 
-
-# ------------------------------------
-# LAWYERS LIST
-# ------------------------------------
 def lawyers_list(request):
-    lawyers = LawyerProfile.objects.all().order_by("user__username")
+    """
+    Public page: list approved lawyers.
+    UI handled by your existing template; we just feed it data.
+    """
+    lawyers = (
+        LawyerProfile.objects
+        .select_related("user")
+        .filter(is_approved=True)
+        .order_by("user__last_name", "user__first_name")
+    )
     return render(request, "lawyers_list.html", {"lawyers": lawyers})
 
 
-# ------------------------------------
-# PRICING PAGE
-# ------------------------------------
-def pricing(request):
-    return render(request, "pricing.html")
+# -------- My Questions (simple) --------
+
+@login_required
+def my_questions(request):
+    """
+    For customers: see their own public questions & answers.
+    For lawyers: see questions they've answered.
+    Keep it minimal; no layout changes.
+    """
+    if hasattr(request.user, "customer_profile"):
+        questions = (
+            PublicQuestion.objects
+            .filter(customer=request.user)
+            .select_related("public_answer")
+            .order_by("-created_at")
+        )
+        context = {"mode": "customer", "questions": questions}
+    elif hasattr(request.user, "lawyer_profile"):
+        answers = (
+            PublicAnswer.objects
+            .filter(lawyer=request.user)
+            .select_related("question")
+            .order_by("-created_at")
+        )
+        context = {"mode": "lawyer", "answers": answers}
+    else:
+        context = {"mode": "none"}
+
+    return render(request, "my_questions.html", context)
 
 
-# ------------------------------------
-# 404 HANDLER (optional for polish)
-# ------------------------------------
-def custom_404(request, exception=None):
-    return render(request, "404.html", status=404)
+# -------- Answer Public Question (for lawyers) --------
+
+@login_required
+def answer_public_question(request, question_id):
+    if not hasattr(request.user, "lawyer_profile"):
+        return redirect("public_questions")
+
+    question = get_object_or_404(PublicQuestion, pk=question_id)
+
+    if hasattr(question, "public_answer"):
+        return redirect("public_questions")
+
+    if request.method == "POST":
+        form = PublicAnswerForm(request.POST)
+        if form.is_valid():
+            answer = form.save(commit=False)
+            answer.question = question
+            answer.lawyer = request.user
+            answer.save()
+            return redirect("public_questions")
+    else:
+        form = PublicAnswerForm()
+
+    return render(
+        request,
+        "answer_public_question.html",
+        {"question": question, "form": form},
+    )
