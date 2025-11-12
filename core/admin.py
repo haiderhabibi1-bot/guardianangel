@@ -2,10 +2,10 @@ from django.contrib import admin
 from .models import (
     CustomerProfile,
     LawyerProfile,
-    BillingProfile,
     PublicQuestion,
     PublicAnswer,
 )
+
 
 @admin.register(CustomerProfile)
 class CustomerProfileAdmin(admin.ModelAdmin):
@@ -18,12 +18,6 @@ class LawyerProfileAdmin(admin.ModelAdmin):
     list_display = ("user", "bar_number", "years_of_experience", "approved")
     list_filter = ("approved",)
     search_fields = ("user__username", "user__email", "bar_number")
-
-
-@admin.register(BillingProfile)
-class BillingProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "created_at")
-    search_fields = ("user__username", "user__email")
 
 
 @admin.register(PublicQuestion)
