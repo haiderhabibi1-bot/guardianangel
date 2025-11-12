@@ -1,24 +1,28 @@
 from django.urls import path
-from django.contrib.auth import views as auth_views
+
 from . import views
 
 urlpatterns = [
-    path('', views.home, name='home'),
+    path("", views.home, name="home"),
+    path("pricing/", views.pricing, name="pricing"),
+    path("public-questions/", views.public_questions, name="public_questions"),
+    path("lawyers/", views.lawyers_list, name="lawyers_list"),
 
-    path('public-questions/', views.public_questions, name='public_questions'),
-    path('pricing/', views.pricing, name='pricing'),
-    path('lawyers/', views.lawyers_list, name='lawyers_list'),
+    path("register/customer/", views.register_customer, name="register_customer"),
+    path("register/lawyer/", views.register_lawyer, name="register_lawyer"),
 
-    # Auth
-    path('login/', auth_views.LoginView.as_view(
-        template_name='login.html'
-    ), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path("login/", views.GuardianLoginView.as_view(), name="login"),
+    path("logout/", views.GuardianLogoutView.as_view(), name="logout"),
 
-    # Registration
-    path('register/customer/', views.register_customer, name='register_customer'),
-    path('register/lawyer/', views.register_lawyer, name='register_lawyer'),
+    path("settings/", views.settings_view, name="settings"),
 
-    # Logged-in landing
-    path('my-questions/', views.my_questions, name='my_questions'),
+    path("my-questions/", views.my_questions, name="my_questions"),
+    path("my-customers/", views.my_customers, name="my_customers"),
+    path("chat/<int:chat_id>/", views.chat_view, name="chat_view"),
+
+    path(
+        "public-questions/<int:question_id>/answer/",
+        views.answer_public_question,
+        name="answer_public_question",
+    ),
 ]
