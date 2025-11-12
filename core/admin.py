@@ -9,25 +9,21 @@ from .models import (
 
 @admin.register(CustomerProfile)
 class CustomerProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "created_at")
-    search_fields = ("user__username", "user__email")
+    list_display = ("user",)
 
 
 @admin.register(LawyerProfile)
 class LawyerProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "bar_number", "years_of_experience", "approved")
-    list_filter = ("approved",)
-    search_fields = ("user__username", "user__email", "bar_number")
+    list_display = ("user", "is_approved")
 
 
 @admin.register(PublicQuestion)
 class PublicQuestionAdmin(admin.ModelAdmin):
-    list_display = ("id", "customer", "created_at", "is_answered")
-    list_filter = ("is_answered",)
-    search_fields = ("question_text", "customer__user__username")
+    list_display = ("id", "customer", "created_at")
+    search_fields = ("question_text",)
 
 
 @admin.register(PublicAnswer)
 class PublicAnswerAdmin(admin.ModelAdmin):
-    list_display = ("id", "lawyer", "question", "created_at")
-    search_fields = ("question__question_text", "lawyer__user__username")
+    list_display = ("question", "lawyer", "created_at")
+    search_fields = ("answer_text",)
